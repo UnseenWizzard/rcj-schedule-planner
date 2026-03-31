@@ -1,0 +1,136 @@
+from __future__ import annotations
+from collections import defaultdict
+from rcj_planner.models import Team, TimeSlot, Resource, Assignment, Schedule
+from rcj_planner.loader import generate_slots
+
+
+class SchedulingError(Exception):
+    pass
+
+
+def _team_conflicts(slot: TimeSlot, team: Team, assignments: list[Assignment], buffer_minutes: int) -> bool:
+    for a in assignments:
+        if team not in a.teams:
+            continue
+        if slot.overlaps(a.slot):
+            return True
+        if slot.buffer_conflict(a.slot, buffer_minutes):
+            return True
+    return False
+
+
+def _resource_conflicts(slot: TimeSlot, resource: Resource, assignments: list[Assignment]) -> bool:
+    for a in assignments:
+        if a.resource == resource and slot.overlaps(a.slot):
+            return True
+    return False
+
+
+def build_schedule(
+    divisions: list[tuple[str, list[Team], int, int]],
+    day_specs: list[str],
+    run_time: int,
+    interview_time: int,
+    interview_group_size: int,
+    buffer_minutes: int,
+) -> Schedule:
+    """
+    divisions: list of (division_label, teams, num_arenas, runs_per_arena)
+    Each division gets its own namespaced arena resources and independent run schedule.
+    All divisions share a single Interview resource.
+    """
+    run_slots = generate_slots(day_specs, run_time)
+    interview_slots = generate_slots(day_specs, interview_time)
+    interview_resource = Resource("interview", "Interview")
+
+    assignments: list[Assignment] = []
+
+    # Phase 1 — Arena runs per division (greedy round-robin, namespaced arenas)
+    for div_label, teams, num_arenas, runs_per_arena in divisions:
+        arenas = [Resource("arena", f"{div_label} – Arena {i+1}") for i in range(num_arenas)]
+        for arena in arenas:
+            cursor = 0
+            for _ in range(runs_per_arena):
+                for team in teams:
+                    found = False
+                    for i in range(cursor, len(run_slots)):
+                        slot = run_slots[i]
+                        if _resource_conflicts(slot, arena, assignments):
+                            continue
+                        if _team_conflicts(slot, team, assignments, buffer_minutes):
+                            continue
+                        assignments.append(Assignment(slot, arena, [team]))
+                        cursor = i + 1
+                        found = True
+                        break
+                    if not found:
+                        raise SchedulingError(
+                            f"No valid run slot found for team '{team.name}' on arena '{arena.name}'. "
+                            "Try extending the day or reducing teams/arenas."
+                        )
+
+    # Phase 2 — Interviews grouped by division (shared interview resource)
+    for div_label, teams, _, _runs in divisions:
+        chunks = [
+            teams[i:i + interview_group_size]
+            for i in range(0, len(teams), interview_group_size)
+        ]
+        cursor = 0
+        for chunk in chunks:
+            found = False
+            for i in range(cursor, len(interview_slots)):
+                slot = interview_slots[i]
+                if _resource_conflicts(slot, interview_resource, assignments):
+                    continue
+                if any(_team_conflicts(slot, t, assignments, buffer_minutes) for t in chunk):
+                    continue
+                assignments.append(Assignment(slot, interview_resource, list(chunk)))
+                cursor = i + 1
+                found = True
+                break
+            if not found:
+                raise SchedulingError(
+                    f"No valid interview slot found for division '{div_label}' group {[t.name for t in chunk]}. "
+                    "Try extending the day or adjusting parameters."
+                )
+
+    meta = {
+        "divisions": {label: {"arenas": num_arenas, "runs_per_arena": runs} for label, _, num_arenas, runs in divisions},
+        "run_time_minutes": run_time,
+        "interview_time_minutes": interview_time,
+        "interview_group_size": interview_group_size,
+        "buffer_minutes": buffer_minutes,
+        "days": day_specs,
+    }
+    return Schedule(assignments=assignments, meta=meta)
+
+
+def validate_schedule(schedule: Schedule) -> list[str]:
+    """Return list of violation messages (empty = valid)."""
+    violations = []
+    assignments = schedule.assignments
+    meta = schedule.meta
+    buffer = meta.get("buffer_minutes", 0)
+
+    # Check resource double-booking
+    for i, a in enumerate(assignments):
+        for b in assignments[i+1:]:
+            if a.resource == b.resource and a.slot.overlaps(b.slot):
+                violations.append(
+                    f"Resource '{a.resource.name}' double-booked at {a.slot} and {b.slot}"
+                )
+
+    # Check team overlap/buffer
+    all_teams = {t for a in assignments for t in a.teams}
+    for team in all_teams:
+        team_assignments = [a for a in assignments if team in a.teams]
+        for i, a in enumerate(team_assignments):
+            for b in team_assignments[i+1:]:
+                if a.slot.overlaps(b.slot):
+                    violations.append(f"Team '{team.name}' has overlapping slots: {a.slot} and {b.slot}")
+                elif a.slot.buffer_conflict(b.slot, buffer):
+                    violations.append(
+                        f"Team '{team.name}' has insufficient buffer between {a.slot} and {b.slot}"
+                    )
+
+    return violations

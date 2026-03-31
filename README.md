@@ -1,0 +1,109 @@
+# rcj-schedule-planner
+
+A CLI tool for generating conflict-free schedules for RoboCupJunior events. Given divisions (each with their own teams file and arena count), time parameters, and available day/timeframes, it produces a valid schedule exported as per-day CSVs.
+
+Each division gets its own independent arena run schedule. All divisions share a single interview schedule.
+
+## Installation
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install -e .
+```
+
+## Usage
+
+### Generate a schedule
+
+```bash
+rcj-planner generate \
+  --division "Maze:soccer.csv:arenas=3" \
+  --division "Rescue Maze:rescue.csv:arenas=2:runs=2" \
+  --run-time 10 \
+  --interview-time 20 \
+  --interview-group-size 3 \
+  --day "Day1:09:00-17:00" \
+  --day "Day2:09:00-13:00" \
+  --output-dir ./output \
+  --save schedule.json
+```
+
+| Flag | Required | Default | Description |
+|---|---|---|---|
+| `--division` | yes (repeatable) | — | Division spec: `Label:path/to/teams.csv:arenas=N` or `Label:path/to/teams.csv:arenas=N:runs=M` |
+| `--run-time` | yes | — | Minutes per arena run slot |
+| `--interview-time` | yes | — | Minutes per interview slot |
+| `--interview-group-size` | yes | — | Teams per interview slot |
+| `--day` | yes (repeatable) | — | Day spec: `Label:HH:MM-HH:MM` |
+| `--output-dir` | no | `./output` | Directory for CSV output |
+| `--save` | no | `schedule.json` | Path for saved schedule |
+| `--buffer` | no | = `--run-time` | Minimum gap (minutes) between a team's consecutive assignments |
+
+### Inspect a schedule
+
+```bash
+rcj-planner show schedule.json
+rcj-planner show schedule.json --day Day1
+```
+
+### Validate a saved schedule
+
+```bash
+rcj-planner validate schedule.json
+```
+
+## Input format
+
+Each division requires its own CSV file:
+
+### `soccer.csv` / `rescue.csv` / …
+
+```csv
+team_name
+Warp Drive
+SkyBot
+Thunderbots
+```
+
+Only `team_name` is required. The division label comes from the `--division` spec, not from the file.
+
+## Output format
+
+### Per-day CSVs (`Day1.csv`, `Day2.csv`, …)
+
+```csv
+time_slot,resource,teams
+09:00-09:10,Soccer Open – Arena 1,Warp Drive
+09:10-09:20,Soccer Open – Arena 2,SkyBot
+09:00-09:10,Rescue Maze – Arena 1,Gamma
+09:00-09:20,Interview,"Warp Drive, SkyBot, Thunderbots"
+```
+
+Arena resources are namespaced by division (`"Soccer Open – Arena 1"`). The interview resource is shared across all divisions. Rows are sorted by `time_slot` then `resource`.
+
+### `schedule.json`
+
+Saved schedule for use with `show` and `validate` commands.
+
+## Scheduling rules
+
+1. Each team gets one run per arena per run in their division (configurable via `runs=N` in the division spec, default 1).
+2. Each team gets exactly one interview assignment.
+3. No team has two assignments that overlap in time.
+4. No team has two consecutive assignments closer than `--buffer` minutes apart.
+5. No resource (arena or interview room) is double-booked.
+6. Arena resources are isolated per division — teams only run on their division's arenas.
+
+Teams within a division are grouped for interviews by `--interview-group-size`. If a division's team count is not a multiple of that size, the last group is smaller.
+
+If no valid slot can be found for a team, the tool exits with a clear error describing which team/resource is affected. Adjust the day length, buffer, or slot durations and retry.
+
+## Development
+
+```bash
+pip install pytest
+python -m pytest tests/
+```
+
+---
+

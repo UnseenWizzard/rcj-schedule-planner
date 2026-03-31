@@ -1,0 +1,6 @@
+output/
+input/
+env
+.venv
+.pytest_*
+.claude

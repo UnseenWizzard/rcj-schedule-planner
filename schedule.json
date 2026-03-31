@@ -1,0 +1,3573 @@
+{
+  "meta": {
+    "divisions": {
+      "Line": {
+        "arenas": 3,
+        "runs_per_arena": 1
+      },
+      "Line Entry": {
+        "arenas": 3,
+        "runs_per_arena": 1
+      },
+      "Maze": {
+        "arenas": 1,
+        "runs_per_arena": 3
+      }
+    },
+    "run_time_minutes": 10,
+    "interview_time_minutes": 15,
+    "interview_group_size": 2,
+    "buffer_minutes": 10,
+    "days": [
+      "Day1:11:00-18:00",
+      "Day2:09:00-14:00"
+    ]
+  },
+  "assignments": [
+    {
+      "day": "Day1",
+      "start": "11:00",
+      "end": "11:10",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 1",
+      "teams": [
+        "Mechanic Team"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:10",
+      "end": "11:20",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 1",
+      "teams": [
+        "Eurobot"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:20",
+      "end": "11:30",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 1",
+      "teams": [
+        "Library"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:30",
+      "end": "11:40",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 1",
+      "teams": [
+        "Die Haftelmacher"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:40",
+      "end": "11:50",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 1",
+      "teams": [
+        "Das Original"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:50",
+      "end": "12:00",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 1",
+      "teams": [
+        "we:bots"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:00",
+      "end": "12:10",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 1",
+      "teams": [
+        "GearUp"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:10",
+      "end": "12:20",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 1",
+      "teams": [
+        "Die Glorreichen 4"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:20",
+      "end": "12:30",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 1",
+      "teams": [
+        "Kaktus"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:30",
+      "end": "12:40",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 1",
+      "teams": [
+        "Nebenniere"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:40",
+      "end": "12:50",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 1",
+      "teams": [
+        "Kepler 404"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:50",
+      "end": "13:00",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 1",
+      "teams": [
+        "2 Geh\u00f6rnzellen"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:00",
+      "end": "13:10",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 1",
+      "teams": [
+        "Project William"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:10",
+      "end": "13:20",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 1",
+      "teams": [
+        "Project X"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:20",
+      "end": "13:30",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 1",
+      "teams": [
+        "TriByte"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:30",
+      "end": "13:40",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 1",
+      "teams": [
+        "NanoRobots"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:40",
+      "end": "13:50",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 1",
+      "teams": [
+        "Angora Goasbock"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:50",
+      "end": "14:00",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 1",
+      "teams": [
+        "Project PVP"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:00",
+      "end": "14:10",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 1",
+      "teams": [
+        "Deep-Drive"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:10",
+      "end": "14:20",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 1",
+      "teams": [
+        "Die (3) 2 Robomenschen"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:20",
+      "end": "14:30",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 1",
+      "teams": [
+        "HTL Trieben Engineering"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:30",
+      "end": "14:40",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 1",
+      "teams": [
+        "NLO Rescue CRO Team"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:20",
+      "end": "11:30",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 2",
+      "teams": [
+        "Mechanic Team"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:30",
+      "end": "11:40",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 2",
+      "teams": [
+        "Eurobot"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:40",
+      "end": "11:50",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 2",
+      "teams": [
+        "Library"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:50",
+      "end": "12:00",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 2",
+      "teams": [
+        "Die Haftelmacher"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:00",
+      "end": "12:10",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 2",
+      "teams": [
+        "Das Original"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:10",
+      "end": "12:20",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 2",
+      "teams": [
+        "we:bots"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:20",
+      "end": "12:30",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 2",
+      "teams": [
+        "GearUp"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:30",
+      "end": "12:40",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 2",
+      "teams": [
+        "Die Glorreichen 4"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:40",
+      "end": "12:50",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 2",
+      "teams": [
+        "Kaktus"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:50",
+      "end": "13:00",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 2",
+      "teams": [
+        "Nebenniere"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:00",
+      "end": "13:10",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 2",
+      "teams": [
+        "Kepler 404"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:10",
+      "end": "13:20",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 2",
+      "teams": [
+        "2 Geh\u00f6rnzellen"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:20",
+      "end": "13:30",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 2",
+      "teams": [
+        "Project William"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:30",
+      "end": "13:40",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 2",
+      "teams": [
+        "Project X"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:40",
+      "end": "13:50",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 2",
+      "teams": [
+        "TriByte"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:50",
+      "end": "14:00",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 2",
+      "teams": [
+        "NanoRobots"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:00",
+      "end": "14:10",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 2",
+      "teams": [
+        "Angora Goasbock"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:10",
+      "end": "14:20",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 2",
+      "teams": [
+        "Project PVP"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:20",
+      "end": "14:30",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 2",
+      "teams": [
+        "Deep-Drive"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:30",
+      "end": "14:40",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 2",
+      "teams": [
+        "Die (3) 2 Robomenschen"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:40",
+      "end": "14:50",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 2",
+      "teams": [
+        "HTL Trieben Engineering"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:50",
+      "end": "15:00",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 2",
+      "teams": [
+        "NLO Rescue CRO Team"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:40",
+      "end": "11:50",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 3",
+      "teams": [
+        "Mechanic Team"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:50",
+      "end": "12:00",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 3",
+      "teams": [
+        "Eurobot"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:00",
+      "end": "12:10",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 3",
+      "teams": [
+        "Library"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:10",
+      "end": "12:20",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 3",
+      "teams": [
+        "Die Haftelmacher"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:20",
+      "end": "12:30",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 3",
+      "teams": [
+        "Das Original"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:30",
+      "end": "12:40",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 3",
+      "teams": [
+        "we:bots"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:40",
+      "end": "12:50",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 3",
+      "teams": [
+        "GearUp"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:50",
+      "end": "13:00",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 3",
+      "teams": [
+        "Die Glorreichen 4"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:00",
+      "end": "13:10",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 3",
+      "teams": [
+        "Kaktus"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:10",
+      "end": "13:20",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 3",
+      "teams": [
+        "Nebenniere"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:20",
+      "end": "13:30",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 3",
+      "teams": [
+        "Kepler 404"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:30",
+      "end": "13:40",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 3",
+      "teams": [
+        "2 Geh\u00f6rnzellen"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:40",
+      "end": "13:50",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 3",
+      "teams": [
+        "Project William"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:50",
+      "end": "14:00",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 3",
+      "teams": [
+        "Project X"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:00",
+      "end": "14:10",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 3",
+      "teams": [
+        "TriByte"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:10",
+      "end": "14:20",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 3",
+      "teams": [
+        "NanoRobots"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:20",
+      "end": "14:30",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 3",
+      "teams": [
+        "Angora Goasbock"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:30",
+      "end": "14:40",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 3",
+      "teams": [
+        "Project PVP"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:40",
+      "end": "14:50",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 3",
+      "teams": [
+        "Deep-Drive"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:50",
+      "end": "15:00",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 3",
+      "teams": [
+        "Die (3) 2 Robomenschen"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:00",
+      "end": "15:10",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 3",
+      "teams": [
+        "HTL Trieben Engineering"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:10",
+      "end": "15:20",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 3",
+      "teams": [
+        "NLO Rescue CRO Team"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:00",
+      "end": "11:10",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Negativ"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:10",
+      "end": "11:20",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Botzilla"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:20",
+      "end": "11:30",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Ifhungryeat"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:30",
+      "end": "11:40",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Schwainsbraten_Hooligans"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:40",
+      "end": "11:50",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Gulaschpanzer"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:50",
+      "end": "12:00",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Cyberh\u00fchner"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:00",
+      "end": "12:10",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "CyberStorm"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:10",
+      "end": "12:20",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Die Linienrichter"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:20",
+      "end": "12:30",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Night Strikers"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:30",
+      "end": "12:40",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Stroke_of_Genius"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:40",
+      "end": "12:50",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Code4U Line"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:50",
+      "end": "13:00",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Salamibrot"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:00",
+      "end": "13:10",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Made in China"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:10",
+      "end": "13:20",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Miss klickt"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:20",
+      "end": "13:30",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "The Ninjas"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:30",
+      "end": "13:40",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Project Pommes"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:40",
+      "end": "13:50",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Potato Girls"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:50",
+      "end": "14:00",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Kampfzwerge"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:00",
+      "end": "14:10",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Ninja Turtles"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:10",
+      "end": "14:20",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Big R\u00f6sti"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:20",
+      "end": "14:30",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "No pain no gain"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:30",
+      "end": "14:40",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Panzerabwehrflugger\u00e4t"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:40",
+      "end": "14:50",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Byte Me"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:50",
+      "end": "15:00",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Pixelbauer"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:00",
+      "end": "15:10",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Tobix"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:10",
+      "end": "15:20",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Astrogix"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:20",
+      "end": "15:30",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Keine Ahnung"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:30",
+      "end": "15:40",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Team Talentlosen"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:40",
+      "end": "15:50",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Doofuse"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:50",
+      "end": "16:00",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Wowa 2.0"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "16:00",
+      "end": "16:10",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Renegade"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "16:10",
+      "end": "16:20",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Queens of the Robots"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "16:20",
+      "end": "16:30",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Frederik Squad"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "16:30",
+      "end": "16:40",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "The Bots"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "16:40",
+      "end": "16:50",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "The Prime"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "16:50",
+      "end": "17:00",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Volte Bot"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "17:00",
+      "end": "17:10",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Chaos-Piloten"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "17:10",
+      "end": "17:20",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "DDHS"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "17:20",
+      "end": "17:30",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Die Grafen"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "17:30",
+      "end": "17:40",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Team G\u00fcnther 7"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "17:40",
+      "end": "17:50",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "PlaKaRaNi"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "17:50",
+      "end": "18:00",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "E&E"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day2",
+      "start": "09:00",
+      "end": "09:10",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 1",
+      "teams": [
+        "Klaka Robotics"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:20",
+      "end": "11:30",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Negativ"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:30",
+      "end": "11:40",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Botzilla"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:40",
+      "end": "11:50",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Ifhungryeat"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:50",
+      "end": "12:00",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Schwainsbraten_Hooligans"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:00",
+      "end": "12:10",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Gulaschpanzer"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:10",
+      "end": "12:20",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Cyberh\u00fchner"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:20",
+      "end": "12:30",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "CyberStorm"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:30",
+      "end": "12:40",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Die Linienrichter"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:40",
+      "end": "12:50",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Night Strikers"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:50",
+      "end": "13:00",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Stroke_of_Genius"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:00",
+      "end": "13:10",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Code4U Line"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:10",
+      "end": "13:20",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Salamibrot"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:20",
+      "end": "13:30",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Made in China"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:30",
+      "end": "13:40",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Miss klickt"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:40",
+      "end": "13:50",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "The Ninjas"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:50",
+      "end": "14:00",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Project Pommes"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:00",
+      "end": "14:10",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Potato Girls"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:10",
+      "end": "14:20",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Kampfzwerge"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:20",
+      "end": "14:30",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Ninja Turtles"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:30",
+      "end": "14:40",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Big R\u00f6sti"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:40",
+      "end": "14:50",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "No pain no gain"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:50",
+      "end": "15:00",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Panzerabwehrflugger\u00e4t"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:00",
+      "end": "15:10",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Byte Me"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:10",
+      "end": "15:20",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Pixelbauer"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:20",
+      "end": "15:30",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Tobix"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:30",
+      "end": "15:40",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Astrogix"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:40",
+      "end": "15:50",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Keine Ahnung"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:50",
+      "end": "16:00",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Team Talentlosen"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "16:00",
+      "end": "16:10",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Doofuse"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "16:10",
+      "end": "16:20",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Wowa 2.0"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "16:20",
+      "end": "16:30",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Renegade"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "16:30",
+      "end": "16:40",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Queens of the Robots"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "16:40",
+      "end": "16:50",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Frederik Squad"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "16:50",
+      "end": "17:00",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "The Bots"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "17:00",
+      "end": "17:10",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "The Prime"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "17:10",
+      "end": "17:20",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Volte Bot"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "17:20",
+      "end": "17:30",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Chaos-Piloten"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "17:30",
+      "end": "17:40",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "DDHS"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "17:40",
+      "end": "17:50",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Die Grafen"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "17:50",
+      "end": "18:00",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Team G\u00fcnther 7"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day2",
+      "start": "09:00",
+      "end": "09:10",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "PlaKaRaNi"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day2",
+      "start": "09:10",
+      "end": "09:20",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "E&E"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day2",
+      "start": "09:20",
+      "end": "09:30",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 2",
+      "teams": [
+        "Klaka Robotics"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:40",
+      "end": "11:50",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Negativ"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:50",
+      "end": "12:00",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Botzilla"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:00",
+      "end": "12:10",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Ifhungryeat"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:10",
+      "end": "12:20",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Schwainsbraten_Hooligans"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:20",
+      "end": "12:30",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Gulaschpanzer"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:30",
+      "end": "12:40",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Cyberh\u00fchner"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:40",
+      "end": "12:50",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "CyberStorm"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:50",
+      "end": "13:00",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Die Linienrichter"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:00",
+      "end": "13:10",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Night Strikers"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:10",
+      "end": "13:20",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Stroke_of_Genius"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:20",
+      "end": "13:30",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Code4U Line"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:30",
+      "end": "13:40",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Salamibrot"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:40",
+      "end": "13:50",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Made in China"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:50",
+      "end": "14:00",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Miss klickt"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:00",
+      "end": "14:10",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "The Ninjas"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:10",
+      "end": "14:20",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Project Pommes"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:20",
+      "end": "14:30",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Potato Girls"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:30",
+      "end": "14:40",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Kampfzwerge"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:40",
+      "end": "14:50",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Ninja Turtles"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:50",
+      "end": "15:00",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Big R\u00f6sti"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:00",
+      "end": "15:10",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "No pain no gain"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:10",
+      "end": "15:20",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Panzerabwehrflugger\u00e4t"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:20",
+      "end": "15:30",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Byte Me"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:30",
+      "end": "15:40",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Pixelbauer"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:40",
+      "end": "15:50",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Tobix"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:50",
+      "end": "16:00",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Astrogix"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "16:00",
+      "end": "16:10",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Keine Ahnung"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "16:10",
+      "end": "16:20",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Team Talentlosen"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "16:20",
+      "end": "16:30",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Doofuse"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "16:30",
+      "end": "16:40",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Wowa 2.0"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "16:40",
+      "end": "16:50",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Renegade"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "16:50",
+      "end": "17:00",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Queens of the Robots"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "17:00",
+      "end": "17:10",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Frederik Squad"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "17:10",
+      "end": "17:20",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "The Bots"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "17:20",
+      "end": "17:30",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "The Prime"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "17:30",
+      "end": "17:40",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Volte Bot"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "17:40",
+      "end": "17:50",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Chaos-Piloten"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "17:50",
+      "end": "18:00",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "DDHS"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day2",
+      "start": "09:00",
+      "end": "09:10",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Die Grafen"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day2",
+      "start": "09:10",
+      "end": "09:20",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Team G\u00fcnther 7"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day2",
+      "start": "09:20",
+      "end": "09:30",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "PlaKaRaNi"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day2",
+      "start": "09:30",
+      "end": "09:40",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "E&E"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day2",
+      "start": "09:40",
+      "end": "09:50",
+      "resource_kind": "arena",
+      "resource_name": "Line Entry \u2013 Arena 3",
+      "teams": [
+        "Klaka Robotics"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:00",
+      "end": "11:10",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "B.Robots Seniors"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:10",
+      "end": "11:20",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "B.Robots"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:20",
+      "end": "11:30",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "B.Robots Juniors"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:30",
+      "end": "11:40",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "Lugner"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:40",
+      "end": "11:50",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "Fight Club"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:50",
+      "end": "12:00",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "Monstar in Muul"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:00",
+      "end": "12:10",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "Gebr\u00fcder Weiss CRO Team"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:10",
+      "end": "12:20",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "TechTitans"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:20",
+      "end": "12:30",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "DIPH"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:30",
+      "end": "12:40",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "(Entry) Stars"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:40",
+      "end": "12:50",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "(Entry) Mazetrix Vienna"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:50",
+      "end": "13:00",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "B.Robots Seniors"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:00",
+      "end": "13:10",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "B.Robots"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:10",
+      "end": "13:20",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "B.Robots Juniors"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:20",
+      "end": "13:30",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "Lugner"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:30",
+      "end": "13:40",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "Fight Club"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:40",
+      "end": "13:50",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "Monstar in Muul"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:50",
+      "end": "14:00",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "Gebr\u00fcder Weiss CRO Team"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:00",
+      "end": "14:10",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "TechTitans"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:10",
+      "end": "14:20",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "DIPH"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:20",
+      "end": "14:30",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "(Entry) Stars"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:30",
+      "end": "14:40",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "(Entry) Mazetrix Vienna"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:40",
+      "end": "14:50",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "B.Robots Seniors"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:50",
+      "end": "15:00",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "B.Robots"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:00",
+      "end": "15:10",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "B.Robots Juniors"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:10",
+      "end": "15:20",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "Lugner"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:20",
+      "end": "15:30",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "Fight Club"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:30",
+      "end": "15:40",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "Monstar in Muul"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:40",
+      "end": "15:50",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "Gebr\u00fcder Weiss CRO Team"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:50",
+      "end": "16:00",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "TechTitans"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "16:00",
+      "end": "16:10",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "DIPH"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "16:10",
+      "end": "16:20",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "(Entry) Stars"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "16:20",
+      "end": "16:30",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "(Entry) Mazetrix Vienna"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:15",
+      "end": "12:30",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "Mechanic Team",
+        "Eurobot"
+      ],
+      "divisions": [
+        "Line",
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:30",
+      "end": "12:45",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "Library",
+        "Die Haftelmacher"
+      ],
+      "divisions": [
+        "Line",
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:00",
+      "end": "13:15",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "Das Original",
+        "we:bots"
+      ],
+      "divisions": [
+        "Line",
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:15",
+      "end": "13:30",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "GearUp",
+        "Die Glorreichen 4"
+      ],
+      "divisions": [
+        "Line",
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:30",
+      "end": "13:45",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "Kaktus",
+        "Nebenniere"
+      ],
+      "divisions": [
+        "Line",
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:00",
+      "end": "14:15",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "Kepler 404",
+        "2 Geh\u00f6rnzellen"
+      ],
+      "divisions": [
+        "Line",
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:15",
+      "end": "14:30",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "Project William",
+        "Project X"
+      ],
+      "divisions": [
+        "Line",
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:30",
+      "end": "14:45",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "TriByte",
+        "NanoRobots"
+      ],
+      "divisions": [
+        "Line",
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:00",
+      "end": "15:15",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "Angora Goasbock",
+        "Project PVP"
+      ],
+      "divisions": [
+        "Line",
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:15",
+      "end": "15:30",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "Deep-Drive",
+        "Die (3) 2 Robomenschen"
+      ],
+      "divisions": [
+        "Line",
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:30",
+      "end": "15:45",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "HTL Trieben Engineering",
+        "NLO Rescue CRO Team"
+      ],
+      "divisions": [
+        "Line",
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:45",
+      "end": "13:00",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "Negativ",
+        "Botzilla"
+      ],
+      "divisions": [
+        "Line Entry",
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:45",
+      "end": "14:00",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "Ifhungryeat",
+        "Schwainsbraten_Hooligans"
+      ],
+      "divisions": [
+        "Line Entry",
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:45",
+      "end": "15:00",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "Gulaschpanzer",
+        "Cyberh\u00fchner"
+      ],
+      "divisions": [
+        "Line Entry",
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:45",
+      "end": "16:00",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "CyberStorm",
+        "Die Linienrichter"
+      ],
+      "divisions": [
+        "Line Entry",
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "16:00",
+      "end": "16:15",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "Night Strikers",
+        "Stroke_of_Genius"
+      ],
+      "divisions": [
+        "Line Entry",
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "16:15",
+      "end": "16:30",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "Code4U Line",
+        "Salamibrot"
+      ],
+      "divisions": [
+        "Line Entry",
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "16:30",
+      "end": "16:45",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "Made in China",
+        "Miss klickt"
+      ],
+      "divisions": [
+        "Line Entry",
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "16:45",
+      "end": "17:00",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "The Ninjas",
+        "Project Pommes"
+      ],
+      "divisions": [
+        "Line Entry",
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "17:00",
+      "end": "17:15",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "Potato Girls",
+        "Kampfzwerge"
+      ],
+      "divisions": [
+        "Line Entry",
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "17:15",
+      "end": "17:30",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "Ninja Turtles",
+        "Big R\u00f6sti"
+      ],
+      "divisions": [
+        "Line Entry",
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "17:30",
+      "end": "17:45",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "No pain no gain",
+        "Panzerabwehrflugger\u00e4t"
+      ],
+      "divisions": [
+        "Line Entry",
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "17:45",
+      "end": "18:00",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "Byte Me",
+        "Pixelbauer"
+      ],
+      "divisions": [
+        "Line Entry",
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day2",
+      "start": "09:00",
+      "end": "09:15",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "Tobix",
+        "Astrogix"
+      ],
+      "divisions": [
+        "Line Entry",
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day2",
+      "start": "09:15",
+      "end": "09:30",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "Keine Ahnung",
+        "Team Talentlosen"
+      ],
+      "divisions": [
+        "Line Entry",
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day2",
+      "start": "09:30",
+      "end": "09:45",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "Doofuse",
+        "Wowa 2.0"
+      ],
+      "divisions": [
+        "Line Entry",
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day2",
+      "start": "09:45",
+      "end": "10:00",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "Renegade",
+        "Queens of the Robots"
+      ],
+      "divisions": [
+        "Line Entry",
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day2",
+      "start": "10:00",
+      "end": "10:15",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "Frederik Squad",
+        "The Bots"
+      ],
+      "divisions": [
+        "Line Entry",
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day2",
+      "start": "10:15",
+      "end": "10:30",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "The Prime",
+        "Volte Bot"
+      ],
+      "divisions": [
+        "Line Entry",
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day2",
+      "start": "10:30",
+      "end": "10:45",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "Chaos-Piloten",
+        "DDHS"
+      ],
+      "divisions": [
+        "Line Entry",
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day2",
+      "start": "10:45",
+      "end": "11:00",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "Die Grafen",
+        "Team G\u00fcnther 7"
+      ],
+      "divisions": [
+        "Line Entry",
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day2",
+      "start": "11:00",
+      "end": "11:15",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "PlaKaRaNi",
+        "E&E"
+      ],
+      "divisions": [
+        "Line Entry",
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day2",
+      "start": "11:15",
+      "end": "11:30",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "Klaka Robotics"
+      ],
+      "divisions": [
+        "Line Entry"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:30",
+      "end": "11:45",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "B.Robots Seniors",
+        "B.Robots"
+      ],
+      "divisions": [
+        "Maze",
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:00",
+      "end": "12:15",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "B.Robots Juniors",
+        "Lugner"
+      ],
+      "divisions": [
+        "Maze",
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day2",
+      "start": "11:30",
+      "end": "11:45",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "Fight Club",
+        "Monstar in Muul"
+      ],
+      "divisions": [
+        "Maze",
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day2",
+      "start": "11:45",
+      "end": "12:00",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "Gebr\u00fcder Weiss CRO Team",
+        "TechTitans"
+      ],
+      "divisions": [
+        "Maze",
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day2",
+      "start": "12:00",
+      "end": "12:15",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "DIPH",
+        "(Entry) Stars"
+      ],
+      "divisions": [
+        "Maze",
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day2",
+      "start": "12:15",
+      "end": "12:30",
+      "resource_kind": "interview",
+      "resource_name": "Interview",
+      "teams": [
+        "(Entry) Mazetrix Vienna"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+[console_scripts]
+rcj-planner = rcj_planner.cli:cli
