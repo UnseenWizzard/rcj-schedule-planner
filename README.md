@@ -24,6 +24,8 @@ rcj-planner generate \
   --interview-group-size 3 \
   --day "Day1:09:00-17:00" \
   --day "Day2:09:00-13:00" \
+  --break "Day1:12:00-13:00" \
+  --break "Day2:Rescue Maze:10:00-10:30" \
   --output-dir ./output \
   --save schedule.json
 ```
@@ -38,6 +40,8 @@ rcj-planner generate \
 | `--output-dir` | no | `./output` | Directory for CSV output |
 | `--save` | no | `schedule.json` | Path for saved schedule |
 | `--buffer` | no | = `--run-time` | Minimum gap (minutes) between a team's consecutive assignments |
+| `--break` | no (repeatable) | — | Break spec: `Day:HH:MM-HH:MM` (global) or `Day:Division:HH:MM-HH:MM` (division-specific) |
+| `--arena-reset` | no | `0` | Minutes to block an arena after each complete round (all teams have had one run) |
 
 ### Inspect a schedule
 
@@ -93,6 +97,9 @@ Saved schedule for use with `show` and `validate` commands.
 4. No team has two consecutive assignments closer than `--buffer` minutes apart.
 5. No resource (arena or interview room) is double-booked.
 6. Arena resources are isolated per division — teams only run on their division's arenas.
+
+7. Global breaks (`Day:HH:MM-HH:MM`) block all arena runs and interviews during that window. Division-specific breaks (`Day:Division:HH:MM-HH:MM`) block only that division's arena runs.
+8. After each complete round on an arena (all teams have had one run), the arena is blocked for `--arena-reset` minutes before the next round begins.
 
 Teams within a division are grouped for interviews by `--interview-group-size`. If a division's team count is not a multiple of that size, the last group is smaller.
 

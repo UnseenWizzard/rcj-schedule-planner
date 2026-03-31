@@ -4,3 +4,4 @@ env
 .venv
 .pytest_*
 .claude
+**/__pycache__

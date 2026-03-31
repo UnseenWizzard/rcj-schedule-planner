@@ -1,6 +1,6 @@
 import os, tempfile
 from datetime import time
-from rcj_planner.loader import load_teams, parse_day_spec, generate_slots, parse_division_spec
+from rcj_planner.loader import load_teams, parse_day_spec, generate_slots, parse_division_spec, parse_break_spec
 
 
 def test_parse_day_spec():
@@ -65,3 +65,27 @@ def test_parse_division_spec_invalid():
         parse_division_spec("Soccer Open:soccer.csv:3")
     with pytest.raises(ValueError):
         parse_division_spec("Soccer Open:soccer.csv:arenas=2:badpart")
+
+
+def test_parse_break_spec_global():
+    from datetime import time
+    b = parse_break_spec("Day1:12:00-13:00")
+    assert b.day == "Day1"
+    assert b.start == time(12, 0)
+    assert b.end == time(13, 0)
+    assert b.division is None
+
+
+def test_parse_break_spec_division():
+    from datetime import time
+    b = parse_break_spec("Day1:Line:12:00-13:00")
+    assert b.day == "Day1"
+    assert b.division == "Line"
+    assert b.start == time(12, 0)
+    assert b.end == time(13, 0)
+
+
+def test_parse_break_spec_invalid():
+    import pytest
+    with pytest.raises((ValueError, Exception)):
+        parse_break_spec("Day1:badtime")

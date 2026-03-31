@@ -1,7 +1,7 @@
 from __future__ import annotations
 import csv
 from datetime import time, datetime, timedelta
-from rcj_planner.models import Team, TimeSlot
+from rcj_planner.models import Team, TimeSlot, Break
 
 
 def load_teams(path: str, division: str = "") -> list[Team]:
@@ -29,6 +29,40 @@ def parse_division_spec(spec: str) -> tuple[str, str, int, int]:
             raise ValueError(f"Invalid runs part {runs_part!r}. Expected 'runs=N'")
         runs_per_arena = int(runs_part.split("=", 1)[1])
     return label.strip(), path.strip(), num_arenas, runs_per_arena
+
+
+def parse_break_spec(spec: str) -> Break:
+    """Parse a break spec into a Break.
+
+    Formats:
+      'Day1:12:00-13:00'              — global break on Day1 12:00–13:00
+      'Day1:Line:12:00-13:00'         — division-specific break (Line only)
+    """
+    parts = spec.split(":", 2)
+    if len(parts) < 2:
+        raise ValueError(f"Invalid break spec {spec!r}")
+    day = parts[0].strip()
+    rest = parts[1] if len(parts) == 2 else parts[1] + ":" + parts[2]
+
+    # Try to parse rest as 'HH:MM-HH:MM' (global) or 'Division:HH:MM-HH:MM'
+    # A time range contains exactly one '-' between two HH:MM tokens.
+    # If rest starts with digits it's a time range; otherwise it's 'Division:HH:MM-HH:MM'.
+    if rest[0].isdigit():
+        # global: rest = 'HH:MM-HH:MM'
+        division = None
+        timerange = rest
+    else:
+        # division-specific: rest = 'Division:HH:MM-HH:MM'
+        div_sep = rest.index(":")
+        division = rest[:div_sep].strip()
+        timerange = rest[div_sep + 1:]
+
+    if "-" not in timerange:
+        raise ValueError(f"Invalid time range in break spec {spec!r}")
+    start_str, end_str = timerange.split("-", 1)
+    start = datetime.strptime(start_str.strip(), "%H:%M").time()
+    end = datetime.strptime(end_str.strip(), "%H:%M").time()
+    return Break(day=day, start=start, end=end, division=division)
 
 
 def parse_day_spec(spec: str) -> tuple[str, time, time]:

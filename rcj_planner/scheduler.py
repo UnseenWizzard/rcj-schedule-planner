@@ -1,6 +1,7 @@
 from __future__ import annotations
 from collections import defaultdict
-from rcj_planner.models import Team, TimeSlot, Resource, Assignment, Schedule
+from datetime import datetime, date, timedelta
+from rcj_planner.models import Team, TimeSlot, Resource, Assignment, Schedule, Break
 from rcj_planner.loader import generate_slots
 
 
@@ -33,24 +34,42 @@ def build_schedule(
     interview_time: int,
     interview_group_size: int,
     buffer_minutes: int,
+    breaks: list[Break] | None = None,
+    arena_reset_minutes: int = 0,
 ) -> Schedule:
     """
     divisions: list of (division_label, teams, num_arenas, runs_per_arena)
     Each division gets its own namespaced arena resources and independent run schedule.
     All divisions share a single Interview resource.
     """
-    run_slots = generate_slots(day_specs, run_time)
-    interview_slots = generate_slots(day_specs, interview_time)
+    breaks = breaks or []
+    global_breaks = [b for b in breaks if b.division is None]
+
+    all_run_slots = generate_slots(day_specs, run_time)
+    all_interview_slots = generate_slots(day_specs, interview_time)
+
+    # Filter interview slots against global breaks only
+    interview_slots = [
+        s for s in all_interview_slots
+        if not any(b.blocks_slot(s) for b in global_breaks)
+    ]
+
     interview_resource = Resource("interview", "Interview")
 
     assignments: list[Assignment] = []
 
     # Phase 1 — Arena runs per division (greedy round-robin, namespaced arenas)
     for div_label, teams, num_arenas, runs_per_arena in divisions:
+        div_breaks = global_breaks + [b for b in breaks if b.division == div_label]
+        run_slots = [
+            s for s in all_run_slots
+            if not any(b.blocks_slot(s) for b in div_breaks)
+        ]
         arenas = [Resource("arena", f"{div_label} – Arena {i+1}") for i in range(num_arenas)]
         for arena in arenas:
             cursor = 0
             for _ in range(runs_per_arena):
+                assignments_before = len(assignments)
                 for team in teams:
                     found = False
                     for i in range(cursor, len(run_slots)):
@@ -68,6 +87,20 @@ def build_schedule(
                             f"No valid run slot found for team '{team.name}' on arena '{arena.name}'. "
                             "Try extending the day or reducing teams/arenas."
                         )
+
+                # Advance cursor past the post-round reset window
+                if arena_reset_minutes > 0:
+                    round_slots = [a.slot for a in assignments[assignments_before:] if a.resource == arena]
+                    last_slot = max(round_slots, key=lambda s: s.end)
+                    cutoff = (
+                        datetime.combine(date.today(), last_slot.end)
+                        + timedelta(minutes=arena_reset_minutes)
+                    ).time()
+                    while cursor < len(run_slots) and (
+                        run_slots[cursor].day == last_slot.day
+                        and run_slots[cursor].start < cutoff
+                    ):
+                        cursor += 1
 
     # Phase 2 — Interviews grouped by division (shared interview resource)
     for div_label, teams, _, _runs in divisions:
@@ -100,7 +133,13 @@ def build_schedule(
         "interview_time_minutes": interview_time,
         "interview_group_size": interview_group_size,
         "buffer_minutes": buffer_minutes,
+        "arena_reset_minutes": arena_reset_minutes,
         "days": day_specs,
+        "breaks": [
+            {"day": b.day, "start": b.start.strftime("%H:%M"), "end": b.end.strftime("%H:%M"),
+             "division": b.division}
+            for b in breaks
+        ],
     }
     return Schedule(assignments=assignments, meta=meta)
 

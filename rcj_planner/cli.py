@@ -1,7 +1,7 @@
 from __future__ import annotations
 import sys
 import click
-from rcj_planner.loader import load_teams, parse_division_spec
+from rcj_planner.loader import load_teams, parse_division_spec, parse_break_spec
 from rcj_planner.scheduler import build_schedule, validate_schedule, SchedulingError
 from rcj_planner.persistence import save, load
 from rcj_planner.exporter import export_day_csvs
@@ -22,8 +22,12 @@ def cli():
 @click.option("--output-dir", default="./output", show_default=True, help="Output directory for CSVs")
 @click.option("--save", "save_path", default="schedule.json", show_default=True, help="Path to save schedule JSON")
 @click.option("--buffer", default=None, type=int, help="Buffer gap in minutes (default: run-time)")
+@click.option("--break", "break_specs", multiple=True,
+              help="Break spec: 'Day:HH:MM-HH:MM' (global) or 'Day:Division:HH:MM-HH:MM' (division-specific)")
+@click.option("--arena-reset", "arena_reset_minutes", default=0, type=int,
+              help="Minutes to block an arena after each complete round (default: 0)")
 def generate(division_specs, run_time, interview_time, interview_group_size, days,
-             output_dir, save_path, buffer):
+             output_dir, save_path, buffer, break_specs, arena_reset_minutes):
     """Generate a conflict-free schedule and export CSVs."""
     buffer_minutes = buffer if buffer is not None else run_time
     try:
@@ -33,6 +37,8 @@ def generate(division_specs, run_time, interview_time, interview_group_size, day
             teams = load_teams(path, division=label)
             divisions.append((label, teams, num_arenas, runs_per_arena))
 
+        parsed_breaks = [parse_break_spec(s) for s in break_specs]
+
         schedule = build_schedule(
             divisions=divisions,
             day_specs=list(days),
@@ -40,6 +46,8 @@ def generate(division_specs, run_time, interview_time, interview_group_size, day
             interview_time=interview_time,
             interview_group_size=interview_group_size,
             buffer_minutes=buffer_minutes,
+            breaks=parsed_breaks,
+            arena_reset_minutes=arena_reset_minutes,
         )
     except (SchedulingError, ValueError) as e:
         click.echo(f"Error: {e}", err=True)

@@ -1,7 +1,7 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import time
-from typing import Literal
+from typing import Literal, Optional
 
 
 @dataclass
@@ -56,6 +56,25 @@ class Assignment:
     slot: TimeSlot
     resource: Resource
     teams: list[Team]
+
+
+@dataclass(frozen=True)
+class Break:
+    """A time window during which no assignments may be scheduled.
+
+    If division is None, the break is global (applies to all divisions and interviews).
+    If division is set, it only blocks arena runs for that division.
+    """
+    day: str
+    start: time
+    end: time
+    division: Optional[str] = None
+
+    def blocks_slot(self, slot: TimeSlot) -> bool:
+        """Return True if this break window overlaps the given slot."""
+        if self.day != slot.day:
+            return False
+        return self.start < slot.end and slot.start < self.end
 
 
 @dataclass
