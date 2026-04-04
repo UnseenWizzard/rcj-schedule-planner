@@ -672,6 +672,21 @@ body.compact .team-tag  { padding: 1px 5px; font-size: 0.72rem; }
 }
 .wb-now-row td { border-left: 3px solid var(--primary); }
 .wb-now-row .wb-time { color: var(--primary); font-weight: 700; background: #eef2ff; }
+@keyframes wb-progress {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+.wb-progress-bar-wrap {
+  height: 4px;
+  background: rgba(255,255,255,0.25);
+  overflow: hidden;
+}
+.wb-progress-bar {
+  height: 100%;
+  background: rgba(255,255,255,0.85);
+  width: 0%;
+  animation: wb-progress linear forwards;
+}
 </style>
 </head>
 <body>
@@ -1291,10 +1306,21 @@ function cancelWallboardScroll() {
   }
 }
 
-function setupWallboardScroll() {
+function advanceWallboard() {
+  const divs = allDivisions();
+  if (divs.length > 0) {
+    state.wallboardDivIdx = (state.wallboardDivIdx + 1) % divs.length;
+  }
+  render();
+}
+
+function setupWallboardScroll(onDone) {
   cancelWallboardScroll();
   const root = document.getElementById('wb-root');
-  if (!root) return;
+  if (!root) {
+    if (onDone) state.wallboardTimer = setTimeout(onDone, state.wallboardInterval * 1000);
+    return;
+  }
 
   const viewH = window.innerHeight;
 
@@ -1309,6 +1335,7 @@ function setupWallboardScroll() {
 
   if (root.scrollHeight <= viewH * 0.92) {
     window.scrollTo(0, 0);
+    if (onDone) state.wallboardTimer = setTimeout(onDone, state.wallboardInterval * 1000);
     return;
   }
 
@@ -1334,7 +1361,10 @@ function setupWallboardScroll() {
       window.scrollTo(0, eased * maxScrollY);
       if (t >= 1) { phase = 'pause-bottom'; phaseStart = ts; }
     } else {
-      return; // pause-bottom — wait for task 3's cycle timer
+      // pause-bottom — brief pause, then trigger cycle
+      _wallboardScrollFrame = null;
+      if (onDone) state.wallboardTimer = setTimeout(onDone, pauseMs);
+      return;
     }
 
     _wallboardScrollFrame = requestAnimationFrame(step);
@@ -1462,6 +1492,9 @@ function renderWallboardView() {
         <div class="wb-div-name">${esc(div)}</div>
         <div class="wb-progress-label">Division ${idx + 1} of ${divs.length}</div>
       </div>
+      <div class="wb-progress-bar-wrap">
+        <div class="wb-progress-bar" style="animation-duration:${state.wallboardInterval}s"></div>
+      </div>
       <div class="wb-content">
         ${content}
       </div>
@@ -1473,6 +1506,10 @@ function renderWallboardView() {
 //  Render dispatcher
 // ─────────────────────────────────────────────
 function render() {
+  if (state.wallboardTimer !== null) {
+    clearTimeout(state.wallboardTimer);
+    state.wallboardTimer = null;
+  }
   cancelWallboardScroll();
   document.body.classList.toggle('compact', state.compact);
   const container = document.getElementById('view-container');
@@ -1483,7 +1520,7 @@ function render() {
 
   if (state.view === 'wallboard') {
     // Defer scroll setup until after layout is painted
-    requestAnimationFrame(() => requestAnimationFrame(setupWallboardScroll));
+    requestAnimationFrame(() => requestAnimationFrame(() => setupWallboardScroll(advanceWallboard)));
   } else {
     // Scroll now-row into view
     const nowRow = container.querySelector('.now-row');
