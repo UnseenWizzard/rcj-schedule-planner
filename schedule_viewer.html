@@ -623,6 +623,7 @@ function loadFiles(files) {
     }
     document.getElementById('loader-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
+    applyHash();
     render();
   });
 }
@@ -907,7 +908,11 @@ function render() {
   // Team search
   const ti = container.querySelector('#team-input');
   if (ti) {
-    ti.addEventListener('input', () => { state.teamSearch = ti.value; render(); });
+    ti.addEventListener('input', () => {
+      state.teamSearch = ti.value;
+      updateHash();
+      render();
+    });
     ti.focus();
     ti.setSelectionRange(ti.value.length, ti.value.length);
   }
@@ -917,6 +922,7 @@ function render() {
     el.addEventListener('click', () => {
       state.teamSearch = el.dataset.team;
       state.view = 'team';
+      updateHash();
       document.querySelectorAll('.view-btn').forEach(b => b.classList.toggle('active', b.dataset.view === 'team'));
       render();
     })
@@ -926,6 +932,7 @@ function render() {
   container.querySelectorAll('.team-browse-tag[data-team]').forEach(el =>
     el.addEventListener('click', () => {
       state.teamSearch = el.dataset.team;
+      updateHash();
       render();
     })
   );
@@ -975,6 +982,7 @@ function loadFromURL(url) {
       }
       document.getElementById('loader-screen').style.display = 'none';
       document.getElementById('app').style.display = 'block';
+      applyHash();
       render();
     })
     .catch(err => {
@@ -987,6 +995,27 @@ function loadFromURL(url) {
       btn.disabled = false;
       btn.textContent = 'Load';
     });
+}
+
+// ─────────────────────────────────────────────
+//  URL hash helpers
+// ─────────────────────────────────────────────
+function updateHash() {
+  if (state.view === 'team' && state.teamSearch) {
+    history.replaceState(null, '', '#team=' + encodeURIComponent(state.teamSearch));
+  } else {
+    history.replaceState(null, '', location.pathname + location.search);
+  }
+}
+
+function applyHash() {
+  const hash = location.hash;
+  if (hash.startsWith('#team=')) {
+    const team = decodeURIComponent(hash.slice(6));
+    state.teamSearch = team;
+    state.view = 'team';
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.toggle('active', b.dataset.view === 'team'));
+  }
 }
 
 // ─────────────────────────────────────────────
