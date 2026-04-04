@@ -29,6 +29,9 @@ def cli():
 def generate(division_specs, run_time, interview_time, interview_group_size, days,
              output_dir, save_path, buffer, break_specs, arena_reset_minutes):
     """Generate a conflict-free schedule and export CSVs."""
+    import os
+    if save_path == "schedule.json":
+        save_path = os.path.join(output_dir, "schedule.json")
     buffer_minutes = buffer if buffer is not None else run_time
     try:
         divisions = []
