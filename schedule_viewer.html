@@ -947,6 +947,7 @@ function renderInterviewView() {
   intRows.forEach(r => { (byDay[r.day] ??= []).push(r); });
 
   const tables = Object.keys(byDay).sort().map(day => {
+    byDay[day].sort((a, b) => a.time_slot.localeCompare(b.time_slot));
     const rows = byDay[day].map((r, i) => {
       const teams = r.teams.split(',').map(t => t.trim()).filter(Boolean);
       const chips = teams.map(t =>
