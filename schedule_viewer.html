@@ -165,6 +165,11 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
 #app { display: none; }
 .app-body { padding: 18px 24px 32px; }
 
+/* ── Compact mode ── */
+body.compact .slot-cell { padding: 2px 3px; min-width: 80px; font-size: 0.75rem; }
+body.compact .time-cell { padding: 3px 7px; font-size: 0.72rem; }
+body.compact .team-tag  { padding: 1px 5px; font-size: 0.72rem; }
+
 /* ── View toggle ── */
 .view-selector {
   display: inline-flex;
@@ -547,6 +552,7 @@ const state = {
   view: 'day',
   selectedDay: null,
   teamSearch: '',
+  compact: false,
 };
 
 // ─────────────────────────────────────────────
@@ -780,7 +786,10 @@ function renderDayView() {
   }
 
   return `
-    <div class="tabs">${tabs}</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div class="tabs" style="margin-bottom:0">${tabs}</div>
+      <button id="density-toggle" style="font-size:0.78rem;padding:4px 12px;border:1px solid var(--border);border-radius:6px;background:white;cursor:pointer;color:var(--muted)">${state.compact ? 'Comfortable' : 'Compact'}</button>
+    </div>
     <div class="grid-wrapper">
       <table class="schedule-table">
         <thead>
@@ -1034,6 +1043,7 @@ function renderTeamView() {
 //  Render dispatcher
 // ─────────────────────────────────────────────
 function render() {
+  document.body.classList.toggle('compact', state.compact);
   const container = document.getElementById('view-container');
   if (state.view === 'day') container.innerHTML = renderDayView();
   else if (state.view === 'division') container.innerHTML = renderDivisionView();
@@ -1044,6 +1054,16 @@ function render() {
   container.querySelectorAll('.tab[data-day]').forEach(btn =>
     btn.addEventListener('click', () => { state.selectedDay = btn.dataset.day; render(); })
   );
+
+  // Density toggle
+  const densityBtn = container.querySelector('#density-toggle');
+  if (densityBtn) {
+    densityBtn.addEventListener('click', () => {
+      state.compact = !state.compact;
+      document.body.classList.toggle('compact', state.compact);
+      densityBtn.textContent = state.compact ? 'Comfortable' : 'Compact';
+    });
+  }
 
   // Team search
   const ti = container.querySelector('#team-input');
