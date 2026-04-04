@@ -68,6 +68,7 @@ def build_schedule(
         arenas = [Resource("arena", f"{div_label} – Arena {i+1}") for i in range(num_arenas)]
         # Each team should get num_arenas * runs_per_arena runs (one per arena per round)
         team_runs = {team: 0 for team in teams}
+        team_day_runs = defaultdict(lambda: defaultdict(int))  # team -> day -> count
         team_arena_runs = {(team, arena): 0 for team in teams for arena in arenas}
         last_slot_for_arena = {arena: None for arena in arenas}
         total_runs_per_team = num_arenas * runs_per_arena
@@ -108,6 +109,7 @@ def build_schedule(
                     assignments.append(Assignment(slot, arena, [team]))
                     team_arena_runs[(team, arena)] += 1
                     team_runs[team] += 1
+                    team_day_runs[team][slot.day] += 1
                     last_slot_for_arena[arena] = slot
                     used_teams.add(team)
                     # Remove this pair from required_pairs so it doesn't get scheduled again
