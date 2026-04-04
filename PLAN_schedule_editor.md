@@ -21,7 +21,7 @@ Single self-contained HTML file (same pattern as `schedule_viewer.html`).
 - [x] Task 1: Scaffold the editor HTML with file loading
 - [x] Task 2: Render the editable schedule grid
 - [x] Task 3: Implement slot selection and move UI
-- [ ] Task 4: Implement the Changes & Diff tab
+- [x] Task 4: Implement the Changes & Diff tab
 - [ ] Task 5: Download edited schedule with info field
 - [ ] Task 6: Polish and edge cases
 
