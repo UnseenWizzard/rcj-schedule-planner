@@ -414,6 +414,9 @@ body.compact .team-tag  { padding: 1px 5px; font-size: 0.72rem; }
 .div-filter-all {
   --div-color: #374151;
 }
+.div-filter-none {
+  --div-color: #9ca3af;
+}
 
 /* ── Division cards ── */
 .div-card {
@@ -824,6 +827,7 @@ function renderDayView() {
   }).join('');
   const filterBar = `<div class="div-filter-bar">
     <button class="div-filter-btn div-filter-all" id="div-filter-all">All</button>
+    <button class="div-filter-btn div-filter-none" id="div-filter-none">Clear</button>
     ${filterPills}
   </div>`;
 
@@ -1199,6 +1203,14 @@ function render() {
   const allBtn = container.querySelector('#div-filter-all');
   if (allBtn) {
     allBtn.addEventListener('click', () => { state.hiddenDivisions.clear(); render(); });
+  }
+  const noneBtn = container.querySelector('#div-filter-none');
+  if (noneBtn) {
+    noneBtn.addEventListener('click', () => {
+      const divs = [...new Set(resourcesForDay(state.selectedDay).map(r => divisionOf(r)))];
+      divs.forEach(d => state.hiddenDivisions.add(d));
+      render();
+    });
   }
   container.querySelectorAll('.div-filter-btn[data-div]').forEach(btn =>
     btn.addEventListener('click', () => {
