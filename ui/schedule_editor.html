@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RCJ Schedule Editor</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f0f2f5;
+  --surface: #ffffff;
+  --primary: #4f46e5;
+  --text: #111827;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --radius: 10px;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── Header ── */
+header {
+  background: #1e1b4b;
+  color: white;
+  padding: 13px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
+
+/* ── Loader screen ── */
+#loader-screen {
+  min-height: calc(100vh - 47px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+#dropzone {
+  border: 2px dashed #c7d2fe;
+  border-radius: 16px;
+  padding: 60px 48px;
+  text-align: center;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  max-width: 460px;
+  width: 100%;
+}
+#dropzone:hover, #dropzone.drag-over { border-color: var(--primary); background: #eef2ff; }
+.drop-icon { font-size: 2.8rem; margin-bottom: 14px; }
+#dropzone h2 { font-size: 1.15rem; margin-bottom: 8px; color: #374151; font-weight: 600; }
+#dropzone p { color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
+
+#load-error {
+  margin-top: 12px;
+  color: #dc2626;
+  font-size: 0.88rem;
+  display: none;
+}
+
+/* ── App ── */
+#app { display: none; }
+
+.app-body { padding: 20px 24px 40px; }
+
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 0;
+}
+.tab-btn {
+  padding: 8px 20px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.tab-btn.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+.tab-btn:hover:not(.active) { color: var(--text); }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── Day tabs ── */
+.day-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.day-tab {
+  padding: 5px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--muted);
+  transition: all 0.15s;
+}
+.day-tab.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+.day-tab:hover:not(.active) { border-color: var(--primary); color: var(--primary); }
+
+/* ── Assignments table ── */
+.grid-wrapper {
+  overflow-x: auto;
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.schedule-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.83rem;
+}
+
+.schedule-table th {
+  background: #f9fafb;
+  padding: 8px 12px;
+  text-align: left;
+  font-weight: 700;
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+
+.schedule-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.schedule-table tr:last-child td { border-bottom: none; }
+.schedule-table tbody tr:hover { background: #f9fafb; }
+
+.team-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: #e0e7ff;
+  color: #3730a3;
+  margin: 1px 2px;
+}
+.team-tag.interview { background: #f3f4f6; color: #374151; }
+
+.resource-kind {
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.time-cell { white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+.empty-state {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* ── Changes placeholder ── */
+.placeholder-panel {
+  background: white;
+  border-radius: var(--radius);
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+.placeholder-panel p { margin-top: 8px; font-size: 0.83rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>RCJ Schedule Editor</h1>
+</header>
+
+<div id="loader-screen">
+  <div id="dropzone">
+    <input type="file" id="file-input" accept=".json" style="display:none">
+    <div class="drop-icon">✏️</div>
+    <h2>Load Schedule</h2>
+    <p>Drag &amp; drop a <strong>schedule.json</strong> file here<br>or click to select</p>
+  </div>
+  <div id="load-error"></div>
+</div>
+
+<div id="app">
+  <div class="app-body">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="editor">Editor</button>
+      <button class="tab-btn" data-tab="changes">Changes &amp; Diff</button>
+    </div>
+
+    <div id="tab-editor" class="tab-panel active">
+      <div class="day-tabs" id="day-tabs"></div>
+      <div class="grid-wrapper">
+        <table class="schedule-table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Resource</th>
+              <th>Teams</th>
+            </tr>
+          </thead>
+          <tbody id="assignment-rows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="tab-changes" class="tab-panel">
+      <div class="placeholder-panel">
+        <strong>No changes yet</strong>
+        <p>Make edits in the Editor tab — changes will appear here.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+//  State
+// ─────────────────────────────────────────────
+let originalSchedule = null;   // parsed JSON, never mutated
+let editedSchedule   = null;   // deep clone, all edits go here
+const changeLog      = [];     // { team, from, to } entries
+
+const state = {
+  selectedDay: null,
+};
+
+// ─────────────────────────────────────────────
+//  File loading
+// ─────────────────────────────────────────────
+function loadScheduleFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!Array.isArray(data.assignments)) throw new Error('Missing assignments array');
+      originalSchedule = data;
+      editedSchedule   = JSON.parse(JSON.stringify(data)); // deep clone
+      showApp();
+    } catch (err) {
+      showError('Failed to parse schedule.json: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+function showError(msg) {
+  const el = document.getElementById('load-error');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+// ─────────────────────────────────────────────
+//  Render
+// ─────────────────────────────────────────────
+function daysInSchedule(schedule) {
+  const s = new Set(schedule.assignments.map(a => a.day));
+  return [...s].sort();
+}
+
+function showApp() {
+  document.getElementById('loader-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+
+  const days = daysInSchedule(editedSchedule);
+  state.selectedDay = days[0] || null;
+
+  renderDayTabs(days);
+  renderAssignments();
+}
+
+function renderDayTabs(days) {
+  const container = document.getElementById('day-tabs');
+  container.innerHTML = days.map(d =>
+    `<button class="day-tab${d === state.selectedDay ? ' active' : ''}" data-day="${d}">${d}</button>`
+  ).join('');
+  container.querySelectorAll('.day-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.selectedDay = btn.dataset.day;
+      container.querySelectorAll('.day-tab').forEach(b => b.classList.toggle('active', b === btn));
+      renderAssignments();
+    });
+  });
+}
+
+function renderAssignments() {
+  const tbody = document.getElementById('assignment-rows');
+  if (!state.selectedDay) {
+    tbody.innerHTML = '<tr><td colspan="3" class="empty-state">No data</td></tr>';
+    return;
+  }
+
+  const rows = editedSchedule.assignments
+    .filter(a => a.day === state.selectedDay)
+    .sort((a, b) => a.start.localeCompare(b.start) || a.resource_name.localeCompare(b.resource_name));
+
+  if (rows.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="3" class="empty-state">No assignments for this day</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = rows.map(a => {
+    const isInterview = a.resource_kind === 'interview';
+    const teamTags = (a.teams || []).map(t =>
+      `<span class="team-tag${isInterview ? ' interview' : ''}">${escHtml(t)}</span>`
+    ).join('');
+    return `<tr>
+      <td class="time-cell">${escHtml(a.start)}&ndash;${escHtml(a.end)}</td>
+      <td>
+        <div>${escHtml(a.resource_name)}</div>
+        <div class="resource-kind">${escHtml(a.resource_kind)}</div>
+      </td>
+      <td>${teamTags}</td>
+    </tr>`;
+  }).join('');
+}
+
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// ─────────────────────────────────────────────
+//  Tab switching
+// ─────────────────────────────────────────────
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + tab));
+  });
+});
+
+// ─────────────────────────────────────────────
+//  File input / drag-drop bootstrap
+// ─────────────────────────────────────────────
+const dropzone  = document.getElementById('dropzone');
+const fileInput = document.getElementById('file-input');
+
+dropzone.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', e => {
+  if (e.target.files.length) loadScheduleFile(e.target.files[0]);
+});
+
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropzone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) loadScheduleFile(file);
+});
+</script>
+</body>
+</html>
