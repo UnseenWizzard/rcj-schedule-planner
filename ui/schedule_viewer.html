@@ -588,6 +588,90 @@ body.compact .team-tag  { padding: 1px 5px; font-size: 0.72rem; }
   background: #e5e7eb;
   color: #374151;
 }
+
+/* ── Wallboard view ── */
+.wb-root {
+  font-size: 1.2rem;
+  max-width: 100%;
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+.wb-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  color: white;
+}
+.wb-div-name {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+.wb-progress-label {
+  font-size: 0.95rem;
+  opacity: 0.85;
+}
+.wb-day-section {
+  border-bottom: 2px solid var(--border);
+}
+.wb-day-section:last-child { border-bottom: none; }
+.wb-day-header {
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 10px 20px 8px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #f9fafb;
+  border-bottom: 1px solid var(--border);
+}
+.wb-section-label {
+  font-size: 0.85em;
+  font-weight: 600;
+  padding: 10px 20px 4px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.wb-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: inherit;
+}
+.wb-table th {
+  padding: 7px 16px;
+  background: #f9fafb;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  font-size: 0.72em;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.wb-table td {
+  padding: 10px 16px;
+  border-bottom: 1px solid #f5f5f5;
+  vertical-align: middle;
+}
+.wb-table tr:last-child td { border-bottom: none; }
+.wb-table tr:hover td { background: #f9fafb; }
+.wb-time {
+  white-space: nowrap;
+  color: var(--muted);
+  font-size: 0.82em;
+  font-weight: 600;
+  min-width: 120px;
+}
+.wb-arena {
+  font-weight: 600;
+  min-width: 80px;
+  font-size: 0.9em;
+}
+.wb-now-row td { border-left: 3px solid var(--primary); }
+.wb-now-row .wb-time { color: var(--primary); font-weight: 700; background: #eef2ff; }
 </style>
 </head>
 <body>
@@ -1198,14 +1282,198 @@ function renderTeamView() {
 // ─────────────────────────────────────────────
 //  Wallboard view
 // ─────────────────────────────────────────────
+let _wallboardScrollFrame = null;
+
+function cancelWallboardScroll() {
+  if (_wallboardScrollFrame !== null) {
+    cancelAnimationFrame(_wallboardScrollFrame);
+    _wallboardScrollFrame = null;
+  }
+}
+
+function setupWallboardScroll() {
+  cancelWallboardScroll();
+  const root = document.getElementById('wb-root');
+  if (!root) return;
+
+  const viewH = window.innerHeight;
+
+  // Try shrinking font size before resorting to scroll
+  const fontSizes = [1.2, 1.1, 1.0, 0.9];
+  let fi = 0;
+  root.style.fontSize = fontSizes[fi] + 'rem';
+  while (fi < fontSizes.length - 1 && root.scrollHeight > viewH * 0.92) {
+    fi++;
+    root.style.fontSize = fontSizes[fi] + 'rem';
+  }
+
+  if (root.scrollHeight <= viewH * 0.92) {
+    window.scrollTo(0, 0);
+    return;
+  }
+
+  // Auto-scroll: top → bottom over wallboardInterval, with brief pauses
+  const pauseMs = 600;
+  const scrollDuration = Math.max(state.wallboardInterval * 1000 - pauseMs * 2, 1000);
+  const maxScrollY = root.scrollHeight - viewH;
+  window.scrollTo(0, 0);
+
+  let phase = 'pause-top';
+  let phaseStart = null;
+
+  function step(ts) {
+    if (phaseStart === null) phaseStart = ts;
+    const elapsed = ts - phaseStart;
+
+    if (phase === 'pause-top') {
+      if (elapsed >= pauseMs) { phase = 'scrolling'; phaseStart = ts; }
+    } else if (phase === 'scrolling') {
+      const t = Math.min(elapsed / scrollDuration, 1);
+      // Ease in-out
+      const eased = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      window.scrollTo(0, eased * maxScrollY);
+      if (t >= 1) { phase = 'pause-bottom'; phaseStart = ts; }
+    } else {
+      return; // pause-bottom — wait for task 3's cycle timer
+    }
+
+    _wallboardScrollFrame = requestAnimationFrame(step);
+  }
+
+  _wallboardScrollFrame = requestAnimationFrame(step);
+}
+
 function renderWallboardView() {
-  return '';
+  const divs = allDivisions();
+  if (!divs.length) return `<div class="empty">No schedule loaded.</div>`;
+
+  const idx = state.wallboardDivIdx % divs.length;
+  const div = divs[idx];
+  const color = divColor(div);
+
+  const days = Object.keys(state.days).sort();
+  const now = new Date();
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+
+  // Detect which day is "today" by finding a day with a currently running slot
+  let todayDayIdx = -1;
+  days.forEach((day, di) => {
+    if (todayDayIdx === -1 && (state.days[day] || []).some(r => isCurrentSlot(r.time_slot))) {
+      todayDayIdx = di;
+    }
+  });
+
+  // Collect all teams in this division across all days (for interview matching)
+  const divTeams = new Set();
+  days.forEach(day => {
+    (state.days[day] || []).forEach(row => {
+      if (divisionOf(row.resource) === div) {
+        row.teams.split(',').forEach(t => { const tr = t.trim(); if (tr) divTeams.add(tr); });
+      }
+    });
+  });
+
+  const daySections = [];
+  days.forEach((day, di) => {
+    const rows = state.days[day] || [];
+
+    // Filter rows for this division
+    let arenaRows = rows.filter(r => divisionOf(r.resource) === div);
+    // Interview rows that include any team from this division
+    let interviewRows = rows.filter(r =>
+      r.resource === 'Interview' &&
+      r.teams.split(',').some(t => divTeams.has(t.trim()))
+    );
+
+    // Apply from-now filtering when today is known
+    if (todayDayIdx !== -1) {
+      if (di < todayDayIdx) return; // past day — skip
+      if (di === todayDayIdx) {
+        // Today: only show slots ending at or after now
+        const keep = r => {
+          const parts = r.time_slot.split(EN_DASH).map(x => x.trim());
+          const end = timeToMinutes(parts[1] || parts[0]);
+          return isNaN(end) || end >= nowMin;
+        };
+        arenaRows = arenaRows.filter(keep);
+        interviewRows = interviewRows.filter(keep);
+      }
+      // Future days: show all
+    }
+
+    if (!arenaRows.length && !interviewRows.length) return;
+
+    arenaRows.sort((a, b) => a.time_slot.localeCompare(b.time_slot));
+    interviewRows.sort((a, b) => a.time_slot.localeCompare(b.time_slot));
+
+    const arenaRowsHtml = arenaRows.map(r => {
+      const teams = r.teams.split(',').map(t => t.trim()).filter(Boolean);
+      const chips = teams.map(t =>
+        `<span class="team-tag" style="background:${color}1a;color:${color}">${esc(t)}</span>`
+      ).join(' ');
+      const isNow = isCurrentSlot(r.time_slot);
+      return `<tr${isNow ? ' class="wb-now-row"' : ''}>
+        <td class="wb-time">${esc(r.time_slot)}</td>
+        <td class="wb-arena">${esc(shortName(r.resource))}</td>
+        <td class="wb-teams">${chips}</td>
+      </tr>`;
+    }).join('');
+
+    let interviewHtml = '';
+    if (interviewRows.length) {
+      const intRowsHtml = interviewRows.map(r => {
+        const teams = r.teams.split(',').map(t => t.trim()).filter(t => t && divTeams.has(t));
+        const chips = teams.map(t =>
+          `<span class="team-tag" style="background:#37415118;color:#374151">${esc(t)}</span>`
+        ).join(' ');
+        const isNow = isCurrentSlot(r.time_slot);
+        return `<tr${isNow ? ' class="wb-now-row"' : ''}>
+          <td class="wb-time">${esc(r.time_slot)}</td>
+          <td class="wb-arena" style="color:var(--muted);font-weight:400">Interview</td>
+          <td class="wb-teams">${chips}</td>
+        </tr>`;
+      }).join('');
+      interviewHtml = `
+        <div class="wb-section-label">Interviews</div>
+        <table class="wb-table">
+          <thead><tr><th>Time</th><th>Slot</th><th>Teams</th></tr></thead>
+          <tbody>${intRowsHtml}</tbody>
+        </table>`;
+    }
+
+    daySections.push(`
+      <div class="wb-day-section">
+        <div class="wb-day-header">${esc(day)}</div>
+        ${arenaRows.length ? `
+          <table class="wb-table">
+            <thead><tr><th>Time</th><th>Arena</th><th>Teams</th></tr></thead>
+            <tbody>${arenaRowsHtml}</tbody>
+          </table>` : ''}
+        ${interviewHtml}
+      </div>`);
+  });
+
+  const content = daySections.join('') ||
+    `<div class="empty">No upcoming slots for this division.</div>`;
+
+  return `
+    <div class="wb-root" id="wb-root">
+      <div class="wb-header" style="background:${color}">
+        <div class="wb-div-name">${esc(div)}</div>
+        <div class="wb-progress-label">Division ${idx + 1} of ${divs.length}</div>
+      </div>
+      <div class="wb-content">
+        ${content}
+      </div>
+    </div>`
+;
 }
 
 // ─────────────────────────────────────────────
 //  Render dispatcher
 // ─────────────────────────────────────────────
 function render() {
+  cancelWallboardScroll();
   document.body.classList.toggle('compact', state.compact);
   const container = document.getElementById('view-container');
   if (state.view === 'day') container.innerHTML = renderDayView();
@@ -1213,9 +1481,14 @@ function render() {
   else if (state.view === 'wallboard') container.innerHTML = renderWallboardView();
   else container.innerHTML = renderTeamView();
 
-  // Scroll now-row into view
-  const nowRow = container.querySelector('.now-row');
-  if (nowRow) nowRow.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  if (state.view === 'wallboard') {
+    // Defer scroll setup until after layout is painted
+    requestAnimationFrame(() => requestAnimationFrame(setupWallboardScroll));
+  } else {
+    // Scroll now-row into view
+    const nowRow = container.querySelector('.now-row');
+    if (nowRow) nowRow.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }
 
   // Day tab clicks
   container.querySelectorAll('.tab[data-day]').forEach(btn =>
