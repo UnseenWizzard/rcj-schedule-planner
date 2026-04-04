@@ -387,12 +387,35 @@ body.compact .team-tag  { padding: 1px 5px; font-size: 0.72rem; }
   letter-spacing: 0.06em;
 }
 
-/* ── Division cards ── */
-.div-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-  gap: 16px;
+/* ── Division filter bar ── */
+.div-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 0 10px;
 }
+.div-filter-btn {
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 2px solid var(--div-color, #6b7280);
+  background: transparent;
+  color: var(--div-color, #6b7280);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  opacity: 0.5;
+}
+.div-filter-btn.active {
+  background: var(--div-color, #6b7280);
+  color: white;
+  opacity: 1;
+}
+.div-filter-all {
+  --div-color: #374151;
+}
+
+/* ── Division cards ── */
 .div-card {
   background: white;
   border-radius: var(--radius);
@@ -595,7 +618,6 @@ body.compact .team-tag  { padding: 1px 5px; font-size: 0.72rem; }
   <div class="app-body">
     <div class="view-selector">
       <button class="view-btn active" data-view="day">By Day</button>
-      <button class="view-btn" data-view="division">By Division</button>
       <button class="view-btn" data-view="interview">Interviews</button>
       <button class="view-btn" data-view="team">By Team</button>
     </div>
@@ -614,6 +636,7 @@ const state = {
   selectedDay: null,
   teamSearch: '',
   compact: false,
+  hiddenDivisions: new Set(),
 };
 
 // ─────────────────────────────────────────────
@@ -788,8 +811,21 @@ function renderDayView() {
 
   const day = state.selectedDay;
   const rows = state.days[day] || [];
-  const resources = resourcesForDay(day);
+  const allResources = resourcesForDay(day);
+  const resources = allResources.filter(r => !state.hiddenDivisions.has(divisionOf(r)));
   const timeSlots = timeSlotsForDay(day);
+
+  // Division filter toggles
+  const divisions = [...new Set(allResources.map(r => divisionOf(r)))];
+  const filterPills = divisions.map(div => {
+    const c = divColor(div);
+    const active = !state.hiddenDivisions.has(div);
+    return `<button class="div-filter-btn${active ? ' active' : ''}" data-div="${esc(div)}" style="--div-color:${c}">${esc(div)}</button>`;
+  }).join('');
+  const filterBar = `<div class="div-filter-bar">
+    <button class="div-filter-btn div-filter-all" id="div-filter-all">All</button>
+    ${filterPills}
+  </div>`;
 
   // Group resources into division columns
   const groups = [];
@@ -874,6 +910,7 @@ function renderDayView() {
       <div class="tabs" style="margin-bottom:0">${tabs}</div>
       <button id="density-toggle" style="font-size:0.78rem;padding:4px 12px;border:1px solid var(--border);border-radius:6px;background:white;cursor:pointer;color:var(--muted)">${state.compact ? 'Comfortable' : 'Compact'}</button>
     </div>
+    ${filterBar}
     <div id="mobile-day-list">${mobileCards}</div>
     <div class="grid-wrapper">
       <table class="schedule-table">
@@ -887,47 +924,6 @@ function renderDayView() {
         <tbody>${dataRows.join('')}</tbody>
       </table>
     </div>`;
-}
-
-// ─────────────────────────────────────────────
-//  Render – Division view
-// ─────────────────────────────────────────────
-function renderDivisionView() {
-  const days = Object.keys(state.days).sort();
-  const divisions = allDivisions();
-
-  const runCards = divisions.map(div => {
-    const color = divColor(div);
-    const divRows = [];
-    days.forEach(day =>
-      (state.days[day] || []).forEach(row => {
-        if (divisionOf(row.resource) === div)
-          divRows.push({ day, ...row });
-      })
-    );
-    const arenas = new Set(divRows.map(r => r.resource)).size;
-    const body = divRows.map(r => `
-      <tr>
-        <td>${r.day}</td>
-        <td>${r.time_slot}</td>
-        <td>${esc(shortName(r.resource))}</td>
-        <td>${esc(r.teams)}</td>
-      </tr>`).join('');
-
-    return `
-      <div class="div-card">
-        <div class="div-card-header" style="background:${color}">
-          <span>${esc(div)}</span>
-          <span class="meta">${arenas} arena${arenas>1?'s':''} · ${divRows.length} runs</span>
-        </div>
-        <table>
-          <thead><tr><th>Day</th><th>Time</th><th>Arena</th><th>Team</th></tr></thead>
-          <tbody>${body}</tbody>
-        </table>
-      </div>`;
-  }).join('');
-
-  return `<div class="div-cards">${runCards}</div>`;
 }
 
 // ─────────────────────────────────────────────
@@ -1164,7 +1160,6 @@ function render() {
   document.body.classList.toggle('compact', state.compact);
   const container = document.getElementById('view-container');
   if (state.view === 'day') container.innerHTML = renderDayView();
-  else if (state.view === 'division') container.innerHTML = renderDivisionView();
   else if (state.view === 'interview') container.innerHTML = renderInterviewView();
   else container.innerHTML = renderTeamView();
 
@@ -1198,6 +1193,20 @@ function render() {
     ti.focus();
     ti.setSelectionRange(ti.value.length, ti.value.length);
   }
+
+  // Division filter toggles
+  const allBtn = container.querySelector('#div-filter-all');
+  if (allBtn) {
+    allBtn.addEventListener('click', () => { state.hiddenDivisions.clear(); render(); });
+  }
+  container.querySelectorAll('.div-filter-btn[data-div]').forEach(btn =>
+    btn.addEventListener('click', () => {
+      const div = btn.dataset.div;
+      if (state.hiddenDivisions.has(div)) state.hiddenDivisions.delete(div);
+      else state.hiddenDivisions.add(div);
+      render();
+    })
+  );
 
   // Clickable team tags in day view → switch to team view
   container.querySelectorAll('.team-tag-link[data-team]').forEach(el =>
@@ -1352,11 +1361,9 @@ document.addEventListener('keydown', e => {
   if (document.getElementById('app').style.display === 'none') return;
   const tag = document.activeElement.tagName;
   if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-  const views = ['day', 'division', 'interview', 'team'];
   if (e.key === '1') switchView('day');
-  else if (e.key === '2') switchView('division');
-  else if (e.key === '3') switchView('interview');
-  else if (e.key === '4') switchView('team');
+  else if (e.key === '2') switchView('interview');
+  else if (e.key === '3') switchView('team');
   else if (e.key === '/' ) { e.preventDefault(); focusTeamSearch(); }
   else if (e.key === 'ArrowLeft'  && state.view === 'day') navigateDay(-1);
   else if (e.key === 'ArrowRight' && state.view === 'day') navigateDay(1);
