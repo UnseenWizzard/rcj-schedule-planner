@@ -363,7 +363,7 @@ body.compact .team-tag  { padding: 1px 5px; font-size: 0.72rem; }
 .now-row .time-cell { color: var(--primary); font-weight: 700; background: #eef2ff; }
 
 /* ── Break rows ── */
-.break-row td {
+.break-row td, td.break-row {
   background: repeating-linear-gradient(
     45deg,
     #f3f4f6,
@@ -864,11 +864,13 @@ function renderDayView() {
 
   // Build break rows: insert after the last slot before each break
   const dayBreaks = (state.breaks[day] || []).filter(b => b.division === null).slice().sort((a,b) => a.start.localeCompare(b.start));
+  const divBreaks = (state.breaks[day] || []).filter(b => b.division !== null).slice().sort((a,b) => a.start.localeCompare(b.start));
   const colCount = resources.length + 1;
 
   // Data rows
   const dataRows = [];
   let breakIdx = 0;
+  let divBreakIdx = 0;
   for (const ts of timeSlots) {
     // Insert any breaks whose start time is <= ts start
     const tsStart = ts.split(EN_DASH)[0].trim();
@@ -877,6 +879,16 @@ function renderDayView() {
       dataRows.push(`<tr class="break-row"><td colspan="${colCount}">
         <span class="break-label">${esc(br.label)} ${br.start}–${br.end}</span>
       </td></tr>`);
+    }
+    while (divBreakIdx < divBreaks.length && divBreaks[divBreakIdx].start <= tsStart) {
+      const br = divBreaks[divBreakIdx++];
+      const cells = groups.map(g => {
+        if (g.div === br.division) {
+          return `<td class="break-row" colspan="${g.resources.length}"><span class="break-label">${esc(br.label)} ${br.start}–${br.end}</span></td>`;
+        }
+        return `<td colspan="${g.resources.length}"></td>`;
+      }).join('');
+      dataRows.push(`<tr><td class="time-cell">${br.start}–${br.end}</td>${cells}</tr>`);
     }
     const cells = resources.map(r => {
       const teams = lookup[ts]?.[r] ?? [];
