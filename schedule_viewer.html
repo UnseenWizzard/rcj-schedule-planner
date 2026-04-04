@@ -976,12 +976,35 @@ function buildTeamCard(team, search = '') {
       </tr>`;
   }).join('');
 
+  // Conflict detection (buffer = 15 min default)
+  const BUFFER = 15;
+  const warnings = [];
+  for (let i = 1; i < assignments.length; i++) {
+    const prev = assignments[i - 1];
+    const curr = assignments[i];
+    const [,prevEnd]   = prev.time_slot.split(EN_DASH).map(x => timeToMinutes(x.trim()));
+    const [currStart,] = curr.time_slot.split(EN_DASH).map(x => timeToMinutes(x.trim()));
+    if (!isNaN(prevEnd) && !isNaN(currStart)) {
+      const gap = currStart - prevEnd;
+      if (gap < 0) {
+        warnings.push(`Overlap: ${prev.time_slot} ↔ ${curr.time_slot}`);
+      } else if (gap < BUFFER) {
+        warnings.push(`Tight turnaround (${gap} min): ${prev.time_slot} → ${curr.time_slot}`);
+      }
+    }
+  }
+  const warnBadge = warnings.length
+    ? `<div style="padding:6px 14px;background:#fef2f2;border-bottom:1px solid #fecaca;font-size:0.78rem;color:#dc2626">
+        ⚠ ${warnings.map(esc).join(' · ')}
+       </div>` : '';
+
   return `
     <div class="team-card">
       <div class="team-card-header">
         <span>${highlightMatch(team, search)}</span>
         <span class="meta">${assignments.length} assignment${assignments.length!==1?'s':''}</span>
       </div>
+      ${warnBadge}
       ${buildTimeline(assignments)}
       <table>
         <thead><tr><th>Day</th><th>Time</th><th>Resource</th><th>With</th></tr></thead>
