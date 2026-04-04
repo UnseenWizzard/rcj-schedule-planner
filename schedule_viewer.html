@@ -1017,29 +1017,36 @@ function timeToMinutes(t) {
 
 function buildTimeline(assignments) {
   if (!assignments.length) return '';
-  const parsed = assignments.map(a => {
-    const [s, e] = a.time_slot.split(EN_DASH).map(x => x.trim());
-    return { start: timeToMinutes(s), end: timeToMinutes(e), div: divisionOf(a.resource) };
-  }).filter(a => !isNaN(a.start) && !isNaN(a.end));
-  if (!parsed.length) return '';
-
-  const dayStart = Math.min(...parsed.map(a => a.start));
-  const dayEnd   = Math.max(...parsed.map(a => a.end));
-  const span = dayEnd - dayStart || 1;
-
-  const slots = parsed.map(a => {
-    const left  = ((a.start - dayStart) / span * 100).toFixed(2);
-    const width = ((a.end - a.start)    / span * 100).toFixed(2);
-    const c = divColor(a.div);
-    return `<div class="timeline-slot" style="left:${left}%;width:${width}%;background:${c}" title="${a.div}"></div>`;
-  }).join('');
-
   const fmt = m => `${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
-  return `
+
+  // Group by day
+  const byDay = {};
+  assignments.forEach(a => { (byDay[a.day] ??= []).push(a); });
+
+  return Object.keys(byDay).sort().map(day => {
+    const parsed = byDay[day].map(a => {
+      const [s, e] = a.time_slot.split(EN_DASH).map(x => x.trim());
+      return { start: timeToMinutes(s), end: timeToMinutes(e), div: divisionOf(a.resource) };
+    }).filter(a => !isNaN(a.start) && !isNaN(a.end));
+    if (!parsed.length) return '';
+
+    const dayStart = Math.min(...parsed.map(a => a.start));
+    const dayEnd   = Math.max(...parsed.map(a => a.end));
+    const span = dayEnd - dayStart || 1;
+
+    const slots = parsed.map(a => {
+      const left  = ((a.start - dayStart) / span * 100).toFixed(2);
+      const width = ((a.end - a.start)    / span * 100).toFixed(2);
+      const c = divColor(a.div);
+      return `<div class="timeline-slot" style="left:${left}%;width:${width}%;background:${c}" title="${a.div}"></div>`;
+    }).join('');
+
+    return `
     <div class="team-timeline">
       <div class="timeline-bar">${slots}</div>
       <div class="timeline-label"><span>${fmt(dayStart)}</span><span>${fmt(dayEnd)}</span></div>
     </div>`;
+  }).join('');
 }
 
 function highlightMatch(text, search) {
@@ -1084,7 +1091,7 @@ function buildTeamCard(team, search = '') {
     const curr = assignments[i];
     const [,prevEnd]   = prev.time_slot.split(EN_DASH).map(x => timeToMinutes(x.trim()));
     const [currStart,] = curr.time_slot.split(EN_DASH).map(x => timeToMinutes(x.trim()));
-    if (!isNaN(prevEnd) && !isNaN(currStart)) {
+    if (prev.day === curr.day && !isNaN(prevEnd) && !isNaN(currStart)) {
       const gap = currStart - prevEnd;
       if (gap < 0) {
         warnings.push(`Overlap: ${prev.time_slot} ↔ ${curr.time_slot}`);
