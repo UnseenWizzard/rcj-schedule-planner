@@ -306,16 +306,16 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
 
 <header>
   <h1>🤖 RCJ Schedule Viewer</h1>
-  <input type="file" id="add-file-input" multiple accept=".csv" style="display:none">
-  <button id="add-files-btn">+ Add CSVs</button>
+  <input type="file" id="add-file-input" multiple accept=".csv,.json" style="display:none">
+  <button id="add-files-btn">+ Add files</button>
 </header>
 
 <div id="loader-screen">
   <div id="dropzone">
-    <input type="file" id="file-input" multiple accept=".csv" style="display:none">
+    <input type="file" id="file-input" multiple accept=".csv,.json" style="display:none">
     <div class="drop-icon">📅</div>
-    <h2>Load Schedule CSVs</h2>
-    <p>Drag &amp; drop <strong>Day1.csv</strong>, <strong>Day2.csv</strong>, … here<br>
+    <h2>Load Schedule</h2>
+    <p>Drag &amp; drop <strong>schedule.json</strong> or <strong>Day1.csv</strong>, <strong>Day2.csv</strong>, … here<br>
     or click to select files</p>
   </div>
 </div>
@@ -390,6 +390,23 @@ function parseLine(line) {
 }
 
 // ─────────────────────────────────────────────
+//  JSON parsing
+// ─────────────────────────────────────────────
+function parseScheduleJSON(text) {
+  const data = JSON.parse(text);
+  const days = {};
+  (data.assignments || []).forEach(a => {
+    const day = a.day;
+    (days[day] ??= []).push({
+      time_slot: a.start + '\u2013' + a.end,
+      resource:  a.resource_name,
+      teams:     (a.teams || []).join(', '),
+    });
+  });
+  return days;
+}
+
+// ─────────────────────────────────────────────
 //  Data helpers
 // ─────────────────────────────────────────────
 const EN_DASH = '\u2013';
@@ -448,13 +465,20 @@ function allTeams() {
 // ─────────────────────────────────────────────
 function loadFiles(files) {
   const promises = [...files].map(file => new Promise(resolve => {
-    const day = file.name.replace(/\.csv$/i, '');
     const reader = new FileReader();
-    reader.onload = e => resolve({ day, rows: parseCSV(e.target.result) });
+    reader.onload = e => {
+      if (file.name.toLowerCase().endsWith('.json')) {
+        const days = parseScheduleJSON(e.target.result);
+        resolve({ days });
+      } else {
+        const day = file.name.replace(/\.csv$/i, '');
+        resolve({ days: { [day]: parseCSV(e.target.result) } });
+      }
+    };
     reader.readAsText(file);
   }));
   Promise.all(promises).then(results => {
-    results.forEach(({ day, rows }) => { state.days[day] = rows; });
+    results.forEach(({ days }) => Object.assign(state.days, days));
     if (!state.selectedDay || !state.days[state.selectedDay]) {
       state.selectedDay = Object.keys(state.days).sort()[0];
     }
