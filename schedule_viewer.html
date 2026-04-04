@@ -198,6 +198,18 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
   transition: opacity 0.15s;
 }
 #url-load-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  display: inline-block;
+  width: 12px; height: 12px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+#url-elapsed { font-size: 0.78rem; color: var(--muted); margin-top: 6px; display: none; }
 #url-error {
   display: none;
   margin-top: 8px;
@@ -574,6 +586,7 @@ body.compact .team-tag  { padding: 1px 5px; font-size: 0.72rem; }
         <button id="url-load-btn">Load</button>
       </div>
       <p id="url-error"></p>
+      <p id="url-elapsed"></p>
     </div>
   </div>
 </div>
@@ -1234,9 +1247,20 @@ function esc(s) {
 function loadFromURL(url) {
   const btn = document.getElementById('url-load-btn');
   const errEl = document.getElementById('url-error');
+  const elapsedEl = document.getElementById('url-elapsed');
   btn.disabled = true;
-  btn.textContent = 'Loading…';
+  btn.innerHTML = '<span class="spinner"></span>Loading…';
   errEl.style.display = 'none';
+  elapsedEl.style.display = 'none';
+
+  const startTime = Date.now();
+  const elapsedTimer = setInterval(() => {
+    const s = ((Date.now() - startTime) / 1000).toFixed(1);
+    if (Date.now() - startTime > 2000) {
+      elapsedEl.style.display = 'block';
+      elapsedEl.textContent = `Still loading… ${s}s`;
+    }
+  }, 500);
 
   fetch(url)
     .then(res => {
@@ -1244,6 +1268,8 @@ function loadFromURL(url) {
       return res.text();
     })
     .then(text => {
+      clearInterval(elapsedTimer);
+      elapsedEl.style.display = 'none';
       const { days, breaks } = parseScheduleJSON(text);
       Object.assign(state.days, days);
       Object.entries(breaks || {}).forEach(([day, bs]) => {
@@ -1258,6 +1284,8 @@ function loadFromURL(url) {
       render();
     })
     .catch(err => {
+      clearInterval(elapsedTimer);
+      elapsedEl.style.display = 'none';
       let msg = err.message || 'Unknown error';
       if (msg.toLowerCase().includes('failed to fetch') || msg.toLowerCase().includes('networkerror')) {
         msg = 'Could not fetch – check CORS headers or try downloading the file directly.';
