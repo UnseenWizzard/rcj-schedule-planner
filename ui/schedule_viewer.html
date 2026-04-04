@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RCJ Schedule Viewer</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f0f2f5;
+  --surface: #ffffff;
+  --primary: #4f46e5;
+  --text: #111827;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --radius: 10px;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── Header ── */
+header {
+  background: #1e1b4b;
+  color: white;
+  padding: 13px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
+.header-actions { display: flex; gap: 8px; align-items: center; }
+#add-files-btn, #print-btn {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: white;
+  padding: 5px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  transition: background 0.15s;
+}
+#add-files-btn:hover, #print-btn:hover { background: rgba(255,255,255,0.22); }
+
+@media (max-width: 767px) {
+  .app-body { padding: 10px 12px 24px; }
+  .view-selector { flex-wrap: wrap; width: 100%; }
+  .view-btn { flex: 1; padding: 6px 8px; font-size: 0.8rem; }
+  /* Hide division view button on mobile — it's an organiser tool */
+  .view-btn[data-view="division"] { display: none; }
+  /* Hide wallboard on mobile — it's a large-screen tool */
+  .view-btn[data-view="wallboard"] { display: none; }
+  /* Day view: vertical list instead of grid */
+  .grid-wrapper { display: none; }
+  #mobile-day-list { display: block; }
+  .mobile-slot-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.09);
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .mobile-slot-time {
+    padding: 6px 12px;
+    background: #f3f4f6;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .mobile-slot-rows { padding: 4px 8px; }
+  .mobile-slot-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 4px;
+    border-bottom: 1px solid #f5f5f5;
+    font-size: 0.83rem;
+  }
+  .mobile-slot-row:last-child { border-bottom: none; }
+  .mobile-resource { font-weight: 600; min-width: 80px; flex-shrink: 0; font-size: 0.78rem; }
+  .mobile-teams { display: flex; flex-wrap: wrap; gap: 3px; }
+  /* Team cards full-width, bigger tap targets */
+  .team-card td, .team-card th { padding: 10px 12px; }
+  .team-search { max-width: 100%; }
+  /* Density toggle hidden on mobile */
+  #density-toggle { display: none; }
+}
+#mobile-day-list { display: none; }
+
+@media print {
+  header, .view-selector, .tabs, .team-search-wrap, #loader-screen { display: none !important; }
+  body { background: white; }
+  .app-body { padding: 0; }
+  .grid-wrapper { overflow: visible; max-height: none; box-shadow: none; border-radius: 0; }
+  .schedule-table thead .div-header-row th,
+  .schedule-table thead .res-header-row th,
+  .time-header-cell, .time-cell { position: static; }
+  .team-card, .div-card { break-inside: avoid; margin-bottom: 12px; }
+  .team-card-header, .div-card-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .team-tag { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+/* ── Loader screen ── */
+#loader-screen {
+  min-height: calc(100vh - 47px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+#dropzone {
+  border: 2px dashed #c7d2fe;
+  border-radius: 16px;
+  padding: 60px 48px;
+  text-align: center;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  max-width: 460px;
+  width: 100%;
+}
+#dropzone:hover, #dropzone.drag-over { border-color: var(--primary); background: #eef2ff; }
+.drop-icon { font-size: 2.8rem; margin-bottom: 14px; }
+#dropzone h2 { font-size: 1.15rem; margin-bottom: 8px; color: #374151; font-weight: 600; }
+#dropzone p { color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
+
+/* ── URL loader ── */
+#url-panel {
+  max-width: 460px;
+  width: 100%;
+  margin-top: 16px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+#url-panel .divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+#url-panel .divider::before,
+#url-panel .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+#url-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  text-align: left;
+}
+#url-card label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+.url-row {
+  display: flex;
+  gap: 8px;
+}
+#url-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.88rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+#url-input:focus { border-color: var(--primary); }
+#url-load-btn {
+  padding: 8px 16px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+}
+#url-load-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  display: inline-block;
+  width: 12px; height: 12px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+#url-elapsed { font-size: 0.78rem; color: var(--muted); margin-top: 6px; display: none; }
+#url-error {
+  display: none;
+  margin-top: 8px;
+  font-size: 0.82rem;
+  color: #dc2626;
+}
+
+/* ── App ── */
+#app { display: none; }
+.app-body { padding: 18px 24px 32px; }
+
+/* ── Compact mode ── */
+body.compact .slot-cell { padding: 2px 3px; min-width: 80px; font-size: 0.75rem; }
+body.compact .time-cell { padding: 3px 7px; font-size: 0.72rem; }
+body.compact .team-tag  { padding: 1px 5px; font-size: 0.72rem; }
+
+/* ── View toggle ── */
+.view-selector {
+  display: inline-flex;
+  gap: 2px;
+  background: #e5e7eb;
+  border-radius: 8px;
+  padding: 3px;
+  margin-bottom: 18px;
+}
+.view-btn {
+  padding: 7px 18px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--muted);
+  font-weight: 500;
+  transition: all 0.15s;
+}
+.view-btn.active {
+  background: white;
+  color: var(--primary);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+
+/* ── Day tabs ── */
+.tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.tab {
+  padding: 6px 18px;
+  border-radius: 20px;
+  border: 2px solid var(--border);
+  background: white;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.15s;
+  color: var(--muted);
+}
+.tab:hover { border-color: var(--primary); color: var(--primary); }
+.tab.active { border-color: var(--primary); background: var(--primary); color: white; }
+
+/* ── Grid ── */
+.grid-wrapper {
+  overflow: auto;
+  max-height: calc(100vh - 120px);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  background: white;
+}
+.schedule-table {
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+.schedule-table thead .div-header-row th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.schedule-table thead .res-header-row th {
+  position: sticky;
+  top: 33px; /* height of div-header-row */
+  z-index: 2;
+}
+.div-header-row th {
+  padding: 6px 12px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgba(255,255,255,0.92);
+  text-align: center;
+}
+.res-header-row th {
+  padding: 7px 10px;
+  font-weight: 600;
+  color: #374151;
+  background: #f9fafb;
+  border-bottom: 2px solid var(--border);
+  text-align: center;
+  font-size: 0.78rem;
+}
+.time-header-cell {
+  background: #f9fafb !important;
+  color: #374151 !important;
+  text-align: left !important;
+  padding: 8px 12px !important;
+  border-right: 2px solid var(--border) !important;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  position: sticky;
+  left: 0;
+  z-index: 3;
+}
+.schedule-table tbody tr:nth-child(even) { background: #fafafa; }
+.schedule-table tbody tr:hover { background: #f0f0ff; }
+.time-cell {
+  padding: 5px 10px;
+  color: var(--muted);
+  font-size: 0.77rem;
+  font-weight: 600;
+  white-space: nowrap;
+  border-right: 2px solid var(--border);
+  background: #f9fafb;
+  vertical-align: middle;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+.slot-cell {
+  padding: 4px 6px;
+  border-right: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+  text-align: center;
+  vertical-align: middle;
+  min-width: 120px;
+}
+.team-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.77rem;
+  font-weight: 500;
+  margin: 1px;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.team-tag-link { cursor: pointer; }
+.team-tag-link:hover { opacity: 0.75; }
+
+/* ── Now row ── */
+.now-row td { border-left: 3px solid var(--primary); }
+.now-row .time-cell { color: var(--primary); font-weight: 700; background: #eef2ff; }
+
+/* ── Break rows ── */
+.break-row td, td.break-row {
+  background: repeating-linear-gradient(
+    45deg,
+    #f3f4f6,
+    #f3f4f6 6px,
+    #e9eaec 6px,
+    #e9eaec 12px
+  );
+  padding: 5px 12px;
+  border-top: 1px solid #d1d5db;
+  border-bottom: 1px solid #d1d5db;
+}
+.break-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ── Division filter bar ── */
+.div-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 0 10px;
+}
+.div-filter-btn {
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 2px solid var(--div-color, #6b7280);
+  background: transparent;
+  color: var(--div-color, #6b7280);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  opacity: 0.5;
+}
+.div-filter-btn.active {
+  background: var(--div-color, #6b7280);
+  color: white;
+  opacity: 1;
+}
+.div-filter-all {
+  --div-color: #374151;
+}
+.div-filter-none {
+  --div-color: #9ca3af;
+}
+
+/* ── Division cards ── */
+.div-card {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+.div-card-header {
+  padding: 11px 16px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+.div-card-header span.meta { font-size: 0.76rem; opacity: 0.82; font-weight: 400; }
+.div-card table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.div-card th {
+  padding: 6px 12px;
+  background: #f9fafb;
+  font-weight: 600;
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+.div-card td {
+  padding: 6px 12px;
+  border-bottom: 1px solid #f5f5f5;
+  vertical-align: middle;
+}
+.div-card tr:last-child td { border-bottom: none; }
+.div-card tr:hover td { background: #f9fafb; }
+
+/* ── Team view ── */
+.team-search-wrap { margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+.team-search-field { position: relative; display: flex; align-items: center; width: 100%; max-width: 420px; }
+.team-search-field .team-search { max-width: 100%; width: 100%; padding-right: 36px; }
+.team-search-clear {
+  position: absolute; right: 8px;
+  background: none; border: none; cursor: pointer;
+  color: var(--muted); font-size: 1.1rem; line-height: 1;
+  padding: 2px 4px; border-radius: 3px;
+}
+.team-search-clear:hover { color: var(--text); background: var(--border); }
+.team-count { font-size: 0.82rem; color: var(--muted); white-space: nowrap; }
+.div-group { margin-bottom: 16px; }
+.div-group-header {
+  padding: 7px 14px;
+  color: white;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border-radius: var(--radius) var(--radius) 0 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+}
+.div-group-header .toggle-icon { font-size: 0.75rem; opacity: 0.8; }
+.div-group-body {
+  background: white;
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 12px;
+}
+.div-group-body.collapsed { display: none; }
+.team-browse-tag {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.12s;
+}
+.team-browse-tag:hover { opacity: 0.75; }
+.team-search {
+  width: 100%;
+  padding: 10px 16px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.team-search:focus { border-color: var(--primary); }
+.team-card {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.team-card-header {
+  padding: 11px 16px;
+  background: #1e1b4b;
+  color: white;
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.team-card-header span.meta { font-size: 0.76rem; opacity: 0.7; font-weight: 400; }
+.team-card table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+.team-card th {
+  padding: 7px 14px;
+  background: #f9fafb;
+  font-weight: 600;
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+.team-card td { padding: 7px 14px; border-bottom: 1px solid #f5f5f5; }
+.team-card tr:last-child td { border-bottom: none; }
+.team-card tr:hover td { background: #f9fafb; }
+
+/* ── Team timeline ── */
+.team-timeline {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: #fafafa;
+}
+.timeline-bar {
+  position: relative;
+  height: 18px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.timeline-slot {
+  position: absolute;
+  height: 100%;
+  border-radius: 3px;
+  opacity: 0.85;
+  min-width: 4px;
+}
+.timeline-label {
+  font-size: 0.7rem;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+  margin-top: 3px;
+}
+
+/* ── Misc ── */
+.empty {
+  text-align: center;
+  padding: 56px 24px;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+.badge {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #e5e7eb;
+  color: #374151;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🤖 RCJ Schedule Viewer</h1>
+  <div class="header-actions">
+    <input type="file" id="add-file-input" multiple accept=".csv,.json" style="display:none">
+    <button id="add-files-btn">+ Add files</button>
+    <button id="print-btn">Print</button>
+  </div>
+</header>
+
+<div id="loader-screen">
+  <div id="dropzone">
+    <input type="file" id="file-input" multiple accept=".csv,.json" style="display:none">
+    <div class="drop-icon">📅</div>
+    <h2>Load Schedule</h2>
+    <p>Drag &amp; drop <strong>schedule.json</strong> or <strong>Day1.csv</strong>, <strong>Day2.csv</strong>, … here<br>
+    or click to select files</p>
+  </div>
+  <div id="url-panel">
+    <div class="divider">or</div>
+    <div id="url-card">
+      <label for="url-input">Load from URL</label>
+      <div class="url-row">
+        <input type="url" id="url-input" placeholder="https://example.com/schedule.json">
+        <button id="url-load-btn">Load</button>
+      </div>
+      <p id="url-error"></p>
+      <p id="url-elapsed"></p>
+    </div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="app-body">
+    <div class="view-selector">
+      <button class="view-btn active" data-view="day">By Day</button>
+      <button class="view-btn" data-view="interview">Interviews</button>
+      <button class="view-btn" data-view="team">By Team</button>
+      <button class="view-btn" data-view="wallboard">Wallboard</button>
+    </div>
+    <div id="view-container"></div>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+//  State
+// ─────────────────────────────────────────────
+const state = {
+  days: {},           // { "Day1": [{time_slot, resource, teams}, …] }
+  breaks: {},         // { "Day1": [{start, end, label}, …] }
+  view: 'day',
+  selectedDay: null,
+  teamSearch: '',
+  compact: false,
+  hiddenDivisions: new Set(),
+  wallboardInterval: 15,
+  wallboardDivIdx: 0,
+  wallboardTimer: null,
+  wallboardPaused: false,
+};
+
+// ─────────────────────────────────────────────
+//  Division colours
+// ─────────────────────────────────────────────
+const PALETTE = [
+  '#4f46e5','#059669','#dc2626','#d97706',
+  '#7c3aed','#0891b2','#db2777','#65a30d','#ea580c','#0369a1'
+];
+const _divColors = {};
+let _colorIdx = 0;
+
+function divColor(div) {
+  if (div === 'Interview') return '#374151';
+  if (!_divColors[div]) _divColors[div] = PALETTE[_colorIdx++ % PALETTE.length];
+  return _divColors[div];
+}
+
+// ─────────────────────────────────────────────
+//  CSV parsing
+// ─────────────────────────────────────────────
+function parseCSV(text) {
+  const lines = text.trim().split(/\r?\n/);
+  if (lines.length < 2) return [];
+  const headers = parseLine(lines[0]).map(h => h.trim());
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
+    const vals = parseLine(lines[i]);
+    const obj = {};
+    headers.forEach((h, idx) => { obj[h] = (vals[idx] || '').trim(); });
+    rows.push(obj);
+  }
+  return rows;
+}
+
+function parseLine(line) {
+  const result = [];
+  let cur = '', inQ = false;
+  for (const c of line) {
+    if (c === '"') { inQ = !inQ; }
+    else if (c === ',' && !inQ) { result.push(cur); cur = ''; }
+    else { cur += c; }
+  }
+  result.push(cur);
+  return result;
+}
+
+// ─────────────────────────────────────────────
+//  JSON parsing
+// ─────────────────────────────────────────────
+function parseScheduleJSON(text) {
+  const data = JSON.parse(text);
+  const days = {};
+  (data.assignments || []).forEach(a => {
+    const day = a.day;
+    (days[day] ??= []).push({
+      time_slot: a.start + '\u2013' + a.end,
+      resource:  a.resource_name,
+      teams:     (a.teams || []).join(', '),
+    });
+  });
+  // Parse breaks per day from meta
+  const breaks = {};
+  const meta = data.meta || {};
+  if (meta.breaks) {
+    // meta.breaks is an array of {day, start, end, label?}
+    meta.breaks.forEach(b => {
+      const day = b.day || Object.keys(days)[0];
+      (breaks[day] ??= []).push({ start: b.start, end: b.end, label: b.label || 'Break', division: b.division ?? null });
+    });
+  }
+  return { days, breaks };
+}
+
+// ─────────────────────────────────────────────
+//  Data helpers
+// ─────────────────────────────────────────────
+const EN_DASH = '\u2013';
+
+function divisionOf(resource) {
+  if (resource === 'Interview') return 'Interview';
+  const idx = resource.indexOf(` ${EN_DASH} `);
+  return idx > -1 ? resource.slice(0, idx) : resource;
+}
+
+function shortName(resource) {
+  if (resource === 'Interview') return 'Interview';
+  const idx = resource.indexOf(` ${EN_DASH} `);
+  return idx > -1 ? resource.slice(idx + 3) : resource;
+}
+
+function allDivisions() {
+  const s = new Set();
+  Object.values(state.days).flat().forEach(r => {
+    const d = divisionOf(r.resource);
+    if (d !== 'Interview') s.add(d);
+  });
+  return [...s].sort();
+}
+
+// Resources for a specific day, ordered by division then name
+function resourcesForDay(day) {
+  const res = new Set((state.days[day] || []).map(r => r.resource));
+  return [...res].sort((a, b) => {
+    const da = divisionOf(a), db = divisionOf(b);
+    if (da !== db) {
+      if (da === 'Interview') return 1;
+      if (db === 'Interview') return -1;
+      return da.localeCompare(db);
+    }
+    return a.localeCompare(b);
+  });
+}
+
+// Time slots for a day, sorted chronologically
+function timeSlotsForDay(day) {
+  const s = new Set((state.days[day] || []).map(r => r.time_slot));
+  return [...s].sort((a, b) => a.localeCompare(b));
+}
+
+function allTeams() {
+  const s = new Set();
+  Object.values(state.days).flat().forEach(r =>
+    r.teams.split(',').forEach(t => { const tr = t.trim(); if (tr) s.add(tr); })
+  );
+  return [...s].sort();
+}
+
+// ─────────────────────────────────────────────
+//  File loading
+// ─────────────────────────────────────────────
+function loadFiles(files) {
+  const promises = [...files].map(file => new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      if (file.name.toLowerCase().endsWith('.json')) {
+        const { days, breaks } = parseScheduleJSON(e.target.result);
+        resolve({ days, breaks });
+      } else {
+        const day = file.name.replace(/\.csv$/i, '');
+        resolve({ days: { [day]: parseCSV(e.target.result) }, breaks: {} });
+      }
+    };
+    reader.readAsText(file);
+  }));
+  Promise.all(promises).then(results => {
+    results.forEach(({ days, breaks }) => {
+      Object.assign(state.days, days);
+      Object.entries(breaks || {}).forEach(([day, bs]) => {
+        (state.breaks[day] ??= []).push(...bs);
+      });
+    });
+    if (!state.selectedDay || !state.days[state.selectedDay]) {
+      state.selectedDay = Object.keys(state.days).sort()[0];
+    }
+    document.getElementById('loader-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    applyHash();
+    render();
+  });
+}
+
+// ─────────────────────────────────────────────
+//  Render – Day view
+// ─────────────────────────────────────────────
+function renderDayView() {
+  const days = Object.keys(state.days).sort();
+  const tabs = days.map(d =>
+    `<button class="tab${d === state.selectedDay ? ' active' : ''}" data-day="${d}">${d}</button>`
+  ).join('');
+
+  const day = state.selectedDay;
+  const rows = state.days[day] || [];
+  const allResources = resourcesForDay(day);
+  const resources = allResources.filter(r => !state.hiddenDivisions.has(divisionOf(r)));
+  const timeSlots = timeSlotsForDay(day);
+
+  // Division filter toggles
+  const divisions = [...new Set(allResources.map(r => divisionOf(r)))];
+  const filterPills = divisions.map(div => {
+    const c = divColor(div);
+    const active = !state.hiddenDivisions.has(div);
+    return `<button class="div-filter-btn${active ? ' active' : ''}" data-div="${esc(div)}" style="--div-color:${c}">${esc(div)}</button>`;
+  }).join('');
+  const filterBar = `<div class="div-filter-bar">
+    <button class="div-filter-btn div-filter-all" id="div-filter-all">All</button>
+    <button class="div-filter-btn div-filter-none" id="div-filter-none">Clear</button>
+    ${filterPills}
+  </div>`;
+
+  // Group resources into division columns
+  const groups = [];
+  let lastDiv = null;
+  for (const r of resources) {
+    const div = divisionOf(r);
+    if (div !== lastDiv) { groups.push({ div, resources: [] }); lastDiv = div; }
+    groups[groups.length - 1].resources.push(r);
+  }
+
+  // Build lookup: timeSlot → resource → teams[]
+  const lookup = {};
+  rows.forEach(row => {
+    (lookup[row.time_slot] ??= {})[row.resource] =
+      row.teams.split(',').map(t => t.trim()).filter(Boolean);
+  });
+
+  // Header row 1: division spans
+  const divCells = groups.map(g => {
+    const c = divColor(g.div);
+    return `<th colspan="${g.resources.length}" style="background:${c}">${g.div}</th>`;
+  }).join('');
+
+  // Header row 2: individual resources
+  const resCells = resources.map(r =>
+    `<th>${shortName(r)}</th>`
+  ).join('');
+
+  // Build break rows: insert after the last slot before each break
+  const dayBreaks = (state.breaks[day] || []).filter(b => b.division === null).slice().sort((a,b) => a.start.localeCompare(b.start));
+  const colCount = resources.length + 1;
+
+  // Division-specific breaks indexed by division for quick lookup
+  const divBreaksByDiv = {};
+  (state.breaks[day] || []).filter(b => b.division !== null).forEach(b => {
+    (divBreaksByDiv[b.division] ??= []).push(b);
+  });
+  // Track which division breaks have shown their label (first slot only)
+  const divBreakLabelShown = new Set();
+
+  // Data rows
+  const dataRows = [];
+  let breakIdx = 0;
+  for (const ts of timeSlots) {
+    // Insert any global breaks whose start time is <= ts start
+    const tsStart = ts.split(EN_DASH)[0].trim();
+    while (breakIdx < dayBreaks.length && dayBreaks[breakIdx].start <= tsStart) {
+      const br = dayBreaks[breakIdx++];
+      dataRows.push(`<tr class="break-row"><td colspan="${colCount}">
+        <span class="break-label">${esc(br.label)} ${br.start}–${br.end}</span>
+      </td></tr>`);
+    }
+    const cells = resources.map(r => {
+      const div = divisionOf(r);
+      const divBr = (divBreaksByDiv[div] || []).find(b => tsStart >= b.start && tsStart < b.end);
+      if (divBr) {
+        const key = div + divBr.start;
+        const label = divBreakLabelShown.has(key) ? '' : `<span class="break-label">${esc(divBr.label)} ${divBr.start}–${divBr.end}</span>`;
+        divBreakLabelShown.add(key);
+        return `<td class="break-row">${label}</td>`;
+      }
+      const teams = lookup[ts]?.[r] ?? [];
+      const c = divColor(div);
+      const chips = teams.map(t =>
+        `<span class="team-tag team-tag-link" style="background:${c}1a;color:${c}" data-team="${esc(t)}">${esc(t)}</span>`
+      ).join('');
+      return `<td class="slot-cell">${chips}</td>`;
+    }).join('');
+    const isNow = isCurrentSlot(ts);
+    dataRows.push(`<tr${isNow ? ' class="now-row"' : ''}><td class="time-cell">${ts}</td>${cells}</tr>`);
+  }
+
+  // Mobile: vertical list grouped by timeslot
+  const mobileCards = timeSlots.map(ts => {
+    const rowItems = resources.map(r => {
+      const teams = lookup[ts]?.[r] ?? [];
+      if (!teams.length) return '';
+      const div = divisionOf(r);
+      const c = divColor(div);
+      const chips = teams.map(t =>
+        `<span class="team-tag team-tag-link" style="background:${c}1a;color:${c}" data-team="${esc(t)}">${esc(t)}</span>`
+      ).join('');
+      return `<div class="mobile-slot-row">
+        <span class="mobile-resource" style="color:${c}">${esc(shortName(r))}</span>
+        <span class="mobile-teams">${chips}</span>
+      </div>`;
+    }).filter(Boolean).join('');
+    if (!rowItems) return '';
+    return `<div class="mobile-slot-card">
+      <div class="mobile-slot-time">${ts}</div>
+      <div class="mobile-slot-rows">${rowItems}</div>
+    </div>`;
+  }).filter(Boolean).join('');
+
+  return `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div class="tabs" style="margin-bottom:0">${tabs}</div>
+      <button id="density-toggle" style="font-size:0.78rem;padding:4px 12px;border:1px solid var(--border);border-radius:6px;background:white;cursor:pointer;color:var(--muted)">${state.compact ? 'Comfortable' : 'Compact'}</button>
+    </div>
+    ${filterBar}
+    <div id="mobile-day-list">${mobileCards}</div>
+    <div class="grid-wrapper">
+      <table class="schedule-table">
+        <thead>
+          <tr class="div-header-row">
+            <th rowspan="2" class="time-header-cell">Time</th>
+            ${divCells}
+          </tr>
+          <tr class="res-header-row">${resCells}</tr>
+        </thead>
+        <tbody>${dataRows.join('')}</tbody>
+      </table>
+    </div>`;
+}
+
+// ─────────────────────────────────────────────
+//  Render – Interview view
+// ─────────────────────────────────────────────
+function renderInterviewView() {
+  const days = Object.keys(state.days).sort();
+  const intRows = [];
+  days.forEach(day =>
+    (state.days[day] || []).forEach(row => {
+      if (row.resource === 'Interview') intRows.push({ day, ...row });
+    })
+  );
+
+  if (!intRows.length) {
+    return `<div class="empty">No interview slots found in the loaded schedule.</div>`;
+  }
+
+  // Group by day
+  const byDay = {};
+  intRows.forEach(r => { (byDay[r.day] ??= []).push(r); });
+
+  const tables = Object.keys(byDay).sort().map(day => {
+    byDay[day].sort((a, b) => a.time_slot.localeCompare(b.time_slot));
+    const rows = byDay[day].map((r, i) => {
+      const teams = r.teams.split(',').map(t => t.trim()).filter(Boolean);
+      const chips = teams.map(t =>
+        `<span class="team-tag" style="background:#37415118;color:#374151">${esc(t)}</span>`
+      ).join(' ');
+      return `<tr>
+        <td style="color:var(--muted);font-size:0.78rem;font-weight:600;white-space:nowrap">${r.time_slot}</td>
+        <td style="text-align:center;color:var(--muted);font-size:0.8rem">${i + 1}</td>
+        <td>${chips}</td>
+      </tr>`;
+    }).join('');
+
+    return `
+      <div class="div-card" style="margin-bottom:16px">
+        <div class="div-card-header" style="background:#374151">
+          <span>${esc(day)}</span>
+          <span class="meta">${byDay[day].length} slot${byDay[day].length>1?'s':''}</span>
+        </div>
+        <table>
+          <thead><tr><th>Time</th><th style="text-align:center">#</th><th>Teams</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+  }).join('');
+
+  return `<div style="max-width:720px">${tables}</div>`;
+}
+
+// ─────────────────────────────────────────────
+//  Render – Team view
+// ─────────────────────────────────────────────
+function teamDivision(team) {
+  // Determine primary division of a team from their assignments
+  const counts = {};
+  Object.values(state.days).flat().forEach(row => {
+    if (row.teams.split(',').map(t => t.trim()).includes(team)) {
+      const d = divisionOf(row.resource);
+      if (d !== 'Interview') counts[d] = (counts[d] || 0) + 1;
+    }
+  });
+  const top = Object.entries(counts).sort((a,b) => b[1]-a[1])[0];
+  return top ? top[0] : 'Other';
+}
+
+function isCurrentSlot(timeSlot) {
+  const now = new Date();
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  const parts = timeSlot.split(EN_DASH).map(x => x.trim());
+  if (parts.length < 2) return false;
+  const start = timeToMinutes(parts[0]);
+  const end   = timeToMinutes(parts[1]);
+  return !isNaN(start) && !isNaN(end) && nowMin >= start && nowMin < end;
+}
+
+function timeToMinutes(t) {
+  const [h, m] = t.trim().split(':').map(Number);
+  return h * 60 + (m || 0);
+}
+
+function buildTimeline(assignments) {
+  if (!assignments.length) return '';
+  const fmt = m => `${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
+
+  // Group by day
+  const byDay = {};
+  assignments.forEach(a => { (byDay[a.day] ??= []).push(a); });
+
+  return Object.keys(byDay).sort().map(day => {
+    const parsed = byDay[day].map(a => {
+      const [s, e] = a.time_slot.split(EN_DASH).map(x => x.trim());
+      return { start: timeToMinutes(s), end: timeToMinutes(e), div: divisionOf(a.resource) };
+    }).filter(a => !isNaN(a.start) && !isNaN(a.end));
+    if (!parsed.length) return '';
+
+    const dayStart = Math.min(...parsed.map(a => a.start));
+    const dayEnd   = Math.max(...parsed.map(a => a.end));
+    const span = dayEnd - dayStart || 1;
+
+    const slots = parsed.map(a => {
+      const left  = ((a.start - dayStart) / span * 100).toFixed(2);
+      const width = ((a.end - a.start)    / span * 100).toFixed(2);
+      const c = divColor(a.div);
+      return `<div class="timeline-slot" style="left:${left}%;width:${width}%;background:${c}" title="${a.div}"></div>`;
+    }).join('');
+
+    return `
+    <div class="team-timeline">
+      <div class="timeline-label">${day}</div>
+      <div class="timeline-bar">${slots}</div>
+      <div class="timeline-label"><span>${fmt(dayStart)}</span><span>${fmt(dayEnd)}</span></div>
+    </div>`;
+  }).join('');
+}
+
+function highlightMatch(text, search) {
+  if (!search) return esc(text);
+  const escaped = esc(text);
+  const searchEsc = esc(search);
+  const idx = escaped.toLowerCase().indexOf(searchEsc.toLowerCase());
+  if (idx === -1) return escaped;
+  return escaped.slice(0, idx)
+    + `<mark style="background:#fef08a;border-radius:2px;padding:0 1px">${escaped.slice(idx, idx + searchEsc.length)}</mark>`
+    + escaped.slice(idx + searchEsc.length);
+}
+
+function buildTeamCard(team, search = '') {
+  const days = Object.keys(state.days).sort();
+  const assignments = [];
+  days.forEach(day =>
+    (state.days[day] || []).forEach(row => {
+      if (row.teams.split(',').map(t => t.trim()).includes(team))
+        assignments.push({ day, ...row });
+    })
+  );
+  assignments.sort((a, b) => a.day.localeCompare(b.day) || a.time_slot.localeCompare(b.time_slot));
+  const rows = assignments.map(a => {
+    const div = divisionOf(a.resource);
+    const c = divColor(div);
+    const co = a.teams.split(',').map(t => t.trim()).filter(t => t !== team);
+    return `
+      <tr>
+        <td>${a.day}</td>
+        <td>${a.time_slot}</td>
+        <td><span class="team-tag" style="background:${c}1a;color:${c}">${esc(a.resource)}</span></td>
+        <td style="color:var(--muted);font-size:0.8rem">${co.length ? esc(co.join(', ')) : '—'}</td>
+      </tr>`;
+  }).join('');
+
+  // Conflict detection (buffer = 15 min default)
+  const BUFFER = 15;
+  const warnings = [];
+  for (let i = 1; i < assignments.length; i++) {
+    const prev = assignments[i - 1];
+    const curr = assignments[i];
+    const [,prevEnd]   = prev.time_slot.split(EN_DASH).map(x => timeToMinutes(x.trim()));
+    const [currStart,] = curr.time_slot.split(EN_DASH).map(x => timeToMinutes(x.trim()));
+    if (prev.day === curr.day && !isNaN(prevEnd) && !isNaN(currStart)) {
+      const gap = currStart - prevEnd;
+      if (gap < 0) {
+        warnings.push(`Overlap: ${prev.time_slot} ↔ ${curr.time_slot}`);
+      } else if (gap < BUFFER) {
+        warnings.push(`Tight turnaround (${gap} min): ${prev.time_slot} → ${curr.time_slot}`);
+      }
+    }
+  }
+  const warnBadge = warnings.length
+    ? `<div style="padding:6px 14px;background:#fef2f2;border-bottom:1px solid #fecaca;font-size:0.78rem;color:#dc2626">
+        ⚠ ${warnings.map(esc).join(' · ')}
+       </div>` : '';
+
+  return `
+    <div class="team-card">
+      <div class="team-card-header">
+        <span>${highlightMatch(team, search)}</span>
+        <span class="meta">${assignments.length} assignment${assignments.length!==1?'s':''}</span>
+      </div>
+      ${warnBadge}
+      ${buildTimeline(assignments)}
+      <table>
+        <thead><tr><th>Day</th><th>Time</th><th>Resource</th><th>With</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
+
+function renderTeamView() {
+  const search = state.teamSearch;
+  const tokens = search.toLowerCase().split(/\s+/).filter(Boolean);
+  const matchesSearch = t => !tokens.length || tokens.every(tok => t.toLowerCase().includes(tok));
+  const teams = allTeams().filter(matchesSearch);
+
+  const countLabel = search
+    ? `<span class="team-count">${teams.length} team${teams.length!==1?'s':''} found</span>`
+    : '';
+
+  let content;
+  if (search) {
+    const cards = teams.map(t => buildTeamCard(t, search)).join('');
+    const empty = teams.length === 0
+      ? `<div class="empty">No teams matching "<strong>${esc(search)}</strong>"</div>` : '';
+    content = cards + empty;
+  } else {
+    // Group all teams by division
+    const byDiv = {};
+    allTeams().forEach(t => {
+      const d = teamDivision(t);
+      (byDiv[d] ??= []).push(t);
+    });
+    const groups = Object.keys(byDiv).sort().map(div => {
+      const c = divColor(div);
+      const tags = byDiv[div].sort().map(t =>
+        `<span class="team-browse-tag" style="background:${c}1a;color:${c}" data-team="${esc(t)}">${esc(t)}</span>`
+      ).join('');
+      return `
+        <div class="div-group">
+          <div class="div-group-header" style="background:${c}" data-div-toggle>
+            <span>${esc(div)} <span style="font-weight:400;opacity:0.8">(${byDiv[div].length})</span></span>
+            <span class="toggle-icon">▲</span>
+          </div>
+          <div class="div-group-body">${tags}</div>
+        </div>`;
+    }).join('');
+    content = groups;
+  }
+
+  return `
+    <div class="team-search-wrap">
+      <div class="team-search-field">
+        <input class="team-search" id="team-input" type="text"
+          placeholder="Search team name…" value="${esc(search)}" autocomplete="off">
+        ${search ? `<button class="team-search-clear" id="team-clear" title="Clear search">×</button>` : ''}
+      </div>
+      ${countLabel}
+    </div>
+    ${content}`;
+}
+
+// ─────────────────────────────────────────────
+//  Wallboard view
+// ─────────────────────────────────────────────
+function renderWallboardView() {
+  return '';
+}
+
+// ─────────────────────────────────────────────
+//  Render dispatcher
+// ─────────────────────────────────────────────
+function render() {
+  document.body.classList.toggle('compact', state.compact);
+  const container = document.getElementById('view-container');
+  if (state.view === 'day') container.innerHTML = renderDayView();
+  else if (state.view === 'interview') container.innerHTML = renderInterviewView();
+  else if (state.view === 'wallboard') container.innerHTML = renderWallboardView();
+  else container.innerHTML = renderTeamView();
+
+  // Scroll now-row into view
+  const nowRow = container.querySelector('.now-row');
+  if (nowRow) nowRow.scrollIntoView({ block: 'center', behavior: 'smooth' });
+
+  // Day tab clicks
+  container.querySelectorAll('.tab[data-day]').forEach(btn =>
+    btn.addEventListener('click', () => { state.selectedDay = btn.dataset.day; render(); })
+  );
+
+  // Density toggle
+  const densityBtn = container.querySelector('#density-toggle');
+  if (densityBtn) {
+    densityBtn.addEventListener('click', () => {
+      state.compact = !state.compact;
+      document.body.classList.toggle('compact', state.compact);
+      densityBtn.textContent = state.compact ? 'Comfortable' : 'Compact';
+    });
+  }
+
+  // Team search
+  const ti = container.querySelector('#team-input');
+  if (ti) {
+    ti.addEventListener('input', () => {
+      state.teamSearch = ti.value;
+      updateHash();
+      render();
+    });
+    ti.focus();
+    ti.setSelectionRange(ti.value.length, ti.value.length);
+  }
+  const tc = container.querySelector('#team-clear');
+  if (tc) {
+    tc.addEventListener('click', () => {
+      state.teamSearch = '';
+      updateHash();
+      render();
+    });
+  }
+
+  // Division filter toggles
+  const allBtn = container.querySelector('#div-filter-all');
+  if (allBtn) {
+    allBtn.addEventListener('click', () => { state.hiddenDivisions.clear(); render(); });
+  }
+  const noneBtn = container.querySelector('#div-filter-none');
+  if (noneBtn) {
+    noneBtn.addEventListener('click', () => {
+      const divs = [...new Set(resourcesForDay(state.selectedDay).map(r => divisionOf(r)))];
+      divs.forEach(d => state.hiddenDivisions.add(d));
+      render();
+    });
+  }
+  container.querySelectorAll('.div-filter-btn[data-div]').forEach(btn =>
+    btn.addEventListener('click', () => {
+      const div = btn.dataset.div;
+      if (state.hiddenDivisions.has(div)) state.hiddenDivisions.delete(div);
+      else state.hiddenDivisions.add(div);
+      render();
+    })
+  );
+
+  // Clickable team tags in day view → switch to team view
+  container.querySelectorAll('.team-tag-link[data-team]').forEach(el =>
+    el.addEventListener('click', () => {
+      state.teamSearch = el.dataset.team;
+      state.view = 'team';
+      updateHash();
+      document.querySelectorAll('.view-btn').forEach(b => b.classList.toggle('active', b.dataset.view === 'team'));
+      render();
+    })
+  );
+
+  // Team browse tags (click → search for that team)
+  container.querySelectorAll('.team-browse-tag[data-team]').forEach(el =>
+    el.addEventListener('click', () => {
+      state.teamSearch = el.dataset.team;
+      updateHash();
+      render();
+    })
+  );
+
+  // Division group collapse toggles
+  container.querySelectorAll('[data-div-toggle]').forEach(header => {
+    header.addEventListener('click', () => {
+      const body = header.nextElementSibling;
+      const icon = header.querySelector('.toggle-icon');
+      body.classList.toggle('collapsed');
+      icon.textContent = body.classList.contains('collapsed') ? '▼' : '▲';
+    });
+  });
+}
+
+// ─────────────────────────────────────────────
+//  Utility
+// ─────────────────────────────────────────────
+function esc(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// ─────────────────────────────────────────────
+//  URL loading
+// ─────────────────────────────────────────────
+function loadFromURL(url) {
+  const btn = document.getElementById('url-load-btn');
+  const errEl = document.getElementById('url-error');
+  const elapsedEl = document.getElementById('url-elapsed');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Loading…';
+  errEl.style.display = 'none';
+  elapsedEl.style.display = 'none';
+
+  const startTime = Date.now();
+  const elapsedTimer = setInterval(() => {
+    const s = ((Date.now() - startTime) / 1000).toFixed(1);
+    if (Date.now() - startTime > 2000) {
+      elapsedEl.style.display = 'block';
+      elapsedEl.textContent = `Still loading… ${s}s`;
+    }
+  }, 500);
+
+  fetch(url)
+    .then(res => {
+      if (!res.ok) throw new Error(`Server returned ${res.status} ${res.statusText}`);
+      return res.text();
+    })
+    .then(text => {
+      clearInterval(elapsedTimer);
+      elapsedEl.style.display = 'none';
+      const { days, breaks } = parseScheduleJSON(text);
+      Object.assign(state.days, days);
+      Object.entries(breaks || {}).forEach(([day, bs]) => {
+        (state.breaks[day] ??= []).push(...bs);
+      });
+      if (!state.selectedDay || !state.days[state.selectedDay]) {
+        state.selectedDay = Object.keys(state.days).sort()[0];
+      }
+      document.getElementById('loader-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      applyHash();
+      render();
+    })
+    .catch(err => {
+      clearInterval(elapsedTimer);
+      elapsedEl.style.display = 'none';
+      let msg = err.message || 'Unknown error';
+      if (msg.toLowerCase().includes('failed to fetch') || msg.toLowerCase().includes('networkerror')) {
+        msg = 'Could not fetch – check CORS headers or try downloading the file directly.';
+      }
+      errEl.textContent = msg;
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Load';
+    });
+}
+
+// ─────────────────────────────────────────────
+//  URL hash helpers
+// ─────────────────────────────────────────────
+function updateHash() {
+  if (state.view === 'team' && state.teamSearch) {
+    history.replaceState(null, '', '#team=' + encodeURIComponent(state.teamSearch));
+  } else {
+    history.replaceState(null, '', location.pathname + location.search);
+  }
+}
+
+function applyHash() {
+  const hash = location.hash;
+  if (hash.startsWith('#team=')) {
+    const team = decodeURIComponent(hash.slice(6));
+    state.teamSearch = team;
+    state.view = 'team';
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.toggle('active', b.dataset.view === 'team'));
+  }
+}
+
+// ─────────────────────────────────────────────
+//  Bootstrap
+// ─────────────────────────────────────────────
+const dropzone   = document.getElementById('dropzone');
+const fileInput  = document.getElementById('file-input');
+const addInput   = document.getElementById('add-file-input');
+const addBtn     = document.getElementById('add-files-btn');
+
+dropzone.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', e => e.target.files.length && loadFiles(e.target.files));
+
+addBtn.addEventListener('click', () => addInput.click());
+addInput.addEventListener('change', e => e.target.files.length && loadFiles(e.target.files));
+
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropzone.classList.remove('drag-over');
+  e.dataTransfer.files.length && loadFiles(e.dataTransfer.files);
+});
+
+const urlInput = document.getElementById('url-input');
+const urlBtn   = document.getElementById('url-load-btn');
+urlBtn.addEventListener('click', () => { const u = urlInput.value.trim(); if (u) loadFromURL(u); });
+urlInput.addEventListener('keydown', e => { if (e.key === 'Enter') { const u = urlInput.value.trim(); if (u) loadFromURL(u); } });
+
+document.getElementById('print-btn').addEventListener('click', () => window.print());
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (document.getElementById('app').style.display === 'none') return;
+  const tag = document.activeElement.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+  if (e.key === '1') switchView('day');
+  else if (e.key === '2') switchView('interview');
+  else if (e.key === '3') switchView('team');
+  else if (e.key === '4') switchView('wallboard');
+  else if (e.key === '/' ) { e.preventDefault(); focusTeamSearch(); }
+  else if (e.key === 'ArrowLeft'  && state.view === 'day') navigateDay(-1);
+  else if (e.key === 'ArrowRight' && state.view === 'day') navigateDay(1);
+});
+
+function switchView(v) {
+  state.view = v;
+  document.querySelectorAll('.view-btn').forEach(b => b.classList.toggle('active', b.dataset.view === v));
+  render();
+}
+
+function focusTeamSearch() {
+  switchView('team');
+  const ti = document.querySelector('#team-input');
+  if (ti) { ti.focus(); ti.select(); }
+}
+
+function navigateDay(dir) {
+  const days = Object.keys(state.days).sort();
+  const idx = days.indexOf(state.selectedDay);
+  const next = days[idx + dir];
+  if (next) { state.selectedDay = next; render(); }
+}
+
+document.querySelectorAll('.view-btn').forEach(btn =>
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.view = btn.dataset.view;
+    render();
+  })
+);
+</script>
+</body>
+</html>
