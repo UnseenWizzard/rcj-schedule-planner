@@ -32,6 +32,7 @@ def generate(division_specs, run_time, interview_time, interview_group_size, day
     import os
     if save_path == "schedule.json":
         save_path = os.path.join(output_dir, "schedule.json")
+    os.makedirs(output_dir, exist_ok=True)
     buffer_minutes = buffer if buffer is not None else run_time
     try:
         divisions = []
