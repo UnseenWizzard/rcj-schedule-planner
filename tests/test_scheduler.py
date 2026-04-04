@@ -138,3 +138,81 @@ def test_interview_resource_shared():
                        interview_group_size=2, buffer_minutes=10)
     interview_resources = {a.resource.name for a in s.assignments if a.resource.kind == "interview"}
     assert interview_resources == {"Interview"}
+
+
+def test_early_day_loading_2day_3runs():
+    DAYS_2 = ["Day1:09:00-17:00", "Day2:09:00-17:00"]
+    teams = [Team(f"Team{i}", "DivA") for i in range(6)]
+    divisions = [("DivA", teams, 1, 3)]  # 1 arena, 3 runs per arena
+    s = build_schedule(divisions, DAYS_2, run_time=10, interview_time=20,
+                       interview_group_size=3, buffer_minutes=10)
+    assert validate_schedule(s) == []
+    teams_with_2_on_day1 = 0
+    for team in teams:
+        arena_runs = [a for a in s.assignments_for_team(team) if a.resource.kind == "arena"]
+        day1_runs = [a for a in arena_runs if a.slot.day == "Day1"]
+        assert len(arena_runs) == 3
+        if len(day1_runs) >= 2:
+            teams_with_2_on_day1 += 1
+    assert teams_with_2_on_day1 >= 5, f"Only {teams_with_2_on_day1}/6 teams have 2+ runs on Day 1"
+
+
+def test_early_day_loading_no_violations():
+    DAYS_2 = ["Day1:09:00-17:00", "Day2:09:00-17:00"]
+    teams = [Team(f"Team{i}", "DivA") for i in range(8)]
+    divisions = [("DivA", teams, 2, 2)]  # 2 arenas, 2 runs each = 4 runs per team
+    s = build_schedule(divisions, DAYS_2, run_time=10, interview_time=20,
+                       interview_group_size=2, buffer_minutes=10)
+    assert validate_schedule(s) == []
+    for team in teams:
+        arena_runs = [a for a in s.assignments_for_team(team) if a.resource.kind == "arena"]
+        assert len(arena_runs) == 4
+
+
+def test_single_day_unaffected():
+    teams = [Team(f"Team{i}", "DivA") for i in range(4)]
+    divisions = [("DivA", teams, 2, 1)]
+    s = build_schedule(divisions, ["Day1:09:00-17:00"], run_time=10, interview_time=20,
+                       interview_group_size=2, buffer_minutes=10)
+    assert validate_schedule(s) == []
+    for team in teams:
+        arena_runs = [a for a in s.assignments_for_team(team) if a.resource.kind == "arena"]
+        assert len(arena_runs) == 2
+
+
+def test_early_day_loading_tight_day1():
+    DAYS_TIGHT = ["Day1:09:00-10:00", "Day2:09:00-17:00"]
+    teams = [Team(f"Team{i}", "DivA") for i in range(4)]
+    divisions = [("DivA", teams, 1, 3)]
+    s = build_schedule(divisions, DAYS_TIGHT, run_time=10, interview_time=20,
+                       interview_group_size=2, buffer_minutes=10)
+    assert validate_schedule(s) == []
+    for team in teams:
+        arena_runs = [a for a in s.assignments_for_team(team) if a.resource.kind == "arena"]
+        assert len(arena_runs) == 3
+
+
+def test_early_day_loading_multi_division():
+    DAYS_2 = ["Day1:09:00-17:00", "Day2:09:00-17:00"]
+    divisions = [
+        ("Soccer", [Team(f"S{i}", "Soccer") for i in range(4)], 1, 3),
+        ("Rescue", [Team(f"R{i}", "Rescue") for i in range(4)], 1, 3),
+    ]
+    s = build_schedule(divisions, DAYS_2, run_time=10, interview_time=20,
+                       interview_group_size=2, buffer_minutes=10)
+    assert validate_schedule(s) == []
+    for div_label, teams, _, _ in divisions:
+        for team in teams:
+            arena_runs = [a for a in s.assignments_for_team(team) if a.resource.kind == "arena"]
+            day1_runs = [a for a in arena_runs if a.slot.day == "Day1"]
+            assert len(arena_runs) == 3
+            assert len(day1_runs) >= 2, f"{team.name} has only {len(day1_runs)} runs on Day 1"
+
+
+def test_early_day_loading_buffer_respected():
+    DAYS_2 = ["Day1:09:00-17:00", "Day2:09:00-17:00"]
+    teams = [Team(f"Team{i}", "DivA") for i in range(4)]
+    divisions = [("DivA", teams, 1, 3)]
+    s = build_schedule(divisions, DAYS_2, run_time=10, interview_time=20,
+                       interview_group_size=2, buffer_minutes=15)
+    assert validate_schedule(s) == []
