@@ -105,6 +105,10 @@ Teams within a division are grouped for interviews by `--interview-group-size`. 
 
 If no valid slot can be found for a team, the tool exits with a clear error describing which team/resource is affected. Adjust the day length, buffer, or slot durations and retry.
 
+## Schedule Viewer
+
+Open `ui/schedule_viewer.html` in a browser and load a `schedule.json` file to view the schedule interactively.
+
 ## Development
 
 ```bash

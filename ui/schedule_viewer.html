@@ -135,90 +135,6 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
 #dropzone h2 { font-size: 1.15rem; margin-bottom: 8px; color: #374151; font-weight: 600; }
 #dropzone p { color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
 
-/* ── URL loader ── */
-#url-panel {
-  max-width: 460px;
-  width: 100%;
-  margin-top: 16px;
-  text-align: center;
-  color: var(--muted);
-  font-size: 0.85rem;
-}
-#url-panel .divider {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 14px;
-  color: var(--muted);
-  font-size: 0.8rem;
-}
-#url-panel .divider::before,
-#url-panel .divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
-#url-card {
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px 20px;
-  text-align: left;
-}
-#url-card label {
-  display: block;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #374151;
-  margin-bottom: 8px;
-}
-.url-row {
-  display: flex;
-  gap: 8px;
-}
-#url-input {
-  flex: 1;
-  padding: 8px 12px;
-  border: 2px solid var(--border);
-  border-radius: 6px;
-  font-size: 0.88rem;
-  outline: none;
-  transition: border-color 0.15s;
-}
-#url-input:focus { border-color: var(--primary); }
-#url-load-btn {
-  padding: 8px 16px;
-  background: var(--primary);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.88rem;
-  font-weight: 600;
-  white-space: nowrap;
-  transition: opacity 0.15s;
-}
-#url-load-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.spinner {
-  display: inline-block;
-  width: 12px; height: 12px;
-  border: 2px solid rgba(255,255,255,0.4);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  vertical-align: middle;
-  margin-right: 4px;
-}
-#url-elapsed { font-size: 0.78rem; color: var(--muted); margin-top: 6px; display: none; }
-#url-error {
-  display: none;
-  margin-top: 8px;
-  font-size: 0.82rem;
-  color: #dc2626;
-}
-
 /* ── App ── */
 #app { display: none; }
 .app-body { padding: 18px 24px 32px; }
@@ -839,18 +755,6 @@ body.wallboard-mode #view-container {
     <h2>Load Schedule</h2>
     <p>Drag &amp; drop <strong>schedule.json</strong> or <strong>Day1.csv</strong>, <strong>Day2.csv</strong>, … here<br>
     or click to select files</p>
-  </div>
-  <div id="url-panel">
-    <div class="divider">or</div>
-    <div id="url-card">
-      <label for="url-input">Load from URL</label>
-      <div class="url-row">
-        <input type="url" id="url-input" placeholder="https://example.com/schedule.json">
-        <button id="url-load-btn">Load</button>
-      </div>
-      <p id="url-error"></p>
-      <p id="url-elapsed"></p>
-    </div>
   </div>
 </div>
 
@@ -1867,64 +1771,6 @@ function esc(s) {
 }
 
 // ─────────────────────────────────────────────
-//  URL loading
-// ─────────────────────────────────────────────
-function loadFromURL(url) {
-  const btn = document.getElementById('url-load-btn');
-  const errEl = document.getElementById('url-error');
-  const elapsedEl = document.getElementById('url-elapsed');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span>Loading…';
-  errEl.style.display = 'none';
-  elapsedEl.style.display = 'none';
-
-  const startTime = Date.now();
-  const elapsedTimer = setInterval(() => {
-    const s = ((Date.now() - startTime) / 1000).toFixed(1);
-    if (Date.now() - startTime > 2000) {
-      elapsedEl.style.display = 'block';
-      elapsedEl.textContent = `Still loading… ${s}s`;
-    }
-  }, 500);
-
-  fetch(url)
-    .then(res => {
-      if (!res.ok) throw new Error(`Server returned ${res.status} ${res.statusText}`);
-      return res.text();
-    })
-    .then(text => {
-      clearInterval(elapsedTimer);
-      elapsedEl.style.display = 'none';
-      const { days, breaks, infoText } = parseScheduleJSON(text);
-      Object.assign(state.days, days);
-      Object.entries(breaks || {}).forEach(([day, bs]) => {
-        (state.breaks[day] ??= []).push(...bs);
-      });
-      if (infoText) state.infoText = infoText;
-      if (!state.selectedDay || !state.days[state.selectedDay]) {
-        state.selectedDay = Object.keys(state.days).sort()[0];
-      }
-      document.getElementById('loader-screen').style.display = 'none';
-      document.getElementById('app').style.display = 'block';
-      applyHash();
-      applyURLParams();
-      render();
-    })
-    .catch(err => {
-      clearInterval(elapsedTimer);
-      elapsedEl.style.display = 'none';
-      let msg = err.message || 'Unknown error';
-      if (msg.toLowerCase().includes('failed to fetch') || msg.toLowerCase().includes('networkerror')) {
-        msg = 'Could not fetch – check CORS headers or try downloading the file directly.';
-      }
-      errEl.textContent = msg;
-      errEl.style.display = 'block';
-      btn.disabled = false;
-      btn.textContent = 'Load';
-    });
-}
-
-// ─────────────────────────────────────────────
 //  URL hash helpers
 // ─────────────────────────────────────────────
 function updateHash() {
@@ -1974,6 +1820,23 @@ fileInput.addEventListener('change', e => e.target.files.length && loadFiles(e.t
 addBtn.addEventListener('click', () => addInput.click());
 addInput.addEventListener('change', e => e.target.files.length && loadFiles(e.target.files));
 
+// Auto-load schedule.json from the same directory (works when served over HTTP/S)
+fetch('./schedule.json')
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+  .then(text => {
+    const { days, breaks, infoText } = parseScheduleJSON(text);
+    Object.assign(state.days, days);
+    Object.entries(breaks || {}).forEach(([day, bs]) => { (state.breaks[day] ??= []).push(...bs); });
+    if (infoText) state.infoText = infoText;
+    if (!state.selectedDay || !state.days[state.selectedDay])
+      state.selectedDay = Object.keys(state.days).sort()[0];
+    document.getElementById('loader-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    applyHash();
+    render();
+  })
+  .catch(() => { /* no schedule.json available — user must load manually */ });
+
 dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
 dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
 dropzone.addEventListener('drop', e => {
@@ -1982,10 +1845,6 @@ dropzone.addEventListener('drop', e => {
   e.dataTransfer.files.length && loadFiles(e.dataTransfer.files);
 });
 
-const urlInput = document.getElementById('url-input');
-const urlBtn   = document.getElementById('url-load-btn');
-urlBtn.addEventListener('click', () => { const u = urlInput.value.trim(); if (u) loadFromURL(u); });
-urlInput.addEventListener('keydown', e => { if (e.key === 'Enter') { const u = urlInput.value.trim(); if (u) loadFromURL(u); } });
 
 document.getElementById('print-btn').addEventListener('click', () => window.print());
 
