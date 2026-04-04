@@ -77,7 +77,6 @@ def build_schedule(
         for team in teams:
             for arena in arenas:
                 required_pairs.extend([(team, arena)] * runs_per_arena)
-        pair_idx = 0
         # Assign by timeslot: for each slot, try to fill all arenas with a team that still needs a run on that arena
         for slot in run_slots:
             used_teams = set()
@@ -89,11 +88,11 @@ def build_schedule(
                     curr_start = datetime.combine(date.today(), slot.start)
                     if curr_start < prev_end + timedelta(minutes=arena_reset_minutes):
                         continue
-                # Find a team for this arena in this slot
-                found = False
-                for i in range(len(required_pairs)):
-                    idx = (pair_idx + i) % len(required_pairs)
-                    team, candidate_arena = required_pairs[idx]
+                if _resource_conflicts(slot, arena, assignments):
+                    continue
+                # Collect all valid candidates for this (slot, arena)
+                candidates = []
+                for i, (team, candidate_arena) in enumerate(required_pairs):
                     if candidate_arena != arena:
                         continue
                     if team in used_teams:
@@ -102,25 +101,23 @@ def build_schedule(
                         continue
                     if team_runs[team] >= total_runs_per_team:
                         continue
-                    if _resource_conflicts(slot, arena, assignments):
-                        continue
                     if _team_conflicts(slot, team, assignments, buffer_minutes):
                         continue
-                    assignments.append(Assignment(slot, arena, [team]))
-                    team_arena_runs[(team, arena)] += 1
-                    team_runs[team] += 1
-                    team_day_runs[team][slot.day] += 1
-                    last_slot_for_arena[arena] = slot
-                    used_teams.add(team)
-                    # Remove this pair from required_pairs so it doesn't get scheduled again
-                    required_pairs.pop(idx)
-                    # Adjust pair_idx if needed
-                    if idx < pair_idx:
-                        pair_idx -= 1
-                    found = True
-                    break
-                if not found:
+                    candidates.append((i, team))
+                if not candidates:
                     continue
+                # Pick best candidate: fewest runs on this day → fewest total runs → original order
+                best_idx, best_team = min(
+                    candidates,
+                    key=lambda x: (team_day_runs[x[1]][slot.day], team_runs[x[1]], x[0])
+                )
+                assignments.append(Assignment(slot, arena, [best_team]))
+                team_arena_runs[(best_team, arena)] += 1
+                team_runs[best_team] += 1
+                team_day_runs[best_team][slot.day] += 1
+                last_slot_for_arena[arena] = slot
+                used_teams.add(best_team)
+                required_pairs.pop(best_idx)
             if not required_pairs:
                 break
         # After scheduling, check if all teams have the required number of runs
