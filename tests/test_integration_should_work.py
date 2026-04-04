@@ -3,11 +3,12 @@ import subprocess
 import pytest
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SHOULD_WORK_SCRIPT = os.path.join(REPO_ROOT, "tests", "integration", "should_work.sh")
 
 
 def test_should_work_generates_valid_schedule(tmp_path):
     result = subprocess.run(
-        ["bash", "should_work.sh"],
+        ["bash", SHOULD_WORK_SCRIPT],
         cwd=REPO_ROOT,
         capture_output=True,
         text=True,
