@@ -195,7 +195,8 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
 
 /* ── Grid ── */
 .grid-wrapper {
-  overflow-x: auto;
+  overflow: auto;
+  max-height: calc(100vh - 120px);
   border-radius: var(--radius);
   box-shadow: 0 1px 4px rgba(0,0,0,0.1);
   background: white;
@@ -204,6 +205,16 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
   border-collapse: collapse;
   font-size: 0.82rem;
   white-space: nowrap;
+}
+.schedule-table thead .div-header-row th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.schedule-table thead .res-header-row th {
+  position: sticky;
+  top: 33px; /* height of div-header-row */
+  z-index: 2;
 }
 .div-header-row th {
   padding: 6px 12px;
@@ -232,6 +243,9 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
+  position: sticky;
+  left: 0;
+  z-index: 3;
 }
 .schedule-table tbody tr:nth-child(even) { background: #fafafa; }
 .schedule-table tbody tr:hover { background: #f0f0ff; }
@@ -244,6 +258,9 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
   border-right: 2px solid var(--border);
   background: #f9fafb;
   vertical-align: middle;
+  position: sticky;
+  left: 0;
+  z-index: 1;
 }
 .slot-cell {
   padding: 4px 6px;
