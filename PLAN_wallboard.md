@@ -24,7 +24,7 @@ Add a "Wallboard" view to the schedule viewer that cycles through divisions (and
   5. Hide the wallboard view button on mobile (`@media (max-width: 767px)`) — it's a large-screen tool.
   6. Verify the app loads without errors, then commit.
 
-- [ ] **Task 2: Implement `renderWallboardView()` — division schedule display**
+- [x] **Task 2: Implement `renderWallboardView()` — division schedule display**
 
   1. Create function `renderWallboardView()` that:
      - Gets all divisions via `allDivisions()`.
@@ -46,7 +46,7 @@ Add a "Wallboard" view to the schedule viewer that cycles through divisions (and
   3. Use large, readable font sizes suitable for projectors (1.1–1.3rem for body, 1.5rem+ for headers).
   4. Verify rendering is correct with sample data, then commit.
 
-- [ ] **Task 3: Implement auto-cycling timer**
+- [x] **Task 3: Implement auto-cycling timer**
 
   1. In `render()`, when `state.view === 'wallboard'`:
      - Clear any existing `state.wallboardTimer` and cancel any running auto-scroll animation.
@@ -58,7 +58,7 @@ Add a "Wallboard" view to the schedule viewer that cycles through divisions (and
      - A thin horizontal bar that animates from 0% to 100% width over the total dwell duration using a CSS animation (`@keyframes`) keyed to `state.wallboardInterval`.
   4. Verify cycling works correctly, then commit.
 
-- [ ] **Task 4: Add wallboard controls (pause, interval, manual nav)**
+- [x] **Task 4: Add wallboard controls (pause, interval, manual nav)**
 
   1. Add a slim control bar at the top of the wallboard view with:
      - **Pause/Resume button**: toggles `state.wallboardPaused`. When paused, clear the timer and show a "Paused" indicator; when resumed, restart it.
