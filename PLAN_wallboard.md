@@ -71,7 +71,7 @@ Add a "Wallboard" view to the schedule viewer that cycles through divisions (and
   3. Wire up event listeners in `render()` for these controls.
   4. Verify controls work, then commit.
 
-- [ ] **Task 5: Wallboard CSS and polish**
+- [x] **Task 5: Wallboard CSS and polish**
 
   1. Add CSS for the wallboard view:
      - Dark background (e.g. `#1e1b4b` or similar) with white/light text for projector readability.

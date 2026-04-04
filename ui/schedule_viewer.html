@@ -589,51 +589,96 @@ body.compact .team-tag  { padding: 1px 5px; font-size: 0.72rem; }
   color: #374151;
 }
 
+/* ── Wallboard full-screen mode ── */
+body.wallboard-mode {
+  background: #0f0d1a;
+  overflow: hidden;
+}
+body.wallboard-mode header,
+body.wallboard-mode .view-selector {
+  display: none;
+}
+body.wallboard-mode #app {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+body.wallboard-mode .app-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+}
+body.wallboard-mode #view-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 /* ── Wallboard view ── */
 .wb-root {
   font-size: 1.2rem;
   max-width: 100%;
-  background: white;
-  border-radius: var(--radius);
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  background: #16132b;
+  color: #e8e6f0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   overflow: hidden;
+  animation: wb-fade-in 0.4s ease;
+}
+@keyframes wb-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 .wb-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 24px;
+  padding: 18px 28px;
   color: white;
+  flex-shrink: 0;
 }
 .wb-div-name {
-  font-size: 1.6rem;
+  font-size: 1.8rem;
   font-weight: 700;
+  letter-spacing: -0.02em;
 }
 .wb-progress-label {
   font-size: 0.95rem;
-  opacity: 0.85;
+  opacity: 0.7;
+}
+.wb-body {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.2) transparent;
 }
 .wb-day-section {
-  border-bottom: 2px solid var(--border);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 .wb-day-section:last-child { border-bottom: none; }
 .wb-day-header {
-  font-size: 1rem;
+  font-size: 0.85rem;
   font-weight: 700;
-  padding: 10px 20px 8px;
-  color: var(--muted);
+  padding: 10px 24px 8px;
+  color: rgba(255,255,255,0.45);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: #f9fafb;
-  border-bottom: 1px solid var(--border);
+  letter-spacing: 0.08em;
+  background: rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
 }
 .wb-section-label {
-  font-size: 0.85em;
+  font-size: 0.78em;
   font-weight: 600;
-  padding: 10px 20px 4px;
-  color: var(--muted);
+  padding: 10px 24px 4px;
+  color: rgba(255,255,255,0.4);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
 }
 .wb-table {
   width: 100%;
@@ -641,91 +686,98 @@ body.compact .team-tag  { padding: 1px 5px; font-size: 0.72rem; }
   font-size: inherit;
 }
 .wb-table th {
-  padding: 7px 16px;
-  background: #f9fafb;
-  border-bottom: 1px solid var(--border);
+  padding: 7px 20px;
+  background: rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
   text-align: left;
-  font-size: 0.72em;
-  color: var(--muted);
+  font-size: 0.68em;
+  color: rgba(255,255,255,0.4);
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.07em;
 }
 .wb-table td {
-  padding: 10px 16px;
-  border-bottom: 1px solid #f5f5f5;
+  padding: 12px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
   vertical-align: middle;
 }
 .wb-table tr:last-child td { border-bottom: none; }
-.wb-table tr:hover td { background: #f9fafb; }
+.wb-table tr:hover td { background: rgba(255,255,255,0.04); }
 .wb-time {
   white-space: nowrap;
-  color: var(--muted);
-  font-size: 0.82em;
+  color: rgba(255,255,255,0.5);
+  font-size: 0.85em;
   font-weight: 600;
-  min-width: 120px;
+  min-width: 130px;
 }
 .wb-arena {
   font-weight: 600;
   min-width: 80px;
   font-size: 0.9em;
+  color: rgba(255,255,255,0.8);
 }
-.wb-now-row td { border-left: 3px solid var(--primary); }
-.wb-now-row .wb-time { color: var(--primary); font-weight: 700; background: #eef2ff; }
+.wb-now-row td { border-left: 3px solid; }
+.wb-now-row .wb-time { font-weight: 700; opacity: 1; color: inherit; }
 @keyframes wb-progress {
   from { width: 0%; }
   to   { width: 100%; }
 }
 .wb-progress-bar-wrap {
   height: 4px;
-  background: rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.12);
   overflow: hidden;
+  flex-shrink: 0;
 }
 .wb-progress-bar {
   height: 100%;
-  background: rgba(255,255,255,0.85);
   width: 0%;
   animation: wb-progress linear forwards;
+  opacity: 0.9;
 }
 .wb-controls {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 16px;
-  background: #f9fafb;
-  border-bottom: 1px solid var(--border);
+  padding: 7px 16px;
+  background: rgba(0,0,0,0.35);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
   flex-wrap: wrap;
+  flex-shrink: 0;
 }
 .wb-ctrl-btn {
   padding: 3px 10px;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255,255,255,0.2);
   border-radius: 4px;
-  background: white;
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.85);
   cursor: pointer;
   font-size: 0.82rem;
   font-weight: 600;
   line-height: 1.5;
+  transition: background 0.15s, border-color 0.15s;
 }
-.wb-ctrl-btn:hover { background: #eef2ff; border-color: var(--primary); }
-.wb-ctrl-btn.paused { color: var(--primary); border-color: var(--primary); }
+.wb-ctrl-btn:hover { background: rgba(255,255,255,0.16); border-color: rgba(255,255,255,0.4); }
+.wb-ctrl-btn.paused { border-color: rgba(255,255,255,0.55); }
+.wb-ctrl-btn.wb-exit { margin-left: auto; }
 .wb-interval-label {
   font-size: 0.8rem;
-  color: var(--muted);
-  margin-left: 8px;
+  color: rgba(255,255,255,0.45);
+  margin-left: 6px;
 }
 .wb-interval-select {
   font-size: 0.82rem;
   padding: 2px 4px;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255,255,255,0.2);
   border-radius: 4px;
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.85);
 }
 .wb-paused-badge {
-  margin-left: auto;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  color: var(--primary);
+  color: rgba(255,255,255,0.6);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 @media print {
   .wb-controls { display: none; }
@@ -1381,24 +1433,23 @@ function setupWallboardScroll(onDone) {
   cancelWallboardScroll();
   if (state.wallboardPaused) return; // don't start timer when paused
   const root = document.getElementById('wb-root');
-  if (!root) {
+  const body = document.getElementById('wb-body');
+  if (!root || !body) {
     if (onDone) state.wallboardTimer = setTimeout(onDone, state.wallboardInterval * 1000);
     return;
   }
-
-  const viewH = window.innerHeight;
 
   // Try shrinking font size before resorting to scroll
   const fontSizes = [1.2, 1.1, 1.0, 0.9];
   let fi = 0;
   root.style.fontSize = fontSizes[fi] + 'rem';
-  while (fi < fontSizes.length - 1 && root.scrollHeight > viewH * 0.92) {
+  while (fi < fontSizes.length - 1 && body.scrollHeight > body.clientHeight) {
     fi++;
     root.style.fontSize = fontSizes[fi] + 'rem';
   }
 
-  if (root.scrollHeight <= viewH * 0.92) {
-    window.scrollTo(0, 0);
+  if (body.scrollHeight <= body.clientHeight) {
+    body.scrollTop = 0;
     if (onDone) state.wallboardTimer = setTimeout(onDone, state.wallboardInterval * 1000);
     return;
   }
@@ -1406,8 +1457,8 @@ function setupWallboardScroll(onDone) {
   // Auto-scroll: top → bottom over wallboardInterval, with brief pauses
   const pauseMs = 600;
   const scrollDuration = Math.max(state.wallboardInterval * 1000 - pauseMs * 2, 1000);
-  const maxScrollY = root.scrollHeight - viewH;
-  window.scrollTo(0, 0);
+  const maxScrollY = body.scrollHeight - body.clientHeight;
+  body.scrollTop = 0;
 
   let phase = 'pause-top';
   let phaseStart = null;
@@ -1422,7 +1473,7 @@ function setupWallboardScroll(onDone) {
       const t = Math.min(elapsed / scrollDuration, 1);
       // Ease in-out
       const eased = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-      window.scrollTo(0, eased * maxScrollY);
+      body.scrollTop = eased * maxScrollY;
       if (t >= 1) { phase = 'pause-bottom'; phaseStart = ts; }
     } else {
       // pause-bottom — brief pause, then trigger cycle
@@ -1506,8 +1557,9 @@ function renderWallboardView() {
         `<span class="team-tag" style="background:${color}1a;color:${color}">${esc(t)}</span>`
       ).join(' ');
       const isNow = isCurrentSlot(r.time_slot);
-      return `<tr${isNow ? ' class="wb-now-row"' : ''}>
-        <td class="wb-time">${esc(r.time_slot)}</td>
+      const nowStyle = isNow ? ` style="border-color:${color}"` : '';
+      return `<tr${isNow ? ` class="wb-now-row"${nowStyle}` : ''}>
+        <td class="wb-time"${isNow ? ` style="color:${color}"` : ''}>${esc(r.time_slot)}</td>
         <td class="wb-arena">${esc(shortName(r.resource))}</td>
         <td class="wb-teams">${chips}</td>
       </tr>`;
@@ -1518,12 +1570,12 @@ function renderWallboardView() {
       const intRowsHtml = interviewRows.map(r => {
         const teams = r.teams.split(',').map(t => t.trim()).filter(t => t && divTeams.has(t));
         const chips = teams.map(t =>
-          `<span class="team-tag" style="background:#37415118;color:#374151">${esc(t)}</span>`
+          `<span class="team-tag" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.75)">${esc(t)}</span>`
         ).join(' ');
         const isNow = isCurrentSlot(r.time_slot);
         return `<tr${isNow ? ' class="wb-now-row"' : ''}>
           <td class="wb-time">${esc(r.time_slot)}</td>
-          <td class="wb-arena" style="color:var(--muted);font-weight:400">Interview</td>
+          <td class="wb-arena" style="opacity:0.55;font-weight:400">Interview</td>
           <td class="wb-teams">${chips}</td>
         </tr>`;
       }).join('');
@@ -1560,8 +1612,8 @@ function renderWallboardView() {
         <div class="wb-div-name">${esc(div)}</div>
         <div class="wb-progress-label">Division ${idx + 1} of ${divs.length}</div>
       </div>
-      <div class="wb-progress-bar-wrap">
-        <div class="wb-progress-bar" style="animation-duration:${state.wallboardInterval}s"></div>
+      <div class="wb-progress-bar-wrap" style="background:rgba(0,0,0,0.2)">
+        <div class="wb-progress-bar" style="animation-duration:${state.wallboardInterval}s;background:${color}"></div>
       </div>
       <div class="wb-controls">
         <button class="wb-ctrl-btn" id="wb-prev">&#8592; Prev</button>
@@ -1570,8 +1622,9 @@ function renderWallboardView() {
         <span class="wb-interval-label">Interval:</span>
         <select class="wb-interval-select" id="wb-interval">${intervalOptions}</select>
         ${state.wallboardPaused ? '<span class="wb-paused-badge">Paused</span>' : ''}
+        <button class="wb-ctrl-btn wb-exit" id="wb-exit">&#x2715; Exit</button>
       </div>
-      <div class="wb-content">
+      <div class="wb-body" id="wb-body">
         ${content}
       </div>
     </div>`
@@ -1588,6 +1641,7 @@ function render() {
   }
   cancelWallboardScroll();
   document.body.classList.toggle('compact', state.compact);
+  document.body.classList.toggle('wallboard-mode', state.view === 'wallboard');
   const container = document.getElementById('view-container');
   if (state.view === 'day') container.innerHTML = renderDayView();
   else if (state.view === 'interview') container.innerHTML = renderInterviewView();
@@ -1602,6 +1656,8 @@ function render() {
     if (prevBtn) prevBtn.addEventListener('click', () => navigateWallboard(-1));
     const nextBtn = container.querySelector('#wb-next');
     if (nextBtn) nextBtn.addEventListener('click', () => navigateWallboard(1));
+    const exitBtn = container.querySelector('#wb-exit');
+    if (exitBtn) exitBtn.addEventListener('click', () => switchView('day'));
     const intervalSel = container.querySelector('#wb-interval');
     if (intervalSel) intervalSel.addEventListener('change', () => {
       state.wallboardInterval = parseInt(intervalSel.value, 10);
@@ -1755,6 +1811,7 @@ function loadFromURL(url) {
       document.getElementById('loader-screen').style.display = 'none';
       document.getElementById('app').style.display = 'block';
       applyHash();
+      applyURLParams();
       render();
     })
     .catch(err => {
@@ -1789,6 +1846,21 @@ function applyHash() {
     state.teamSearch = team;
     state.view = 'team';
     document.querySelectorAll('.view-btn').forEach(b => b.classList.toggle('active', b.dataset.view === 'team'));
+  } else if (hash === '#wallboard' || hash.startsWith('#wallboard=')) {
+    const secs = parseInt(hash.split('=')[1], 10);
+    if (!isNaN(secs) && secs > 0) state.wallboardInterval = secs;
+    state.view = 'wallboard';
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.toggle('active', b.dataset.view === 'wallboard'));
+  }
+}
+
+function applyURLParams() {
+  const params = new URLSearchParams(location.search);
+  if (params.has('wallboard')) {
+    const secs = parseInt(params.get('wallboard'), 10);
+    if (!isNaN(secs) && secs > 0) state.wallboardInterval = secs;
+    state.view = 'wallboard';
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.toggle('active', b.dataset.view === 'wallboard'));
   }
 }
 
