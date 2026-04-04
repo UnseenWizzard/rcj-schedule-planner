@@ -59,6 +59,20 @@ def build_schedule(
 
     assignments: list[Assignment] = []
 
+    # Map day label → 0-based index so cross-day reset comparisons are monotonic
+    day_index: dict[str, int] = {}
+    for i, spec in enumerate(day_specs):
+        label = spec.split(":")[0]
+        day_index[label] = i
+
+    _reset_base = date(2000, 1, 1)
+
+    def _slot_end_dt(slot: TimeSlot) -> datetime:
+        return datetime.combine(_reset_base + timedelta(days=day_index[slot.day]), slot.end)
+
+    def _slot_start_dt(slot: TimeSlot) -> datetime:
+        return datetime.combine(_reset_base + timedelta(days=day_index[slot.day]), slot.start)
+
     # Phase 1 — Arena runs per division (prioritize filling each timeslot across all arenas)
     for div_entry in divisions:
         div_label, teams, num_arenas, runs_per_arena = div_entry[:4]
@@ -89,8 +103,8 @@ def build_schedule(
                 # Arena reset: skip if not enough time since last run on this arena
                 if last_slot_for_arena[arena] is not None and div_arena_reset > 0:
                     prev_slot = last_slot_for_arena[arena]
-                    prev_end = datetime.combine(date.today(), prev_slot.end)
-                    curr_start = datetime.combine(date.today(), slot.start)
+                    prev_end = _slot_end_dt(prev_slot)
+                    curr_start = _slot_start_dt(slot)
                     if curr_start < prev_end + timedelta(minutes=div_arena_reset):
                         continue
                 if _resource_conflicts(slot, arena, assignments):
