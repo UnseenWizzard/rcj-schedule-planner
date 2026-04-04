@@ -130,7 +130,7 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
 }
 .day-tab:hover:not(.active) { border-color: var(--primary); color: var(--primary); }
 
-/* ── Assignments table ── */
+/* ── Schedule grid ── */
 .grid-wrapper {
   overflow-x: auto;
   background: white;
@@ -154,38 +154,62 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
   text-transform: uppercase;
   letter-spacing: 0.04em;
   border-bottom: 2px solid var(--border);
+  border-right: 1px solid var(--border);
   white-space: nowrap;
+  min-width: 120px;
 }
+.schedule-table th:last-child { border-right: none; }
+.schedule-table th.time-header { min-width: 90px; }
 
 .schedule-table td {
-  padding: 8px 12px;
+  padding: 6px 10px;
   border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
   vertical-align: middle;
 }
-
+.schedule-table td:last-child { border-right: none; }
 .schedule-table tr:last-child td { border-bottom: none; }
-.schedule-table tbody tr:hover { background: #f9fafb; }
+
+.slot-cell {
+  min-width: 120px;
+  height: 38px;
+}
+.slot-cell.empty { background: #fafafa; }
+.slot-cell.occupied { background: white; }
 
 .team-tag {
   display: inline-block;
-  padding: 2px 8px;
-  border-radius: 4px;
+  padding: 3px 9px;
+  border-radius: 5px;
   font-size: 0.78rem;
   font-weight: 600;
   background: #e0e7ff;
   color: #3730a3;
   margin: 1px 2px;
+  cursor: grab;
+  user-select: none;
+  border: 1.5px solid transparent;
+  transition: border-color 0.12s, background 0.12s;
 }
-.team-tag.interview { background: #f3f4f6; color: #374151; }
+.team-tag:active { cursor: grabbing; }
+.team-tag.interview { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
 
 .resource-kind {
   font-size: 0.72rem;
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  margin-top: 2px;
+  font-weight: 500;
 }
 
-.time-cell { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.time-cell {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
 
 .empty-state {
   padding: 48px 24px;
@@ -233,14 +257,8 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
     <div id="tab-editor" class="tab-panel active">
       <div class="day-tabs" id="day-tabs"></div>
       <div class="grid-wrapper">
-        <table class="schedule-table">
-          <thead>
-            <tr>
-              <th>Time</th>
-              <th>Resource</th>
-              <th>Teams</th>
-            </tr>
-          </thead>
+        <table class="schedule-table" id="schedule-table">
+          <thead id="schedule-thead"></thead>
           <tbody id="assignment-rows"></tbody>
         </table>
       </div>
@@ -326,34 +344,83 @@ function renderDayTabs(days) {
   });
 }
 
+// ─────────────────────────────────────────────
+//  Grid helpers
+// ─────────────────────────────────────────────
+function buildGrid(assignments) {
+  // Collect unique resources: arenas first (sorted by name), then interviews
+  const resourceMap = new Map(); // name -> kind
+  assignments.forEach(a => {
+    if (!resourceMap.has(a.resource_name)) resourceMap.set(a.resource_name, a.resource_kind);
+  });
+  const resources = [...resourceMap.entries()]
+    .sort((a, b) => {
+      if (a[1] !== b[1]) return a[1] === 'arena' ? -1 : 1;
+      return a[0].localeCompare(b[0]);
+    })
+    .map(([name, kind]) => ({ name, kind }));
+
+  // Collect unique time slots sorted by start time
+  const slotMap = new Map(); // "start|end" -> {start, end}
+  assignments.forEach(a => {
+    const key = a.start + '|' + a.end;
+    if (!slotMap.has(key)) slotMap.set(key, { start: a.start, end: a.end });
+  });
+  const slots = [...slotMap.values()].sort((a, b) => a.start.localeCompare(b.start));
+
+  // Build lookup: "start|resource_name" -> assignment
+  const lookup = new Map();
+  assignments.forEach(a => {
+    lookup.set(a.start + '|' + a.resource_name, a);
+  });
+
+  return { resources, slots, lookup };
+}
+
 function renderAssignments() {
+  const thead = document.getElementById('schedule-thead');
   const tbody = document.getElementById('assignment-rows');
+
   if (!state.selectedDay) {
-    tbody.innerHTML = '<tr><td colspan="3" class="empty-state">No data</td></tr>';
+    thead.innerHTML = '<tr><th class="time-header">Time</th></tr>';
+    tbody.innerHTML = '<tr><td class="empty-state">No data</td></tr>';
     return;
   }
 
-  const rows = editedSchedule.assignments
-    .filter(a => a.day === state.selectedDay)
-    .sort((a, b) => a.start.localeCompare(b.start) || a.resource_name.localeCompare(b.resource_name));
+  const dayAssignments = editedSchedule.assignments.filter(a => a.day === state.selectedDay);
 
-  if (rows.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="3" class="empty-state">No assignments for this day</td></tr>';
+  if (dayAssignments.length === 0) {
+    thead.innerHTML = '<tr><th class="time-header">Time</th></tr>';
+    tbody.innerHTML = '<tr><td class="empty-state">No assignments for this day</td></tr>';
     return;
   }
 
-  tbody.innerHTML = rows.map(a => {
-    const isInterview = a.resource_kind === 'interview';
-    const teamTags = (a.teams || []).map(t =>
-      `<span class="team-tag${isInterview ? ' interview' : ''}">${escHtml(t)}</span>`
-    ).join('');
+  const { resources, slots, lookup } = buildGrid(dayAssignments);
+
+  // Header: Time + one column per resource
+  thead.innerHTML = '<tr>' +
+    '<th class="time-header">Time</th>' +
+    resources.map(r =>
+      `<th><div>${escHtml(r.name)}</div><div class="resource-kind">${escHtml(r.kind)}</div></th>`
+    ).join('') +
+    '</tr>';
+
+  // Rows: one per time slot
+  tbody.innerHTML = slots.map(slot => {
+    const cells = resources.map(r => {
+      const a = lookup.get(slot.start + '|' + r.name);
+      if (a) {
+        const isInterview = r.kind === 'interview';
+        const teamTags = (a.teams || []).map(t =>
+          `<span class="team-tag${isInterview ? ' interview' : ''}">${escHtml(t)}</span>`
+        ).join('');
+        return `<td class="slot-cell occupied">${teamTags}</td>`;
+      }
+      return `<td class="slot-cell empty"></td>`;
+    }).join('');
     return `<tr>
-      <td class="time-cell">${escHtml(a.start)}&ndash;${escHtml(a.end)}</td>
-      <td>
-        <div>${escHtml(a.resource_name)}</div>
-        <div class="resource-kind">${escHtml(a.resource_kind)}</div>
-      </td>
-      <td>${teamTags}</td>
+      <td class="time-cell">${escHtml(slot.start)}&ndash;${escHtml(slot.end)}</td>
+      ${cells}
     </tr>`;
   }).join('');
 }
