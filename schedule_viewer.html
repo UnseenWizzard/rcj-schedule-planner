@@ -284,6 +284,8 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
   white-space: nowrap;
   vertical-align: middle;
 }
+.team-tag-link { cursor: pointer; }
+.team-tag-link:hover { opacity: 0.75; }
 
 /* ── Division cards ── */
 .div-cards {
@@ -673,7 +675,7 @@ function renderDayView() {
       const div = divisionOf(r);
       const c = divColor(div);
       const chips = teams.map(t =>
-        `<span class="team-tag" style="background:${c}1a;color:${c}">${esc(t)}</span>`
+        `<span class="team-tag team-tag-link" style="background:${c}1a;color:${c}" data-team="${esc(t)}">${esc(t)}</span>`
       ).join('');
       return `<td class="slot-cell">${chips}</td>`;
     }).join('');
@@ -909,6 +911,16 @@ function render() {
     ti.focus();
     ti.setSelectionRange(ti.value.length, ti.value.length);
   }
+
+  // Clickable team tags in day view → switch to team view
+  container.querySelectorAll('.team-tag-link[data-team]').forEach(el =>
+    el.addEventListener('click', () => {
+      state.teamSearch = el.dataset.team;
+      state.view = 'team';
+      document.querySelectorAll('.view-btn').forEach(b => b.classList.toggle('active', b.dataset.view === 'team'));
+      render();
+    })
+  );
 
   // Team browse tags (click → search for that team)
   container.querySelectorAll('.team-browse-tag[data-team]').forEach(el =>
