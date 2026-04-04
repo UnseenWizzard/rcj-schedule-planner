@@ -864,15 +864,21 @@ function renderDayView() {
 
   // Build break rows: insert after the last slot before each break
   const dayBreaks = (state.breaks[day] || []).filter(b => b.division === null).slice().sort((a,b) => a.start.localeCompare(b.start));
-  const divBreaks = (state.breaks[day] || []).filter(b => b.division !== null).slice().sort((a,b) => a.start.localeCompare(b.start));
   const colCount = resources.length + 1;
+
+  // Division-specific breaks indexed by division for quick lookup
+  const divBreaksByDiv = {};
+  (state.breaks[day] || []).filter(b => b.division !== null).forEach(b => {
+    (divBreaksByDiv[b.division] ??= []).push(b);
+  });
+  // Track which division breaks have shown their label (first slot only)
+  const divBreakLabelShown = new Set();
 
   // Data rows
   const dataRows = [];
   let breakIdx = 0;
-  let divBreakIdx = 0;
   for (const ts of timeSlots) {
-    // Insert any breaks whose start time is <= ts start
+    // Insert any global breaks whose start time is <= ts start
     const tsStart = ts.split(EN_DASH)[0].trim();
     while (breakIdx < dayBreaks.length && dayBreaks[breakIdx].start <= tsStart) {
       const br = dayBreaks[breakIdx++];
@@ -880,19 +886,16 @@ function renderDayView() {
         <span class="break-label">${esc(br.label)} ${br.start}–${br.end}</span>
       </td></tr>`);
     }
-    while (divBreakIdx < divBreaks.length && divBreaks[divBreakIdx].start <= tsStart) {
-      const br = divBreaks[divBreakIdx++];
-      const cells = groups.map(g => {
-        if (g.div === br.division) {
-          return `<td class="break-row" colspan="${g.resources.length}"><span class="break-label">${esc(br.label)} ${br.start}–${br.end}</span></td>`;
-        }
-        return `<td colspan="${g.resources.length}"></td>`;
-      }).join('');
-      dataRows.push(`<tr><td class="time-cell">${br.start}–${br.end}</td>${cells}</tr>`);
-    }
     const cells = resources.map(r => {
-      const teams = lookup[ts]?.[r] ?? [];
       const div = divisionOf(r);
+      const divBr = (divBreaksByDiv[div] || []).find(b => tsStart >= b.start && tsStart < b.end);
+      if (divBr) {
+        const key = div + divBr.start;
+        const label = divBreakLabelShown.has(key) ? '' : `<span class="break-label">${esc(divBr.label)} ${divBr.start}–${divBr.end}</span>`;
+        divBreakLabelShown.add(key);
+        return `<td class="break-row">${label}</td>`;
+      }
+      const teams = lookup[ts]?.[r] ?? [];
       const c = divColor(div);
       const chips = teams.map(t =>
         `<span class="team-tag team-tag-link" style="background:${c}1a;color:${c}" data-team="${esc(t)}">${esc(t)}</span>`
