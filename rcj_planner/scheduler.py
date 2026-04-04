@@ -70,10 +70,12 @@ def build_schedule(
         ]
         arenas = [Resource("arena", f"{div_label} – Arena {i+1}") for i in range(num_arenas)]
         # Each team should get num_arenas * runs_per_arena runs (one per arena per round)
+        num_teams = len(teams)
         team_runs = {team: 0 for team in teams}
         team_day_runs = defaultdict(lambda: defaultdict(int))  # team -> day -> count
         team_arena_runs = {(team, arena): 0 for team in teams for arena in arenas}
         last_slot_for_arena = {arena: None for arena in arenas}
+        arena_run_count = {arena: 0 for arena in arenas}
         total_runs_per_team = num_arenas * runs_per_arena
         # Build a list of all (team, arena) pairs that need to be scheduled, each repeated runs_per_arena times
         required_pairs = []
@@ -118,7 +120,9 @@ def build_schedule(
                 team_arena_runs[(best_team, arena)] += 1
                 team_runs[best_team] += 1
                 team_day_runs[best_team][slot.day] += 1
-                last_slot_for_arena[arena] = slot
+                arena_run_count[arena] += 1
+                if arena_run_count[arena] % num_teams == 0:
+                    last_slot_for_arena[arena] = slot
                 used_teams.add(best_team)
                 required_pairs.pop(best_idx)
             if not required_pairs:
