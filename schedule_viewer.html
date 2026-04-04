@@ -856,7 +856,18 @@ function teamDivision(team) {
   return top ? top[0] : 'Other';
 }
 
-function buildTeamCard(team) {
+function highlightMatch(text, search) {
+  if (!search) return esc(text);
+  const escaped = esc(text);
+  const searchEsc = esc(search);
+  const idx = escaped.toLowerCase().indexOf(searchEsc.toLowerCase());
+  if (idx === -1) return escaped;
+  return escaped.slice(0, idx)
+    + `<mark style="background:#fef08a;border-radius:2px;padding:0 1px">${escaped.slice(idx, idx + searchEsc.length)}</mark>`
+    + escaped.slice(idx + searchEsc.length);
+}
+
+function buildTeamCard(team, search = '') {
   const days = Object.keys(state.days).sort();
   const assignments = [];
   days.forEach(day =>
@@ -882,7 +893,7 @@ function buildTeamCard(team) {
   return `
     <div class="team-card">
       <div class="team-card-header">
-        <span>${esc(team)}</span>
+        <span>${highlightMatch(team, search)}</span>
         <span class="meta">${assignments.length} assignment${assignments.length!==1?'s':''}</span>
       </div>
       <table>
@@ -904,7 +915,7 @@ function renderTeamView() {
 
   let content;
   if (search) {
-    const cards = teams.map(buildTeamCard).join('');
+    const cards = teams.map(t => buildTeamCard(t, search)).join('');
     const empty = teams.length === 0
       ? `<div class="empty">No teams matching "<strong>${esc(search)}</strong>"</div>` : '';
     content = cards + empty;
