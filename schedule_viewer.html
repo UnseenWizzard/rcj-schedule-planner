@@ -51,6 +51,50 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
 }
 #add-files-btn:hover, #print-btn:hover { background: rgba(255,255,255,0.22); }
 
+@media (max-width: 767px) {
+  .app-body { padding: 10px 12px 24px; }
+  .view-selector { flex-wrap: wrap; width: 100%; }
+  .view-btn { flex: 1; padding: 6px 8px; font-size: 0.8rem; }
+  /* Hide division view button on mobile — it's an organiser tool */
+  .view-btn[data-view="division"] { display: none; }
+  /* Day view: vertical list instead of grid */
+  .grid-wrapper { display: none; }
+  #mobile-day-list { display: block; }
+  .mobile-slot-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.09);
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .mobile-slot-time {
+    padding: 6px 12px;
+    background: #f3f4f6;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .mobile-slot-rows { padding: 4px 8px; }
+  .mobile-slot-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 4px;
+    border-bottom: 1px solid #f5f5f5;
+    font-size: 0.83rem;
+  }
+  .mobile-slot-row:last-child { border-bottom: none; }
+  .mobile-resource { font-weight: 600; min-width: 80px; flex-shrink: 0; font-size: 0.78rem; }
+  .mobile-teams { display: flex; flex-wrap: wrap; gap: 3px; }
+  /* Team cards full-width, bigger tap targets */
+  .team-card td, .team-card th { padding: 10px 12px; }
+  .team-search { max-width: 100%; }
+  /* Density toggle hidden on mobile */
+  #density-toggle { display: none; }
+}
+#mobile-day-list { display: none; }
+
 @media print {
   header, .view-selector, .tabs, .team-search-wrap, #loader-screen { display: none !important; }
   body { background: white; }
@@ -785,11 +829,34 @@ function renderDayView() {
     dataRows.push(`<tr><td class="time-cell">${ts}</td>${cells}</tr>`);
   }
 
+  // Mobile: vertical list grouped by timeslot
+  const mobileCards = timeSlots.map(ts => {
+    const rowItems = resources.map(r => {
+      const teams = lookup[ts]?.[r] ?? [];
+      if (!teams.length) return '';
+      const div = divisionOf(r);
+      const c = divColor(div);
+      const chips = teams.map(t =>
+        `<span class="team-tag team-tag-link" style="background:${c}1a;color:${c}" data-team="${esc(t)}">${esc(t)}</span>`
+      ).join('');
+      return `<div class="mobile-slot-row">
+        <span class="mobile-resource" style="color:${c}">${esc(shortName(r))}</span>
+        <span class="mobile-teams">${chips}</span>
+      </div>`;
+    }).filter(Boolean).join('');
+    if (!rowItems) return '';
+    return `<div class="mobile-slot-card">
+      <div class="mobile-slot-time">${ts}</div>
+      <div class="mobile-slot-rows">${rowItems}</div>
+    </div>`;
+  }).filter(Boolean).join('');
+
   return `
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
       <div class="tabs" style="margin-bottom:0">${tabs}</div>
       <button id="density-toggle" style="font-size:0.78rem;padding:4px 12px;border:1px solid var(--border);border-radius:6px;background:white;cursor:pointer;color:var(--muted)">${state.compact ? 'Comfortable' : 'Compact'}</button>
     </div>
+    <div id="mobile-day-list">${mobileCards}</div>
     <div class="grid-wrapper">
       <table class="schedule-table">
         <thead>
