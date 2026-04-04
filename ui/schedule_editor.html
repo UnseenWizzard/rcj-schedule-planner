@@ -38,6 +38,19 @@ header {
   box-shadow: 0 2px 8px rgba(0,0,0,0.25);
 }
 header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
+#download-btn {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 6px;
+  background: #4ade80;
+  color: #14532d;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: none;
+  transition: background 0.15s;
+}
+#download-btn:hover { background: #22c55e; }
 
 /* ── Loader screen ── */
 #loader-screen {
@@ -321,6 +334,7 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
 
 <header>
   <h1>RCJ Schedule Editor</h1>
+  <button id="download-btn">&#8615; Download Edited Schedule</button>
 </header>
 
 <div id="loader-screen">
@@ -673,6 +687,7 @@ function performMove(targetCell) {
 
   deselectAll();
   renderAssignments();
+  updateDownloadButton();
 }
 
 // ─────────────────────────────────────────────
@@ -710,6 +725,7 @@ function undoLastChange() {
   }
   renderAssignments();
   renderChangesTab();
+  updateDownloadButton();
 }
 
 // Simple LCS-based line diff
@@ -810,6 +826,44 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') deselectAll(
 document.getElementById('tab-changes').addEventListener('click', e => {
   if (e.target.id === 'undo-btn') undoLastChange();
 });
+
+// ─────────────────────────────────────────────
+//  Download
+// ─────────────────────────────────────────────
+function updateDownloadButton() {
+  document.getElementById('download-btn').style.display = changeLog.length > 0 ? 'block' : 'none';
+}
+
+function buildInfoField() {
+  const today = new Date().toISOString().slice(0, 10);
+  const lines = [`Schedule edited on ${today}`, 'Changes:'];
+  changeLog.forEach(entry => {
+    if (entry.type === 'move') {
+      const teams = entry.teams.join(', ');
+      lines.push(`- ${teams}: ${entry.from.resource} ${entry.from.day} ${entry.from.start}-${entry.from.end} -> ${entry.to.day} ${entry.to.start}-${entry.to.end}`);
+    } else {
+      const aTeams = entry.aTeams.join(', ');
+      const bTeams = entry.bTeams.join(', ');
+      lines.push(`- ${aTeams}: ${entry.aFrom.resource} ${entry.aFrom.day} ${entry.aFrom.start}-${entry.aFrom.end} -> ${entry.aTo.day} ${entry.aTo.start}-${entry.aTo.end}`);
+      lines.push(`- ${bTeams}: ${entry.bFrom.resource} ${entry.bFrom.day} ${entry.bFrom.start}-${entry.bFrom.end} -> ${entry.bTo.day} ${entry.bTo.start}-${entry.bTo.end}`);
+    }
+  });
+  return lines.join('\n');
+}
+
+function downloadEditedSchedule() {
+  const output = { info: buildInfoField(), ...editedSchedule };
+  const json = JSON.stringify(output, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'schedule_edited.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById('download-btn').addEventListener('click', downloadEditedSchedule);
 </script>
 </body>
 </html>
