@@ -36,18 +36,21 @@ def build_schedule(
     buffer_minutes: int,
     breaks: list[Break] | None = None,
     arena_reset_minutes: int = 0,
+    interview_day_specs: list[str] | None = None,
+    num_interview_rooms: int = 1,
 ) -> Schedule:
     """
     divisions: list of (division_label, teams, num_arenas, runs_per_arena, arena_reset_minutes)
     Each division gets its own namespaced arena resources and independent run schedule.
-    All divisions share a single Interview resource.
+    All divisions share interview resources (one or more, per num_interview_rooms).
     arena_reset_minutes (kwarg) is a global fallback used only if the division tuple has 4 elements.
     """
     breaks = breaks or []
     global_breaks = [b for b in breaks if b.division is None]
 
     all_run_slots = generate_slots(day_specs, run_time)
-    all_interview_slots = generate_slots(day_specs, interview_time)
+    interview_specs = interview_day_specs if interview_day_specs is not None else day_specs
+    all_interview_slots = generate_slots(interview_specs, interview_time)
 
     # Filter interview slots against global breaks only
     interview_slots = [
@@ -55,7 +58,10 @@ def build_schedule(
         if not any(b.blocks_slot(s) for b in global_breaks)
     ]
 
-    interview_resource = Resource("interview", "Interview")
+    if num_interview_rooms == 1:
+        interview_resources = [Resource("interview", "Interview")]
+    else:
+        interview_resources = [Resource("interview", f"Interview {i+1}") for i in range(num_interview_rooms)]
 
     assignments: list[Assignment] = []
 
@@ -150,13 +156,16 @@ def build_schedule(
                     if chunk_idx in placed_chunks:
                         continue
                     for slot in gap_slots:
-                        if _resource_conflicts(slot, interview_resource, assignments):
-                            continue
                         if any(_team_conflicts(slot, t, assignments, buffer_minutes) for t in chunk):
                             continue
-                        assignments.append(Assignment(slot, interview_resource, list(chunk)))
-                        placed_chunks.add(chunk_idx)
-                        break
+                        for ir in interview_resources:
+                            if _resource_conflicts(slot, ir, assignments):
+                                continue
+                            assignments.append(Assignment(slot, ir, list(chunk)))
+                            placed_chunks.add(chunk_idx)
+                            break
+                        if chunk_idx in placed_chunks:
+                            break
         else:
             # General path: fill each timeslot across all arenas
             team_day_runs = defaultdict(lambda: defaultdict(int))  # team -> day -> count
@@ -222,7 +231,7 @@ def build_schedule(
                     "Try extending the day or reducing teams/arenas."
                 )
 
-    # Phase 2 — Interviews grouped by division (shared interview resource)
+    # Phase 2 — Interviews grouped by division (shared interview resources)
     # Chunks already placed in Phase 1 (simplified mode) are skipped here.
     for div_label, teams, _, _runs, *_ in divisions:
         chunks = [
@@ -237,14 +246,18 @@ def build_schedule(
             found = False
             for i in range(cursor, len(interview_slots)):
                 slot = interview_slots[i]
-                if _resource_conflicts(slot, interview_resource, assignments):
-                    continue
                 if any(_team_conflicts(slot, t, assignments, buffer_minutes) for t in chunk):
                     continue
-                assignments.append(Assignment(slot, interview_resource, list(chunk)))
-                cursor = i + 1
-                found = True
-                break
+                for ir in interview_resources:
+                    if _resource_conflicts(slot, ir, assignments):
+                        continue
+                    assignments.append(Assignment(slot, ir, list(chunk)))
+                    if all(_resource_conflicts(slot, r, assignments) for r in interview_resources):
+                        cursor = i + 1
+                    found = True
+                    break
+                if found:
+                    break
             if not found:
                 raise SchedulingError(
                     f"No valid interview slot found for division '{div_label}' group {[t.name for t in chunk]}. "
@@ -264,6 +277,8 @@ def build_schedule(
         "interview_group_size": interview_group_size,
         "buffer_minutes": buffer_minutes,
         "days": day_specs,
+        "interview_days": interview_specs,
+        "interview_rooms": num_interview_rooms,
         "breaks": [
             {"day": b.day, "start": b.start.strftime("%H:%M"), "end": b.end.strftime("%H:%M"),
              "division": b.division}

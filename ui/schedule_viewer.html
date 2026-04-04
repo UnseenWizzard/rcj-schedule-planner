@@ -896,30 +896,24 @@ function shortName(resource) {
   return idx > -1 ? resource.slice(idx + 3) : resource;
 }
 
-// Build a map from team name → division for a given day (based on arena rows only)
-function buildTeamToDivisionMap(day) {
-  const map = {};
-  (state.days[day] || []).forEach(row => {
-    if (!isInterviewResource(row.resource)) {
-      const div = divisionOf(row.resource);
-      if (div !== row.resource) {
-        row.teams.split(',').forEach(t => {
-          const tr = t.trim();
-          if (tr) map[tr] = div;
-        });
-      }
-    }
-  });
-  return map;
-}
-
-// For a given day, return a map from interview resource name → Set of division labels
+// For a given day, return a map from interview resource name → Set of division labels.
+// Two passes: first build team→division from arena rows, then resolve interview resources.
 function interviewResourceDivisions(day) {
-  const teamToDiv = buildTeamToDivisionMap(day);
+  const teamToDiv = {};
   const result = {};
   (state.days[day] || []).forEach(row => {
     if (isInterviewResource(row.resource)) {
-      const divSet = (result[row.resource] ??= new Set());
+      (result[row.resource] ??= new Set());
+    } else {
+      const div = divisionOf(row.resource);
+      if (div !== row.resource) {
+        row.teams.split(',').forEach(t => { const tr = t.trim(); if (tr) teamToDiv[tr] = div; });
+      }
+    }
+  });
+  (state.days[day] || []).forEach(row => {
+    if (isInterviewResource(row.resource)) {
+      const divSet = result[row.resource];
       row.teams.split(',').forEach(t => {
         const tr = t.trim();
         if (tr && teamToDiv[tr]) divSet.add(teamToDiv[tr]);
@@ -927,6 +921,17 @@ function interviewResourceDivisions(day) {
     }
   });
   return result;
+}
+
+// Returns the effective division for a resource: interview resources map to their
+// parent division (first alphabetically if mixed), fallback 'Interview' if unmapped.
+function effectiveDivOf(resource, intResDivs) {
+  if (isInterviewResource(resource)) {
+    const divSet = intResDivs[resource];
+    if (divSet && divSet.size > 0) return [...divSet].sort()[0];
+    return 'Interview';
+  }
+  return divisionOf(resource);
 }
 
 function allDivisions() {
@@ -938,24 +943,15 @@ function allDivisions() {
   return [...s].sort();
 }
 
-// Resources for a specific day, ordered by division then arenas then interview resources
-function resourcesForDay(day) {
+// Resources for a specific day, ordered by division then arenas then interview resources.
+// Accepts an optional pre-computed interviewResourceDivisions map to avoid redundant work.
+function resourcesForDay(day, intResDivs) {
   const res = new Set((state.days[day] || []).map(r => r.resource));
-  const intResDivs = interviewResourceDivisions(day);
-
-  // Determine primary division for an interview resource (first sorted div, or 'Interview' if unknown)
-  const intResPrimaryDiv = {};
-  for (const [intRes, divSet] of Object.entries(intResDivs)) {
-    const sorted = [...divSet].sort();
-    intResPrimaryDiv[intRes] = sorted[0] || 'Interview';
-  }
-
+  intResDivs ??= interviewResourceDivisions(day);
   return [...res].sort((a, b) => {
-    const aIsInt = isInterviewResource(a), bIsInt = isInterviewResource(b);
-    const da = aIsInt ? (intResPrimaryDiv[a] || 'Interview') : divisionOf(a);
-    const db = bIsInt ? (intResPrimaryDiv[b] || 'Interview') : divisionOf(b);
+    const da = effectiveDivOf(a, intResDivs), db = effectiveDivOf(b, intResDivs);
     if (da !== db) return da.localeCompare(db);
-    // Within same division: arenas before interview resources
+    const aIsInt = isInterviewResource(a), bIsInt = isInterviewResource(b);
     if (aIsInt !== bIsInt) return aIsInt ? 1 : -1;
     return a.localeCompare(b);
   });
@@ -1040,12 +1036,15 @@ function renderDayView() {
 
   const day = state.selectedDay;
   const rows = state.days[day] || [];
-  const allResources = resourcesForDay(day);
-  const resources = allResources.filter(r => !state.hiddenDivisions.has(divisionOf(r)));
+  const intResDivs = interviewResourceDivisions(day);
+  const ediv = r => effectiveDivOf(r, intResDivs);
+
+  const allResources = resourcesForDay(day, intResDivs);
+  const resources = allResources.filter(r => !state.hiddenDivisions.has(ediv(r)));
   const timeSlots = timeSlotsForDay(day);
 
-  // Division filter toggles
-  const divisions = [...new Set(allResources.map(r => divisionOf(r)))];
+  // Division filter toggles — only real divisions (no standalone "Interview" pill)
+  const divisions = [...new Set(allResources.map(ediv).filter(d => d !== 'Interview'))];
   const filterPills = divisions.map(div => {
     const c = divColor(div);
     const active = !state.hiddenDivisions.has(div);
@@ -1057,11 +1056,10 @@ function renderDayView() {
     ${filterPills}
   </div>`;
 
-  // Group resources into division columns
   const groups = [];
   let lastDiv = null;
   for (const r of resources) {
-    const div = divisionOf(r);
+    const div = ediv(r);
     if (div !== lastDiv) { groups.push({ div, resources: [] }); lastDiv = div; }
     groups[groups.length - 1].resources.push(r);
   }
@@ -1109,7 +1107,7 @@ function renderDayView() {
       </td></tr>`);
     }
     const cells = resources.map(r => {
-      const div = divisionOf(r);
+      const div = ediv(r);
       const divBr = (divBreaksByDiv[div] || []).find(b => tsStart >= b.start && tsStart < b.end);
       if (divBr) {
         const key = div + divBr.start;
@@ -1133,7 +1131,7 @@ function renderDayView() {
     const rowItems = resources.map(r => {
       const teams = lookup[ts]?.[r] ?? [];
       if (!teams.length) return '';
-      const div = divisionOf(r);
+      const div = ediv(r);
       const c = divColor(div);
       const chips = teams.map(t =>
         `<span class="team-tag team-tag-link" style="background:${c}1a;color:${c}" data-team="${esc(t)}">${esc(t)}</span>`
@@ -1180,9 +1178,10 @@ function renderLocationView() {
     return `<div class="empty">No schedule loaded.</div>`;
   }
 
-  // Default selection: "Interview" if present, otherwise first location
+  // Default selection: first interview resource if present, otherwise first location
   if (!state.selectedLocation || !locations.includes(state.selectedLocation)) {
-    state.selectedLocation = locations.includes('Interview') ? 'Interview' : locations[0];
+    const firstInterview = locations.find(l => isInterviewResource(l));
+    state.selectedLocation = firstInterview || locations[0];
   }
 
   const loc = state.selectedLocation;
@@ -1570,9 +1569,9 @@ function renderWallboardView() {
 
     // Filter rows for this division
     let arenaRows = rows.filter(r => divisionOf(r.resource) === div);
-    // Interview rows that include any team from this division
+    // Interview rows that include any team from this division (supports multiple interview resources)
     let interviewRows = rows.filter(r =>
-      r.resource === 'Interview' &&
+      isInterviewResource(r.resource) &&
       r.teams.split(',').some(t => divTeams.has(t.trim()))
     );
 
@@ -1621,7 +1620,7 @@ function renderWallboardView() {
         const isNow = isCurrentSlot(r.time_slot);
         return `<tr${isNow ? ' class="wb-now-row"' : ''}>
           <td class="wb-time">${esc(r.time_slot)}</td>
-          <td class="wb-arena" style="opacity:0.55;font-weight:400">Interview</td>
+          <td class="wb-arena" style="opacity:0.55;font-weight:400">${esc(r.resource)}</td>
           <td class="wb-teams">${chips}</td>
         </tr>`;
       }).join('');
@@ -1805,7 +1804,8 @@ function render() {
   const noneBtn = container.querySelector('#div-filter-none');
   if (noneBtn) {
     noneBtn.addEventListener('click', () => {
-      const divs = [...new Set(resourcesForDay(state.selectedDay).map(r => divisionOf(r)))];
+      const ird = interviewResourceDivisions(state.selectedDay);
+      const divs = [...new Set(resourcesForDay(state.selectedDay, ird).map(r => effectiveDivOf(r, ird)))];
       divs.forEach(d => state.hiddenDivisions.add(d));
       render();
     });

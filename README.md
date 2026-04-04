@@ -2,7 +2,7 @@
 
 A CLI tool for generating conflict-free schedules for RoboCupJunior events. Given divisions (each with their own teams file and arena count), time parameters, and available day/timeframes, it produces a valid schedule exported as per-day CSVs.
 
-Each division gets its own independent arena run schedule. All divisions share a single interview schedule.
+Each division gets its own independent arena run schedule. All divisions share the interview schedule, which supports one or more parallel interview rooms.
 
 ## Installation
 
@@ -24,6 +24,8 @@ rcj-planner generate \
   --interview-group-size 3 \
   --day "Day1:09:00-17:00" \
   --day "Day2:09:00-13:00" \
+  --interview-day "Day1:13:00-17:00" \
+  --interview-rooms 2 \
   --break "Day1:12:00-13:00" \
   --break "Day2:Rescue Maze:10:00-10:30" \
   --output-dir ./output \
@@ -41,6 +43,8 @@ rcj-planner generate \
 | `--save` | no | `schedule.json` | Path for saved schedule |
 | `--buffer` | no | = `--run-time` | Minimum gap (minutes) between a team's consecutive assignments |
 | `--break` | no (repeatable) | — | Break spec: `Day:HH:MM-HH:MM` (global) or `Day:Division:HH:MM-HH:MM` (division-specific) |
+| `--interview-day` | no (repeatable) | — | Override interview time window for a day: `Label:HH:MM-HH:MM`. Label must match an existing `--day` label. Days without an override use their `--day` window. |
+| `--interview-rooms` | no | `1` | Number of parallel interview resources. When `1`, the resource is named `"Interview"`; when `>1`, resources are named `"Interview 1"`, `"Interview 2"`, etc. |
 
 #### Division spec
 
@@ -104,7 +108,7 @@ time_slot,resource,teams
 09:00-09:20,Interview,"Warp Drive, SkyBot, Thunderbots"
 ```
 
-Arena resources are namespaced by division (`"Soccer Open – Arena 1"`). The interview resource is shared across all divisions. Rows are sorted by `time_slot` then `resource`.
+Arena resources are namespaced by division (`"Soccer Open – Arena 1"`). The interview resource is shared across all divisions and named `"Interview"` by default. With `--interview-rooms 2` the resources are named `"Interview 1"`, `"Interview 2"`, etc. Rows are sorted by `time_slot` then `resource`.
 
 ### `schedule.json`
 
@@ -118,6 +122,7 @@ Saved schedule for use with `show` and `validate` commands.
 4. No team has two consecutive assignments closer than `--buffer` minutes apart.
 5. No resource (arena or interview room) is double-booked.
 6. Arena resources are isolated per division — teams only run on their division's arenas.
+   Interview resources are shared across divisions; the number of parallel rooms is set with `--interview-rooms` (default 1).
 
 7. Global breaks (`Day:HH:MM-HH:MM`) block all arena runs and interviews during that window. Division-specific breaks (`Day:Division:HH:MM-HH:MM`) block only that division's arena runs.
 8. After each complete round on an arena (all teams have had one run), the arena is blocked for `arena_reset=R` minutes (configured per division in the `--division` spec) before the next round begins.

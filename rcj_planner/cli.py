@@ -19,13 +19,17 @@ def cli():
 @click.option("--interview-time", required=True, type=int, help="Minutes per interview slot")
 @click.option("--interview-group-size", required=True, type=int, help="Teams per interview slot")
 @click.option("--day", "days", required=True, multiple=True, help="Day spec: Label:HH:MM-HH:MM")
+@click.option("--interview-day", "interview_days", multiple=True,
+              help="Override interview time window for a day: Label:HH:MM-HH:MM")
+@click.option("--interview-rooms", default=1, type=int, show_default=True,
+              help="Number of parallel interview rooms")
 @click.option("--output-dir", default="./output", show_default=True, help="Output directory for CSVs")
 @click.option("--save", "save_path", default="schedule.json", show_default=True, help="Path to save schedule JSON")
 @click.option("--buffer", default=None, type=int, help="Buffer gap in minutes (default: run-time)")
 @click.option("--break", "break_specs", multiple=True,
               help="Break spec: 'Day:HH:MM-HH:MM' (global) or 'Day:Division:HH:MM-HH:MM' (division-specific)")
 def generate(division_specs, run_time, interview_time, interview_group_size, days,
-             output_dir, save_path, buffer, break_specs):
+             interview_days, interview_rooms, output_dir, save_path, buffer, break_specs):
     """Generate a conflict-free schedule and export CSVs."""
     import os
     if save_path == "schedule.json":
@@ -41,6 +45,18 @@ def generate(division_specs, run_time, interview_time, interview_group_size, day
 
         parsed_breaks = [parse_break_spec(s) for s in break_specs]
 
+        day_labels = {d.split(":")[0] for d in days}
+        for iday in interview_days:
+            label = iday.split(":")[0]
+            if label not in day_labels:
+                raise click.BadParameter(
+                    f"'{label}' does not match any --day label", param_hint="--interview-day"
+                )
+        interview_overrides = {iday.split(":")[0]: iday for iday in interview_days}
+        resolved_interview_day_specs = [
+            interview_overrides.get(d.split(":")[0], d) for d in days
+        ]
+
         schedule = build_schedule(
             divisions=divisions,
             day_specs=list(days),
@@ -49,6 +65,8 @@ def generate(division_specs, run_time, interview_time, interview_group_size, day
             interview_group_size=interview_group_size,
             buffer_minutes=buffer_minutes,
             breaks=parsed_breaks,
+            interview_day_specs=resolved_interview_day_specs,
+            num_interview_rooms=interview_rooms,
         )
     except (SchedulingError, ValueError) as e:
         click.echo(f"Error: {e}", err=True)

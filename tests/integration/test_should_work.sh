@@ -2,9 +2,9 @@
 set -e
 
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-cd "$REPO_ROOT"
+cd "$(dirname "$0")"
 
-source .venv/bin/activate
+source "$REPO_ROOT/.venv/bin/activate"
 
 OUTPUT=$(bash should_work.sh 2>&1)
 EXIT_CODE=$?

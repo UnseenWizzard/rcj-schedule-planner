@@ -297,3 +297,58 @@ def test_early_day_loading_buffer_respected():
     s = build_schedule(divisions, DAYS_2, run_time=10, interview_time=20,
                        interview_group_size=2, buffer_minutes=15)
     assert validate_schedule(s) == []
+
+
+def test_interview_day_specs_restricts_window():
+    """Interviews should only be scheduled within the interview_day_specs window."""
+    from datetime import time as dtime
+    divisions = make_divisions(num_teams=4, num_arenas=2)
+    interview_day_specs = ["Day1:14:00-17:00"]
+    s = build_schedule(divisions, DAYS, run_time=10, interview_time=20,
+                       interview_group_size=2, buffer_minutes=10,
+                       interview_day_specs=interview_day_specs)
+    assert validate_schedule(s) == []
+    for a in s.assignments:
+        if a.resource.kind == "interview":
+            assert a.slot.start >= dtime(14, 0), (
+                f"Interview at {a.slot.start} is outside the interview window 14:00-17:00"
+            )
+
+
+def test_interview_day_specs_none_uses_day_specs():
+    """Omitting interview_day_specs should preserve current behavior (interviews use run day specs)."""
+    divisions = make_divisions(num_teams=4, num_arenas=2)
+    s = build_schedule(divisions, DAYS, run_time=10, interview_time=20,
+                       interview_group_size=2, buffer_minutes=10,
+                       interview_day_specs=None)
+    assert validate_schedule(s) == []
+    assert s.meta["interview_days"] == DAYS
+    interviews = [a for a in s.assignments if a.resource.kind == "interview"]
+    assert len(interviews) == 2  # 4 teams / group_size 2
+
+
+def test_num_interview_rooms_1_single_resource():
+    """With num_interview_rooms=1, only one 'Interview' resource should exist."""
+    divisions = make_divisions(num_teams=4, num_arenas=2)
+    s = build_schedule(divisions, DAYS, run_time=10, interview_time=20,
+                       interview_group_size=2, buffer_minutes=10,
+                       num_interview_rooms=1)
+    interview_resources = {a.resource.name for a in s.assignments if a.resource.kind == "interview"}
+    assert interview_resources == {"Interview"}
+
+
+def test_num_interview_rooms_2_parallel_groups():
+    """With num_interview_rooms=2, two groups can be interviewed at the same time."""
+    teams = [Team(f"Team{i}", "DivA") for i in range(4)]
+    divisions = [("DivA", teams, 2, 1, 0)]
+    s = build_schedule(divisions, DAYS, run_time=10, interview_time=20,
+                       interview_group_size=1, buffer_minutes=10,
+                       num_interview_rooms=2)
+    assert validate_schedule(s) == []
+    interview_resources = {a.resource.name for a in s.assignments if a.resource.kind == "interview"}
+    assert "Interview 1" in interview_resources
+    assert "Interview 2" in interview_resources
+    # Verify that two interviews are scheduled at the same time (parallelism)
+    interview_assignments = [a for a in s.assignments if a.resource.kind == "interview"]
+    start_times = [a.slot.start for a in interview_assignments]
+    assert len(start_times) > len(set(start_times)), "Expected parallel interviews at same time slot"
