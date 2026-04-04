@@ -433,6 +433,34 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
 .team-card tr:last-child td { border-bottom: none; }
 .team-card tr:hover td { background: #f9fafb; }
 
+/* ── Team timeline ── */
+.team-timeline {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: #fafafa;
+}
+.timeline-bar {
+  position: relative;
+  height: 18px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.timeline-slot {
+  position: absolute;
+  height: 100%;
+  border-radius: 3px;
+  opacity: 0.85;
+  min-width: 4px;
+}
+.timeline-label {
+  font-size: 0.7rem;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+  margin-top: 3px;
+}
+
 /* ── Misc ── */
 .empty {
   text-align: center;
@@ -856,6 +884,38 @@ function teamDivision(team) {
   return top ? top[0] : 'Other';
 }
 
+function timeToMinutes(t) {
+  const [h, m] = t.trim().split(':').map(Number);
+  return h * 60 + (m || 0);
+}
+
+function buildTimeline(assignments) {
+  if (!assignments.length) return '';
+  const parsed = assignments.map(a => {
+    const [s, e] = a.time_slot.split(EN_DASH).map(x => x.trim());
+    return { start: timeToMinutes(s), end: timeToMinutes(e), div: divisionOf(a.resource) };
+  }).filter(a => !isNaN(a.start) && !isNaN(a.end));
+  if (!parsed.length) return '';
+
+  const dayStart = Math.min(...parsed.map(a => a.start));
+  const dayEnd   = Math.max(...parsed.map(a => a.end));
+  const span = dayEnd - dayStart || 1;
+
+  const slots = parsed.map(a => {
+    const left  = ((a.start - dayStart) / span * 100).toFixed(2);
+    const width = ((a.end - a.start)    / span * 100).toFixed(2);
+    const c = divColor(a.div);
+    return `<div class="timeline-slot" style="left:${left}%;width:${width}%;background:${c}" title="${a.div}"></div>`;
+  }).join('');
+
+  const fmt = m => `${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
+  return `
+    <div class="team-timeline">
+      <div class="timeline-bar">${slots}</div>
+      <div class="timeline-label"><span>${fmt(dayStart)}</span><span>${fmt(dayEnd)}</span></div>
+    </div>`;
+}
+
 function highlightMatch(text, search) {
   if (!search) return esc(text);
   const escaped = esc(text);
@@ -896,6 +956,7 @@ function buildTeamCard(team, search = '') {
         <span>${highlightMatch(team, search)}</span>
         <span class="meta">${assignments.length} assignment${assignments.length!==1?'s':''}</span>
       </div>
+      ${buildTimeline(assignments)}
       <table>
         <thead><tr><th>Day</th><th>Time</th><th>Resource</th><th>With</th></tr></thead>
         <tbody>${rows}</tbody>
