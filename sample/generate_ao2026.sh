@@ -10,4 +10,5 @@ rcj-planner generate \
     --break "Day1:12:30-13:30" \
     --break "Day1:Maze:14:00-14:40" \
     --break "Day1:Maze:11:00-11:40" \
-    --buffer 20
+    --buffer 10 \
+    --output-dir output/ao2026
