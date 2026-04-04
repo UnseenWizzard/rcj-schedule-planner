@@ -791,6 +791,7 @@ const state = {
   infoText: null,     // info field from edited schedule.json, or null
   view: 'day',
   selectedDay: null,
+  selectedLocation: null,
   teamSearch: '',
   compact: false,
   hiddenDivisions: new Set(),
@@ -903,6 +904,23 @@ function allDivisions() {
 // Resources for a specific day, ordered by division then name
 function resourcesForDay(day) {
   const res = new Set((state.days[day] || []).map(r => r.resource));
+  return [...res].sort((a, b) => {
+    const da = divisionOf(a), db = divisionOf(b);
+    if (da !== db) {
+      if (da === 'Interview') return 1;
+      if (db === 'Interview') return -1;
+      return da.localeCompare(db);
+    }
+    return a.localeCompare(b);
+  });
+}
+
+// All unique locations across all days, divisions first then "Interview" last
+function allLocations() {
+  const res = new Set();
+  for (const day of Object.keys(state.days)) {
+    for (const r of (state.days[day] || [])) res.add(r.resource);
+  }
   return [...res].sort((a, b) => {
     const da = divisionOf(a), db = divisionOf(b);
     if (da !== db) {
