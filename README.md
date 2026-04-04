@@ -32,7 +32,7 @@ rcj-planner generate \
 
 | Flag | Required | Default | Description |
 |---|---|---|---|
-| `--division` | yes (repeatable) | — | Division spec: `Label:path/to/teams.csv:arenas=N` or `Label:path/to/teams.csv:arenas=N:runs=M` or `Label:path/to/teams.csv:arenas=N:runs=M:arena_reset=R` |
+| `--division` | yes (repeatable) | — | Division spec (see below) |
 | `--run-time` | yes | — | Minutes per arena run slot |
 | `--interview-time` | yes | — | Minutes per interview slot |
 | `--interview-group-size` | yes | — | Teams per interview slot |
@@ -41,6 +41,28 @@ rcj-planner generate \
 | `--save` | no | `schedule.json` | Path for saved schedule |
 | `--buffer` | no | = `--run-time` | Minimum gap (minutes) between a team's consecutive assignments |
 | `--break` | no (repeatable) | — | Break spec: `Day:HH:MM-HH:MM` (global) or `Day:Division:HH:MM-HH:MM` (division-specific) |
+
+#### Division spec
+
+```
+Label:path/to/teams.csv:arenas=N[:runs=M][:arena_reset=R]
+```
+
+| Key | Required | Default | Description |
+|---|---|---|---|
+| `Label` | yes | — | Display name for the division (e.g. `Soccer Open`) |
+| `path/to/teams.csv` | yes | — | Path to the CSV file listing team names |
+| `arenas=N` | yes | — | Number of arenas available to this division |
+| `runs=M` | no | `1` | Number of runs each team must complete on each arena |
+| `arena_reset=R` | no | `0` | Minutes to block an arena after each complete round (one run per team) before the next round can begin |
+
+Example:
+
+```bash
+--division "Rescue Maze:input/maze.csv:arenas=2:runs=3:arena_reset=15"
+```
+
+This schedules the Rescue Maze division with 2 arenas, 3 runs per team per arena, and a 15-minute reset gap between rounds on each arena.
 
 ### Inspect a schedule
 
