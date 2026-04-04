@@ -1124,31 +1124,55 @@ function renderDayView() {
 }
 
 // ─────────────────────────────────────────────
-//  Render – Interview view
+//  Render – Location view
 // ─────────────────────────────────────────────
-function renderInterviewView() {
-  const days = Object.keys(state.days).sort();
-  const intRows = [];
-  days.forEach(day =>
-    (state.days[day] || []).forEach(row => {
-      if (row.resource === 'Interview') intRows.push({ day, ...row });
-    })
-  );
-
-  if (!intRows.length) {
-    return `<div class="empty">No interview slots found in the loaded schedule.</div>`;
+function renderLocationView() {
+  const locations = allLocations();
+  if (!locations.length) {
+    return `<div class="empty">No schedule loaded.</div>`;
   }
 
-  // Group by day
+  // Default selection: "Interview" if present, otherwise first location
+  if (!state.selectedLocation || !locations.includes(state.selectedLocation)) {
+    state.selectedLocation = locations.includes('Interview') ? 'Interview' : locations[0];
+  }
+
+  const loc = state.selectedLocation;
+  const color = divColor(divisionOf(loc));
+
+  // Collect all rows for the selected location across all days
+  const days = Object.keys(state.days).sort();
   const byDay = {};
-  intRows.forEach(r => { (byDay[r.day] ??= []).push(r); });
+  days.forEach(day => {
+    const rows = (state.days[day] || []).filter(r => r.resource === loc);
+    if (rows.length) byDay[day] = rows;
+  });
+
+  // Location picker
+  const pickerBtns = locations.map(l => {
+    const active = l === loc;
+    const c = divColor(divisionOf(l));
+    const style = active
+      ? `background:${c};color:#fff;border-color:${c}`
+      : `background:transparent;color:${c};border-color:${c}`;
+    return `<button onclick="state.selectedLocation=${JSON.stringify(l)};render()"
+      style="border:2px solid;border-radius:999px;padding:4px 12px;font-size:0.8rem;cursor:pointer;margin:2px;${style}"
+    >${esc(l)}</button>`;
+  }).join('');
+
+  const picker = `<div style="margin-bottom:20px;display:flex;flex-wrap:wrap;gap:2px">${pickerBtns}</div>`;
+
+  // Day cards
+  if (!Object.keys(byDay).length) {
+    return picker + `<div class="empty">No slots found for <strong>${esc(loc)}</strong>.</div>`;
+  }
 
   const tables = Object.keys(byDay).sort().map(day => {
     byDay[day].sort((a, b) => a.time_slot.localeCompare(b.time_slot));
     const rows = byDay[day].map((r, i) => {
       const teams = r.teams.split(',').map(t => t.trim()).filter(Boolean);
       const chips = teams.map(t =>
-        `<span class="team-tag" style="background:#37415118;color:#374151">${esc(t)}</span>`
+        `<span class="team-tag" style="background:${color}18;color:${color}">${esc(t)}</span>`
       ).join(' ');
       return `<tr>
         <td style="color:var(--muted);font-size:0.78rem;font-weight:600;white-space:nowrap">${r.time_slot}</td>
@@ -1159,7 +1183,7 @@ function renderInterviewView() {
 
     return `
       <div class="div-card" style="margin-bottom:16px">
-        <div class="div-card-header" style="background:#374151">
+        <div class="div-card-header" style="background:${color}">
           <span>${esc(day)}</span>
           <span class="meta">${byDay[day].length} slot${byDay[day].length>1?'s':''}</span>
         </div>
@@ -1170,7 +1194,7 @@ function renderInterviewView() {
       </div>`;
   }).join('');
 
-  return `<div style="max-width:720px">${tables}</div>`;
+  return `<div style="max-width:720px">${picker}${tables}</div>`;
 }
 
 // ─────────────────────────────────────────────
