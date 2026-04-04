@@ -73,6 +73,10 @@ def build_schedule(
     def _slot_start_dt(slot: TimeSlot) -> datetime:
         return datetime.combine(_reset_base + timedelta(days=day_index[slot.day]), slot.start)
 
+    # Track interview chunk indices already placed in Phase 1 (simplified mode)
+    # div_label -> set of chunk indices placed
+    div_phase1_placed: dict[str, set[int]] = {}
+
     # Phase 1 — Arena runs per division (prioritize filling each timeslot across all arenas)
     for div_entry in divisions:
         div_label, teams, num_arenas, runs_per_arena = div_entry[:4]
@@ -92,6 +96,8 @@ def build_schedule(
             arena = arenas[0]
             slot_cursor = 0
             last_assigned_slot = None
+            round_first_slots: list = []
+            round_last_slots: list = []
 
             for round_num in range(runs_per_arena):
                 if round_num > 0:
@@ -100,6 +106,7 @@ def build_schedule(
                     while slot_cursor < len(run_slots) and _slot_start_dt(run_slots[slot_cursor]) < required_start:
                         slot_cursor += 1
 
+                round_first_slot = None
                 for team in teams:
                     scheduled = False
                     while slot_cursor < len(run_slots):
@@ -112,6 +119,8 @@ def build_schedule(
                         assignments.append(Assignment(slot, arena, [team]))
                         team_runs[team] += 1
                         last_assigned_slot = slot
+                        if round_first_slot is None:
+                            round_first_slot = slot
                         scheduled = True
                         break
                     if not scheduled:
@@ -119,6 +128,35 @@ def build_schedule(
                             f"No valid run slot found for team '{team.name}' in division '{div_label}' round {round_num + 1}. "
                             "Try extending the day or reducing teams/arenas."
                         )
+                round_first_slots.append(round_first_slot)
+                round_last_slots.append(last_assigned_slot)
+
+            # Try to schedule interviews in the reset gaps between rounds
+            chunks = [
+                teams[i:i + interview_group_size]
+                for i in range(0, len(teams), interview_group_size)
+            ]
+            placed_chunks: set[int] = set()
+            div_phase1_placed[div_label] = placed_chunks
+
+            for gap_idx in range(runs_per_arena - 1):
+                gap_start = _slot_end_dt(round_last_slots[gap_idx])
+                gap_end = _slot_start_dt(round_first_slots[gap_idx + 1])
+                gap_slots = [
+                    s for s in interview_slots
+                    if _slot_start_dt(s) >= gap_start and _slot_end_dt(s) <= gap_end
+                ]
+                for chunk_idx, chunk in enumerate(chunks):
+                    if chunk_idx in placed_chunks:
+                        continue
+                    for slot in gap_slots:
+                        if _resource_conflicts(slot, interview_resource, assignments):
+                            continue
+                        if any(_team_conflicts(slot, t, assignments, buffer_minutes) for t in chunk):
+                            continue
+                        assignments.append(Assignment(slot, interview_resource, list(chunk)))
+                        placed_chunks.add(chunk_idx)
+                        break
         else:
             # General path: fill each timeslot across all arenas
             team_day_runs = defaultdict(lambda: defaultdict(int))  # team -> day -> count
@@ -185,13 +223,17 @@ def build_schedule(
                 )
 
     # Phase 2 — Interviews grouped by division (shared interview resource)
+    # Chunks already placed in Phase 1 (simplified mode) are skipped here.
     for div_label, teams, _, _runs, *_ in divisions:
         chunks = [
             teams[i:i + interview_group_size]
             for i in range(0, len(teams), interview_group_size)
         ]
+        phase1_placed = div_phase1_placed.get(div_label, set())
         cursor = 0
-        for chunk in chunks:
+        for chunk_idx, chunk in enumerate(chunks):
+            if chunk_idx in phase1_placed:
+                continue
             found = False
             for i in range(cursor, len(interview_slots)):
                 slot = interview_slots[i]

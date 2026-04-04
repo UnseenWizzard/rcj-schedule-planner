@@ -105,7 +105,7 @@ more correct.
      an `else` branch).
   5. Run all tests (`python -m pytest tests/`) and fix any failures, then commit.
 
-- [ ] **Task 7 — Schedule interviews in arena_reset gaps (simplified mode)**
+- [x] **Task 7 — Schedule interviews in arena_reset gaps (simplified mode)**
 
   For divisions using the simplified single-arena path, interviews can be
   scheduled during the reset breaks between rounds.
