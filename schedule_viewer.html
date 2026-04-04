@@ -287,6 +287,27 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
 .team-tag-link { cursor: pointer; }
 .team-tag-link:hover { opacity: 0.75; }
 
+/* ── Break rows ── */
+.break-row td {
+  background: repeating-linear-gradient(
+    45deg,
+    #f3f4f6,
+    #f3f4f6 6px,
+    #e9eaec 6px,
+    #e9eaec 12px
+  );
+  padding: 5px 12px;
+  border-top: 1px solid #d1d5db;
+  border-bottom: 1px solid #d1d5db;
+}
+.break-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
 /* ── Division cards ── */
 .div-cards {
   display: grid;
@@ -477,6 +498,7 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
 // ─────────────────────────────────────────────
 const state = {
   days: {},           // { "Day1": [{time_slot, resource, teams}, …] }
+  breaks: {},         // { "Day1": [{start, end, label}, …] }
   view: 'day',
   selectedDay: null,
   teamSearch: '',
@@ -542,7 +564,17 @@ function parseScheduleJSON(text) {
       teams:     (a.teams || []).join(', '),
     });
   });
-  return days;
+  // Parse breaks per day from meta
+  const breaks = {};
+  const meta = data.meta || {};
+  if (meta.breaks) {
+    // meta.breaks is an array of {day, start, end, label?}
+    meta.breaks.forEach(b => {
+      const day = b.day || Object.keys(days)[0];
+      (breaks[day] ??= []).push({ start: b.start, end: b.end, label: b.label || 'Break' });
+    });
+  }
+  return { days, breaks };
 }
 
 // ─────────────────────────────────────────────
@@ -607,17 +639,22 @@ function loadFiles(files) {
     const reader = new FileReader();
     reader.onload = e => {
       if (file.name.toLowerCase().endsWith('.json')) {
-        const days = parseScheduleJSON(e.target.result);
-        resolve({ days });
+        const { days, breaks } = parseScheduleJSON(e.target.result);
+        resolve({ days, breaks });
       } else {
         const day = file.name.replace(/\.csv$/i, '');
-        resolve({ days: { [day]: parseCSV(e.target.result) } });
+        resolve({ days: { [day]: parseCSV(e.target.result) }, breaks: {} });
       }
     };
     reader.readAsText(file);
   }));
   Promise.all(promises).then(results => {
-    results.forEach(({ days }) => Object.assign(state.days, days));
+    results.forEach(({ days, breaks }) => {
+      Object.assign(state.days, days);
+      Object.entries(breaks || {}).forEach(([day, bs]) => {
+        (state.breaks[day] ??= []).push(...bs);
+      });
+    });
     if (!state.selectedDay || !state.days[state.selectedDay]) {
       state.selectedDay = Object.keys(state.days).sort()[0];
     }
@@ -669,8 +706,22 @@ function renderDayView() {
     `<th>${shortName(r)}</th>`
   ).join('');
 
+  // Build break rows: insert after the last slot before each break
+  const dayBreaks = (state.breaks[day] || []).slice().sort((a,b) => a.start.localeCompare(b.start));
+  const colCount = resources.length + 1;
+
   // Data rows
-  const dataRows = timeSlots.map(ts => {
+  const dataRows = [];
+  let breakIdx = 0;
+  for (const ts of timeSlots) {
+    // Insert any breaks whose start time is <= ts start
+    const tsStart = ts.split(EN_DASH)[0].trim();
+    while (breakIdx < dayBreaks.length && dayBreaks[breakIdx].start <= tsStart) {
+      const br = dayBreaks[breakIdx++];
+      dataRows.push(`<tr class="break-row"><td colspan="${colCount}">
+        <span class="break-label">${esc(br.label)} ${br.start}–${br.end}</span>
+      </td></tr>`);
+    }
     const cells = resources.map(r => {
       const teams = lookup[ts]?.[r] ?? [];
       const div = divisionOf(r);
@@ -680,8 +731,8 @@ function renderDayView() {
       ).join('');
       return `<td class="slot-cell">${chips}</td>`;
     }).join('');
-    return `<tr><td class="time-cell">${ts}</td>${cells}</tr>`;
-  }).join('');
+    dataRows.push(`<tr><td class="time-cell">${ts}</td>${cells}</tr>`);
+  }
 
   return `
     <div class="tabs">${tabs}</div>
@@ -694,7 +745,7 @@ function renderDayView() {
           </tr>
           <tr class="res-header-row">${resCells}</tr>
         </thead>
-        <tbody>${dataRows}</tbody>
+        <tbody>${dataRows.join('')}</tbody>
       </table>
     </div>`;
 }
@@ -975,8 +1026,11 @@ function loadFromURL(url) {
       return res.text();
     })
     .then(text => {
-      const days = parseScheduleJSON(text);
+      const { days, breaks } = parseScheduleJSON(text);
       Object.assign(state.days, days);
+      Object.entries(breaks || {}).forEach(([day, bs]) => {
+        (state.breaks[day] ??= []).push(...bs);
+      });
       if (!state.selectedDay || !state.days[state.selectedDay]) {
         state.selectedDay = Object.keys(state.days).sort()[0];
       }
