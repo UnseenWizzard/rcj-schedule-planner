@@ -453,6 +453,15 @@ body.compact .team-tag  { padding: 1px 5px; font-size: 0.72rem; }
 
 /* ── Team view ── */
 .team-search-wrap { margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+.team-search-field { position: relative; display: flex; align-items: center; width: 100%; max-width: 420px; }
+.team-search-field .team-search { max-width: 100%; width: 100%; padding-right: 36px; }
+.team-search-clear {
+  position: absolute; right: 8px;
+  background: none; border: none; cursor: pointer;
+  color: var(--muted); font-size: 1.1rem; line-height: 1;
+  padding: 2px 4px; border-radius: 3px;
+}
+.team-search-clear:hover { color: var(--text); background: var(--border); }
 .team-count { font-size: 0.82rem; color: var(--muted); white-space: nowrap; }
 .div-group { margin-bottom: 16px; }
 .div-group-header {
@@ -491,7 +500,6 @@ body.compact .team-tag  { padding: 1px 5px; font-size: 0.72rem; }
 .team-browse-tag:hover { opacity: 0.75; }
 .team-search {
   width: 100%;
-  max-width: 420px;
   padding: 10px 16px;
   border: 2px solid var(--border);
   border-radius: 8px;
@@ -1147,8 +1155,11 @@ function renderTeamView() {
 
   return `
     <div class="team-search-wrap">
-      <input class="team-search" id="team-input" type="text"
-        placeholder="Search team name…" value="${esc(search)}" autocomplete="off">
+      <div class="team-search-field">
+        <input class="team-search" id="team-input" type="text"
+          placeholder="Search team name…" value="${esc(search)}" autocomplete="off">
+        ${search ? `<button class="team-search-clear" id="team-clear" title="Clear search">×</button>` : ''}
+      </div>
       ${countLabel}
     </div>
     ${content}`;
@@ -1193,6 +1204,14 @@ function render() {
     });
     ti.focus();
     ti.setSelectionRange(ti.value.length, ti.value.length);
+  }
+  const tc = container.querySelector('#team-clear');
+  if (tc) {
+    tc.addEventListener('click', () => {
+      state.teamSearch = '';
+      updateHash();
+      render();
+    });
   }
 
   // Division filter toggles
