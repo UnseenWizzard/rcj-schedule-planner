@@ -328,7 +328,43 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
 .div-card tr:hover td { background: #f9fafb; }
 
 /* ── Team view ── */
-.team-search-wrap { margin-bottom: 16px; }
+.team-search-wrap { margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+.team-count { font-size: 0.82rem; color: var(--muted); white-space: nowrap; }
+.div-group { margin-bottom: 16px; }
+.div-group-header {
+  padding: 7px 14px;
+  color: white;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border-radius: var(--radius) var(--radius) 0 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+}
+.div-group-header .toggle-icon { font-size: 0.75rem; opacity: 0.8; }
+.div-group-body {
+  background: white;
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 12px;
+}
+.div-group-body.collapsed { display: none; }
+.team-browse-tag {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.12s;
+}
+.team-browse-tag:hover { opacity: 0.75; }
 .team-search {
   width: 100%;
   max-width: 420px;
@@ -753,59 +789,102 @@ function renderInterviewView() {
 // ─────────────────────────────────────────────
 //  Render – Team view
 // ─────────────────────────────────────────────
-function renderTeamView() {
-  const search = state.teamSearch;
-  const teams = search.length >= 1
-    ? allTeams().filter(t => t.toLowerCase().includes(search.toLowerCase()))
-    : [];
+function teamDivision(team) {
+  // Determine primary division of a team from their assignments
+  const counts = {};
+  Object.values(state.days).flat().forEach(row => {
+    if (row.teams.split(',').map(t => t.trim()).includes(team)) {
+      const d = divisionOf(row.resource);
+      if (d !== 'Interview') counts[d] = (counts[d] || 0) + 1;
+    }
+  });
+  const top = Object.entries(counts).sort((a,b) => b[1]-a[1])[0];
+  return top ? top[0] : 'Other';
+}
 
-  const cards = teams.map(team => {
-    const days = Object.keys(state.days).sort();
-    const assignments = [];
-    days.forEach(day =>
-      (state.days[day] || []).forEach(row => {
-        if (row.teams.split(',').map(t => t.trim()).includes(team))
-          assignments.push({ day, ...row });
-      })
-    );
-    assignments.sort((a, b) => a.day.localeCompare(b.day) || a.time_slot.localeCompare(b.time_slot));
-    const rows = assignments.map(a => {
-      const div = divisionOf(a.resource);
-      const c = divColor(div);
-      const co = a.teams.split(',').map(t => t.trim()).filter(t => t !== team);
-      return `
-        <tr>
-          <td>${a.day}</td>
-          <td>${a.time_slot}</td>
-          <td><span class="team-tag" style="background:${c}1a;color:${c}">${esc(a.resource)}</span></td>
-          <td style="color:var(--muted);font-size:0.8rem">${co.length ? esc(co.join(', ')) : '—'}</td>
-        </tr>`;
-    }).join('');
-
+function buildTeamCard(team) {
+  const days = Object.keys(state.days).sort();
+  const assignments = [];
+  days.forEach(day =>
+    (state.days[day] || []).forEach(row => {
+      if (row.teams.split(',').map(t => t.trim()).includes(team))
+        assignments.push({ day, ...row });
+    })
+  );
+  assignments.sort((a, b) => a.day.localeCompare(b.day) || a.time_slot.localeCompare(b.time_slot));
+  const rows = assignments.map(a => {
+    const div = divisionOf(a.resource);
+    const c = divColor(div);
+    const co = a.teams.split(',').map(t => t.trim()).filter(t => t !== team);
     return `
-      <div class="team-card">
-        <div class="team-card-header">
-          <span>${esc(team)}</span>
-          <span class="meta">${assignments.length} assignment${assignments.length!==1?'s':''}</span>
-        </div>
-        <table>
-          <thead><tr><th>Day</th><th>Time</th><th>Resource</th><th>With</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>`;
+      <tr>
+        <td>${a.day}</td>
+        <td>${a.time_slot}</td>
+        <td><span class="team-tag" style="background:${c}1a;color:${c}">${esc(a.resource)}</span></td>
+        <td style="color:var(--muted);font-size:0.8rem">${co.length ? esc(co.join(', ')) : '—'}</td>
+      </tr>`;
   }).join('');
 
-  const empty = search.length >= 1 && teams.length === 0
-    ? `<div class="empty">No teams matching "<strong>${esc(search)}</strong>"</div>` : '';
-  const hint = !search
-    ? `<div class="empty">Type a team name to see their full schedule</div>` : '';
+  return `
+    <div class="team-card">
+      <div class="team-card-header">
+        <span>${esc(team)}</span>
+        <span class="meta">${assignments.length} assignment${assignments.length!==1?'s':''}</span>
+      </div>
+      <table>
+        <thead><tr><th>Day</th><th>Time</th><th>Resource</th><th>With</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
+
+function renderTeamView() {
+  const search = state.teamSearch;
+  const tokens = search.toLowerCase().split(/\s+/).filter(Boolean);
+  const matchesSearch = t => !tokens.length || tokens.every(tok => t.toLowerCase().includes(tok));
+  const teams = allTeams().filter(matchesSearch);
+
+  const countLabel = search
+    ? `<span class="team-count">${teams.length} team${teams.length!==1?'s':''} found</span>`
+    : '';
+
+  let content;
+  if (search) {
+    const cards = teams.map(buildTeamCard).join('');
+    const empty = teams.length === 0
+      ? `<div class="empty">No teams matching "<strong>${esc(search)}</strong>"</div>` : '';
+    content = cards + empty;
+  } else {
+    // Group all teams by division
+    const byDiv = {};
+    allTeams().forEach(t => {
+      const d = teamDivision(t);
+      (byDiv[d] ??= []).push(t);
+    });
+    const groups = Object.keys(byDiv).sort().map(div => {
+      const c = divColor(div);
+      const tags = byDiv[div].sort().map(t =>
+        `<span class="team-browse-tag" style="background:${c}1a;color:${c}" data-team="${esc(t)}">${esc(t)}</span>`
+      ).join('');
+      return `
+        <div class="div-group">
+          <div class="div-group-header" style="background:${c}" data-div-toggle>
+            <span>${esc(div)} <span style="font-weight:400;opacity:0.8">(${byDiv[div].length})</span></span>
+            <span class="toggle-icon">▲</span>
+          </div>
+          <div class="div-group-body">${tags}</div>
+        </div>`;
+    }).join('');
+    content = groups;
+  }
 
   return `
     <div class="team-search-wrap">
       <input class="team-search" id="team-input" type="text"
         placeholder="Search team name…" value="${esc(search)}" autocomplete="off">
+      ${countLabel}
     </div>
-    ${cards}${empty}${hint}`;
+    ${content}`;
 }
 
 // ─────────────────────────────────────────────
@@ -830,6 +909,24 @@ function render() {
     ti.focus();
     ti.setSelectionRange(ti.value.length, ti.value.length);
   }
+
+  // Team browse tags (click → search for that team)
+  container.querySelectorAll('.team-browse-tag[data-team]').forEach(el =>
+    el.addEventListener('click', () => {
+      state.teamSearch = el.dataset.team;
+      render();
+    })
+  );
+
+  // Division group collapse toggles
+  container.querySelectorAll('[data-div-toggle]').forEach(header => {
+    header.addEventListener('click', () => {
+      const body = header.nextElementSibling;
+      const icon = header.querySelector('.toggle-icon');
+      body.classList.toggle('collapsed');
+      icon.textContent = body.classList.contains('collapsed') ? '▼' : '▲';
+    });
+  });
 }
 
 // ─────────────────────────────────────────────
