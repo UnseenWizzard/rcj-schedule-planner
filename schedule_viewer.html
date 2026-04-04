@@ -38,7 +38,8 @@ header {
   box-shadow: 0 2px 8px rgba(0,0,0,0.25);
 }
 header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
-#add-files-btn {
+.header-actions { display: flex; gap: 8px; align-items: center; }
+#add-files-btn, #print-btn {
   background: rgba(255,255,255,0.12);
   border: 1px solid rgba(255,255,255,0.25);
   color: white;
@@ -48,7 +49,20 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
   font-size: 0.82rem;
   transition: background 0.15s;
 }
-#add-files-btn:hover { background: rgba(255,255,255,0.22); }
+#add-files-btn:hover, #print-btn:hover { background: rgba(255,255,255,0.22); }
+
+@media print {
+  header, .view-selector, .tabs, .team-search-wrap, #loader-screen { display: none !important; }
+  body { background: white; }
+  .app-body { padding: 0; }
+  .grid-wrapper { overflow: visible; max-height: none; box-shadow: none; border-radius: 0; }
+  .schedule-table thead .div-header-row th,
+  .schedule-table thead .res-header-row th,
+  .time-header-cell, .time-cell { position: static; }
+  .team-card, .div-card { break-inside: avoid; margin-bottom: 12px; }
+  .team-card-header, .div-card-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .team-tag { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
 
 /* ── Loader screen ── */
 #loader-screen {
@@ -483,8 +497,11 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
 
 <header>
   <h1>🤖 RCJ Schedule Viewer</h1>
-  <input type="file" id="add-file-input" multiple accept=".csv,.json" style="display:none">
-  <button id="add-files-btn">+ Add files</button>
+  <div class="header-actions">
+    <input type="file" id="add-file-input" multiple accept=".csv,.json" style="display:none">
+    <button id="add-files-btn">+ Add files</button>
+    <button id="print-btn">Print</button>
+  </div>
 </header>
 
 <div id="loader-screen">
@@ -1170,6 +1187,8 @@ const urlInput = document.getElementById('url-input');
 const urlBtn   = document.getElementById('url-load-btn');
 urlBtn.addEventListener('click', () => { const u = urlInput.value.trim(); if (u) loadFromURL(u); });
 urlInput.addEventListener('keydown', e => { if (e.key === 'Enter') { const u = urlInput.value.trim(); if (u) loadFromURL(u); } });
+
+document.getElementById('print-btn').addEventListener('click', () => window.print());
 
 document.querySelectorAll('.view-btn').forEach(btn =>
   btn.addEventListener('click', () => {
