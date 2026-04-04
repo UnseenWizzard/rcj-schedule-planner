@@ -28,7 +28,7 @@ def _resource_conflicts(slot: TimeSlot, resource: Resource, assignments: list[As
 
 
 def build_schedule(
-    divisions: list[tuple[str, list[Team], int, int]],
+    divisions: list[tuple[str, list[Team], int, int, int]],
     day_specs: list[str],
     run_time: int,
     interview_time: int,
@@ -38,9 +38,10 @@ def build_schedule(
     arena_reset_minutes: int = 0,
 ) -> Schedule:
     """
-    divisions: list of (division_label, teams, num_arenas, runs_per_arena)
+    divisions: list of (division_label, teams, num_arenas, runs_per_arena, arena_reset_minutes)
     Each division gets its own namespaced arena resources and independent run schedule.
     All divisions share a single Interview resource.
+    arena_reset_minutes (kwarg) is a global fallback used only if the division tuple has 4 elements.
     """
     breaks = breaks or []
     global_breaks = [b for b in breaks if b.division is None]
@@ -59,7 +60,9 @@ def build_schedule(
     assignments: list[Assignment] = []
 
     # Phase 1 — Arena runs per division (prioritize filling each timeslot across all arenas)
-    for div_label, teams, num_arenas, runs_per_arena in divisions:
+    for div_entry in divisions:
+        div_label, teams, num_arenas, runs_per_arena = div_entry[:4]
+        div_arena_reset = div_entry[4] if len(div_entry) > 4 else arena_reset_minutes
         div_breaks = global_breaks + [b for b in breaks if b.division == div_label]
         run_slots = [
             s for s in all_run_slots
@@ -82,11 +85,11 @@ def build_schedule(
             used_teams = set()
             for arena in arenas:
                 # Arena reset: skip if not enough time since last run on this arena
-                if last_slot_for_arena[arena] is not None and arena_reset_minutes > 0:
+                if last_slot_for_arena[arena] is not None and div_arena_reset > 0:
                     prev_slot = last_slot_for_arena[arena]
                     prev_end = datetime.combine(date.today(), prev_slot.end)
                     curr_start = datetime.combine(date.today(), slot.start)
-                    if curr_start < prev_end + timedelta(minutes=arena_reset_minutes):
+                    if curr_start < prev_end + timedelta(minutes=div_arena_reset):
                         continue
                 if _resource_conflicts(slot, arena, assignments):
                     continue
@@ -129,7 +132,7 @@ def build_schedule(
                 )
 
     # Phase 2 — Interviews grouped by division (shared interview resource)
-    for div_label, teams, _, _runs in divisions:
+    for div_label, teams, _, _runs, *_ in divisions:
         chunks = [
             teams[i:i + interview_group_size]
             for i in range(0, len(teams), interview_group_size)
@@ -154,12 +157,17 @@ def build_schedule(
                 )
 
     meta = {
-        "divisions": {label: {"arenas": num_arenas, "runs_per_arena": runs} for label, _, num_arenas, runs in divisions},
+        "divisions": {
+            label: {"arenas": num_arenas, "runs_per_arena": runs, "arena_reset_minutes": reset}
+            for label, _, num_arenas, runs, reset in (
+                (e[0], e[1], e[2], e[3], e[4] if len(e) > 4 else arena_reset_minutes)
+                for e in divisions
+            )
+        },
         "run_time_minutes": run_time,
         "interview_time_minutes": interview_time,
         "interview_group_size": interview_group_size,
         "buffer_minutes": buffer_minutes,
-        "arena_reset_minutes": arena_reset_minutes,
         "days": day_specs,
         "breaks": [
             {"day": b.day, "start": b.start.strftime("%H:%M"), "end": b.end.strftime("%H:%M"),

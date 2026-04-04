@@ -6,9 +6,9 @@ from rcj_planner.scheduler import build_schedule, validate_schedule, SchedulingE
 DAYS = ["Day1:09:00-17:00"]
 
 
-def make_divisions(num_teams=4, num_arenas=2, division="DivA", runs_per_arena=1):
+def make_divisions(num_teams=4, num_arenas=2, division="DivA", runs_per_arena=1, arena_reset=0):
     teams = [Team(f"Team{i}", division) for i in range(num_teams)]
-    return [(division, teams, num_arenas, runs_per_arena)]
+    return [(division, teams, num_arenas, runs_per_arena, arena_reset)]
 
 
 def test_basic_schedule():
@@ -78,11 +78,11 @@ def test_arena_resources_namespaced():
 
 def test_arena_reset_between_rounds():
     """After each round (all 3 teams run once on the arena), a 30-min gap must follow."""
-    divisions = make_divisions(num_teams=3, num_arenas=1, runs_per_arena=3)
+    divisions = make_divisions(num_teams=3, num_arenas=1, runs_per_arena=3, arena_reset=30)
     s = build_schedule(
         divisions, ["Day1:09:00-17:00"],
         run_time=10, interview_time=20, interview_group_size=3,
-        buffer_minutes=10, arena_reset_minutes=30,
+        buffer_minutes=10,
     )
     assert validate_schedule(s) == []
     arena_runs = sorted(

@@ -32,7 +32,7 @@ rcj-planner generate \
 
 | Flag | Required | Default | Description |
 |---|---|---|---|
-| `--division` | yes (repeatable) | — | Division spec: `Label:path/to/teams.csv:arenas=N` or `Label:path/to/teams.csv:arenas=N:runs=M` |
+| `--division` | yes (repeatable) | — | Division spec: `Label:path/to/teams.csv:arenas=N` or `Label:path/to/teams.csv:arenas=N:runs=M` or `Label:path/to/teams.csv:arenas=N:runs=M:arena_reset=R` |
 | `--run-time` | yes | — | Minutes per arena run slot |
 | `--interview-time` | yes | — | Minutes per interview slot |
 | `--interview-group-size` | yes | — | Teams per interview slot |
@@ -41,7 +41,6 @@ rcj-planner generate \
 | `--save` | no | `schedule.json` | Path for saved schedule |
 | `--buffer` | no | = `--run-time` | Minimum gap (minutes) between a team's consecutive assignments |
 | `--break` | no (repeatable) | — | Break spec: `Day:HH:MM-HH:MM` (global) or `Day:Division:HH:MM-HH:MM` (division-specific) |
-| `--arena-reset` | no | `0` | Minutes to block an arena after each complete round (all teams have had one run) |
 
 ### Inspect a schedule
 
@@ -99,7 +98,7 @@ Saved schedule for use with `show` and `validate` commands.
 6. Arena resources are isolated per division — teams only run on their division's arenas.
 
 7. Global breaks (`Day:HH:MM-HH:MM`) block all arena runs and interviews during that window. Division-specific breaks (`Day:Division:HH:MM-HH:MM`) block only that division's arena runs.
-8. After each complete round on an arena (all teams have had one run), the arena is blocked for `--arena-reset` minutes before the next round begins.
+8. After each complete round on an arena (all teams have had one run), the arena is blocked for `arena_reset=R` minutes (configured per division in the `--division` spec) before the next round begins.
 
 Teams within a division are grouped for interviews by `--interview-group-size`. If a division's team count is not a multiple of that size, the last group is smaller.
 

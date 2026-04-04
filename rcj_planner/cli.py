@@ -24,10 +24,8 @@ def cli():
 @click.option("--buffer", default=None, type=int, help="Buffer gap in minutes (default: run-time)")
 @click.option("--break", "break_specs", multiple=True,
               help="Break spec: 'Day:HH:MM-HH:MM' (global) or 'Day:Division:HH:MM-HH:MM' (division-specific)")
-@click.option("--arena-reset", "arena_reset_minutes", default=0, type=int,
-              help="Minutes to block an arena after each complete round (default: 0)")
 def generate(division_specs, run_time, interview_time, interview_group_size, days,
-             output_dir, save_path, buffer, break_specs, arena_reset_minutes):
+             output_dir, save_path, buffer, break_specs):
     """Generate a conflict-free schedule and export CSVs."""
     import os
     if save_path == "schedule.json":
@@ -37,9 +35,9 @@ def generate(division_specs, run_time, interview_time, interview_group_size, day
     try:
         divisions = []
         for spec in division_specs:
-            label, path, num_arenas, runs_per_arena = parse_division_spec(spec)
+            label, path, num_arenas, runs_per_arena, arena_reset = parse_division_spec(spec)
             teams = load_teams(path, division=label)
-            divisions.append((label, teams, num_arenas, runs_per_arena))
+            divisions.append((label, teams, num_arenas, runs_per_arena, arena_reset))
 
         parsed_breaks = [parse_break_spec(s) for s in break_specs]
 
@@ -51,7 +49,6 @@ def generate(division_specs, run_time, interview_time, interview_group_size, day
             interview_group_size=interview_group_size,
             buffer_minutes=buffer_minutes,
             breaks=parsed_breaks,
-            arena_reset_minutes=arena_reset_minutes,
         )
     except (SchedulingError, ValueError) as e:
         click.echo(f"Error: {e}", err=True)

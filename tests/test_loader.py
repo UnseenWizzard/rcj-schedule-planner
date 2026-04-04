@@ -43,18 +43,28 @@ def test_load_teams_division_override(tmp_path):
 
 
 def test_parse_division_spec():
-    label, path, num_arenas, runs_per_arena = parse_division_spec("Soccer Open:soccer.csv:arenas=3")
+    label, path, num_arenas, runs_per_arena, arena_reset = parse_division_spec("Soccer Open:soccer.csv:arenas=3")
     assert label == "Soccer Open"
     assert path == "soccer.csv"
     assert num_arenas == 3
     assert runs_per_arena == 1
+    assert arena_reset == 0
 
 
 def test_parse_division_spec_with_runs():
-    label, path, num_arenas, runs_per_arena = parse_division_spec("Line:Line.csv:arenas=2:runs=3")
+    label, path, num_arenas, runs_per_arena, arena_reset = parse_division_spec("Line:Line.csv:arenas=2:runs=3")
     assert label == "Line"
     assert num_arenas == 2
     assert runs_per_arena == 3
+    assert arena_reset == 0
+
+
+def test_parse_division_spec_with_arena_reset():
+    label, path, num_arenas, runs_per_arena, arena_reset = parse_division_spec("Maze:maze.csv:arenas=2:runs=3:arena_reset=15")
+    assert label == "Maze"
+    assert num_arenas == 2
+    assert runs_per_arena == 3
+    assert arena_reset == 15
 
 
 def test_parse_division_spec_invalid():

@@ -13,22 +13,25 @@ def load_teams(path: str, division: str = "") -> list[Team]:
     return teams
 
 
-def parse_division_spec(spec: str) -> tuple[str, str, int, int]:
-    """Parse 'Label:path/to/teams.csv:arenas=N[:runs=M]' into (label, path, num_arenas, runs_per_arena)."""
+def parse_division_spec(spec: str) -> tuple[str, str, int, int, int]:
+    """Parse 'Label:path/to/teams.csv:arenas=N[:runs=M][:arena_reset=R]' into (label, path, num_arenas, runs_per_arena, arena_reset_minutes)."""
     parts = spec.split(":")
-    if len(parts) not in (3, 4):
-        raise ValueError(f"Invalid division spec {spec!r}. Expected 'Label:path:arenas=N' or 'Label:path:arenas=N:runs=M'")
+    if len(parts) < 3:
+        raise ValueError(f"Invalid division spec {spec!r}. Expected 'Label:path:arenas=N'")
     label, path, arenas_part = parts[0], parts[1], parts[2]
     if not arenas_part.startswith("arenas="):
         raise ValueError(f"Invalid arenas part {arenas_part!r}. Expected 'arenas=N'")
     num_arenas = int(arenas_part.split("=", 1)[1])
     runs_per_arena = 1
-    if len(parts) == 4:
-        runs_part = parts[3]
-        if not runs_part.startswith("runs="):
-            raise ValueError(f"Invalid runs part {runs_part!r}. Expected 'runs=N'")
-        runs_per_arena = int(runs_part.split("=", 1)[1])
-    return label.strip(), path.strip(), num_arenas, runs_per_arena
+    arena_reset_minutes = 0
+    for extra in parts[3:]:
+        if extra.startswith("runs="):
+            runs_per_arena = int(extra.split("=", 1)[1])
+        elif extra.startswith("arena_reset="):
+            arena_reset_minutes = int(extra.split("=", 1)[1])
+        else:
+            raise ValueError(f"Unknown division spec option {extra!r}. Expected 'runs=N' or 'arena_reset=N'")
+    return label.strip(), path.strip(), num_arenas, runs_per_arena, arena_reset_minutes
 
 
 def parse_break_spec(spec: str) -> Break:
