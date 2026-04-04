@@ -1233,6 +1233,40 @@ urlInput.addEventListener('keydown', e => { if (e.key === 'Enter') { const u = u
 
 document.getElementById('print-btn').addEventListener('click', () => window.print());
 
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (document.getElementById('app').style.display === 'none') return;
+  const tag = document.activeElement.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+  const views = ['day', 'division', 'interview', 'team'];
+  if (e.key === '1') switchView('day');
+  else if (e.key === '2') switchView('division');
+  else if (e.key === '3') switchView('interview');
+  else if (e.key === '4') switchView('team');
+  else if (e.key === '/' ) { e.preventDefault(); focusTeamSearch(); }
+  else if (e.key === 'ArrowLeft'  && state.view === 'day') navigateDay(-1);
+  else if (e.key === 'ArrowRight' && state.view === 'day') navigateDay(1);
+});
+
+function switchView(v) {
+  state.view = v;
+  document.querySelectorAll('.view-btn').forEach(b => b.classList.toggle('active', b.dataset.view === v));
+  render();
+}
+
+function focusTeamSearch() {
+  switchView('team');
+  const ti = document.querySelector('#team-input');
+  if (ti) { ti.focus(); ti.select(); }
+}
+
+function navigateDay(dir) {
+  const days = Object.keys(state.days).sort();
+  const idx = days.indexOf(state.selectedDay);
+  const next = days[idx + dir];
+  if (next) { state.selectedDay = next; render(); }
+}
+
 document.querySelectorAll('.view-btn').forEach(btn =>
   btn.addEventListener('click', () => {
     document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
