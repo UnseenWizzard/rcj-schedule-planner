@@ -20,7 +20,7 @@ Single self-contained HTML file (same pattern as `schedule_viewer.html`).
 
 - [x] Task 1: Scaffold the editor HTML with file loading
 - [x] Task 2: Render the editable schedule grid
-- [ ] Task 3: Implement slot selection and move UI
+- [x] Task 3: Implement slot selection and move UI
 - [ ] Task 4: Implement the Changes & Diff tab
 - [ ] Task 5: Download edited schedule with info field
 - [ ] Task 6: Polish and edge cases
@@ -42,7 +42,7 @@ Create `ui/schedule_editor.html` with:
 - Can open the file in browser, drop a `schedule.json`, see assignments listed
 - Tab switching works (Changes tab can be empty placeholder)
 
-**After task:** run any existing or newly created tests and fix failures, then make a git commit. Update the checklist above.
+**After task:** make a git commit. Update the checklist above.
 
 ---
 
@@ -65,7 +65,7 @@ Render `editedSchedule` as an interactive schedule view:
 - Day tabs switch between days
 - Empty slots are clearly visible
 
-**After task:** run any existing or newly created tests and fix failures, then make a git commit. Update the checklist above.
+**After task:** make a git commit. Update the checklist above.
 
 ---
 
@@ -100,7 +100,7 @@ Use `TimeSlot.overlaps` and `TimeSlot.buffer_conflict` logic from `models.py`, r
 - Invalid moves (overlap/buffer conflict) are not offered as targets
 - Multiple sequential edits work correctly
 
-**After task:** run any existing or newly created tests and fix failures, then make a git commit. Update the checklist above.
+**After task:** make a git commit. Update the checklist above.
 
 ---
 
@@ -125,7 +125,7 @@ The second tab shows two sections:
 - Diff correctly highlights changed lines in the JSON
 - Undo reverts the last change and updates both the summary and diff
 
-**After task:** run any existing or newly created tests and fix failures, then make a git commit. Update the checklist above.
+**After task:** make a git commit. Update the checklist above.
 
 ---
 
@@ -158,7 +158,7 @@ Changes:
 - Info field contains accurate change descriptions
 - Downloaded file can be loaded back into the editor
 
-**After task:** run any existing or newly created tests and fix failures, then make a git commit. Update the checklist above.
+**After task:** make a git commit. Update the checklist above.
 
 ---
 
@@ -170,7 +170,7 @@ Changes:
 - Ensure the editor works with the existing `schedule.json` test files in the repo
 - Test with the viewer: load an edited schedule in `schedule_viewer.html` to verify it renders correctly
 
-**After task:** run any existing or newly created tests and fix failures, then make a git commit. Update the checklist above.
+**After task:** make a git commit. Update the checklist above.
 
 ---
 

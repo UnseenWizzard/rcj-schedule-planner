@@ -194,6 +194,11 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
 .team-tag:active { cursor: grabbing; }
 .team-tag.interview { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
 
+/* ── Selection states ── */
+.slot-cell.selected-source { background: #eef2ff !important; outline: 2px solid var(--primary); outline-offset: -2px; }
+.slot-cell.valid-target { background: #dcfce7 !important; outline: 2px dashed #16a34a; outline-offset: -2px; cursor: pointer; }
+.slot-cell.valid-target:hover { background: #bbf7d0 !important; }
+
 .resource-kind {
   font-size: 0.72rem;
   color: var(--muted);
@@ -283,6 +288,7 @@ const changeLog      = [];     // { team, from, to } entries
 
 const state = {
   selectedDay: null,
+  selected: null,   // { idx, start, end, resource_name, teams }
 };
 
 // ─────────────────────────────────────────────
@@ -410,13 +416,14 @@ function renderAssignments() {
     const cells = resources.map(r => {
       const a = lookup.get(slot.start + '|' + r.name);
       if (a) {
+        const aIdx = editedSchedule.assignments.indexOf(a);
         const isInterview = r.kind === 'interview';
         const teamTags = (a.teams || []).map(t =>
           `<span class="team-tag${isInterview ? ' interview' : ''}">${escHtml(t)}</span>`
         ).join('');
-        return `<td class="slot-cell occupied">${teamTags}</td>`;
+        return `<td class="slot-cell occupied" data-start="${escAttr(slot.start)}" data-end="${escAttr(slot.end)}" data-resource="${escAttr(r.name)}" data-idx="${aIdx}">${teamTags}</td>`;
       }
-      return `<td class="slot-cell empty"></td>`;
+      return `<td class="slot-cell empty" data-start="${escAttr(slot.start)}" data-end="${escAttr(slot.end)}" data-resource="${escAttr(r.name)}"></td>`;
     }).join('');
     return `<tr>
       <td class="time-cell">${escHtml(slot.start)}&ndash;${escHtml(slot.end)}</td>
@@ -431,6 +438,147 @@ function escHtml(str) {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+function escAttr(str) {
+  return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+}
+
+// ─────────────────────────────────────────────
+//  Time / overlap helpers
+// ─────────────────────────────────────────────
+function timeToMinutes(t) {
+  const [h, m] = t.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function slotsOverlap(s1, e1, s2, e2) {
+  return s1 < e2 && s2 < e1;  // string compare works for zero-padded HH:MM
+}
+
+function hasBufferConflict(s1, e1, s2, e2, bufferMins) {
+  if (slotsOverlap(s1, e1, s2, e2)) return true;
+  const gap = Math.min(
+    Math.abs(timeToMinutes(s1) - timeToMinutes(e2)),
+    Math.abs(timeToMinutes(e1) - timeToMinutes(s2))
+  );
+  return gap < bufferMins;
+}
+
+function getTeamOtherAssignments(team, excludeIdx, day) {
+  return editedSchedule.assignments.filter((a, idx) =>
+    idx !== excludeIdx && a.day === day && a.teams.includes(team)
+  );
+}
+
+function canMoveTo(teams, fromIdx, targetStart, targetEnd, day) {
+  const bufferMins = (editedSchedule.meta && editedSchedule.meta.buffer_minutes) || 0;
+  for (const team of teams) {
+    const others = getTeamOtherAssignments(team, fromIdx, day);
+    for (const other of others) {
+      if (hasBufferConflict(targetStart, targetEnd, other.start, other.end, bufferMins)) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+// ─────────────────────────────────────────────
+//  Selection & move
+// ─────────────────────────────────────────────
+function selectCell(cell) {
+  deselectAll();
+  const idx = parseInt(cell.dataset.idx, 10);
+  const a = editedSchedule.assignments[idx];
+  state.selected = { idx, start: a.start, end: a.end, resource_name: a.resource_name, teams: [...a.teams] };
+  cell.classList.add('selected-source');
+  highlightValidTargets();
+}
+
+function deselectAll() {
+  state.selected = null;
+  document.querySelectorAll('.slot-cell.selected-source').forEach(c => c.classList.remove('selected-source'));
+  document.querySelectorAll('.slot-cell.valid-target').forEach(c => c.classList.remove('valid-target'));
+}
+
+function highlightValidTargets() {
+  const sel = state.selected;
+  if (!sel) return;
+  const day = state.selectedDay;
+
+  document.querySelectorAll('.slot-cell').forEach(cell => {
+    if (cell.dataset.resource !== sel.resource_name) return;
+    if (cell.classList.contains('selected-source')) return;
+
+    const cStart = cell.dataset.start;
+    const cEnd   = cell.dataset.end;
+
+    if (!canMoveTo(sel.teams, sel.idx, cStart, cEnd, day)) return;
+
+    if (cell.classList.contains('occupied')) {
+      const tIdx = parseInt(cell.dataset.idx, 10);
+      const tA   = editedSchedule.assignments[tIdx];
+      if (!canMoveTo(tA.teams, tIdx, sel.start, sel.end, day)) return;
+    }
+
+    cell.classList.add('valid-target');
+  });
+}
+
+function handleCellClick(e) {
+  const cell = e.target.closest('.slot-cell');
+  if (!cell) return;
+
+  const sel = state.selected;
+
+  if (!sel) {
+    if (cell.classList.contains('occupied')) selectCell(cell);
+    return;
+  }
+
+  if (cell.classList.contains('selected-source')) { deselectAll(); return; }
+  if (cell.classList.contains('valid-target'))    { performMove(cell); return; }
+  if (cell.classList.contains('occupied'))        { selectCell(cell); return; }
+  deselectAll();
+}
+
+function performMove(targetCell) {
+  const sel  = state.selected;
+  const selA = editedSchedule.assignments[sel.idx];
+  const tStart = targetCell.dataset.start;
+  const tEnd   = targetCell.dataset.end;
+
+  if (targetCell.classList.contains('occupied')) {
+    const tIdx = parseInt(targetCell.dataset.idx, 10);
+    const tA   = editedSchedule.assignments[tIdx];
+
+    changeLog.push({
+      type: 'swap',
+      aIdx: sel.idx, aTeams: [...selA.teams],
+      bIdx: tIdx,    bTeams: [...tA.teams],
+      aFrom: { day: selA.day, start: selA.start, end: selA.end, resource: selA.resource_name },
+      aTo:   { day: selA.day, start: tA.start,   end: tA.end,   resource: selA.resource_name },
+      bFrom: { day: tA.day,   start: tA.start,   end: tA.end,   resource: tA.resource_name },
+      bTo:   { day: tA.day,   start: selA.start, end: selA.end, resource: tA.resource_name },
+    });
+
+    const tmpStart = selA.start, tmpEnd = selA.end;
+    selA.start = tA.start;  selA.end = tA.end;
+    tA.start   = tmpStart;  tA.end   = tmpEnd;
+  } else {
+    changeLog.push({
+      type: 'move',
+      idx: sel.idx, teams: [...selA.teams],
+      from: { day: selA.day, start: selA.start, end: selA.end, resource: selA.resource_name },
+      to:   { day: selA.day, start: tStart,     end: tEnd,     resource: selA.resource_name },
+    });
+    selA.start = tStart;
+    selA.end   = tEnd;
+  }
+
+  deselectAll();
+  renderAssignments();
 }
 
 // ─────────────────────────────────────────────
@@ -463,6 +611,10 @@ dropzone.addEventListener('drop', e => {
   const file = e.dataTransfer.files[0];
   if (file) loadScheduleFile(file);
 });
+
+// Cell click delegation (event listener persists across re-renders since tbody is static)
+document.getElementById('assignment-rows').addEventListener('click', handleCellClick);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') deselectAll(); });
 </script>
 </body>
 </html>
