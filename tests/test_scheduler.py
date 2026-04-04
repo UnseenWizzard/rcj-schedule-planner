@@ -223,6 +223,73 @@ def test_early_day_loading_multi_division():
             assert len(day1_runs) >= 2, f"{team.name} has only {len(day1_runs)} runs on Day 1"
 
 
+def test_arena_reset_all_rounds_should_work_scenario():
+    """Mirrors the should_work.sh scenario: 4 teams, 1 arena, 4 runs, arena_reset=60,
+    2 days with a lunch break. Verifies reset gap between every pair of consecutive
+    rounds and no reset gap within rounds."""
+    from datetime import timedelta
+    day_specs = ["Day1:10:30-18:00", "Day2:09:00-13:00"]
+    breaks = [Break(day="Day1", start=time(12, 30), end=time(13, 30))]
+    teams = [Team(f"Team{i}", "DivA") for i in range(4)]
+    divisions = [("DivA", teams, 1, 4, 60)]
+    s = build_schedule(
+        divisions, day_specs,
+        run_time=10, interview_time=15, interview_group_size=2,
+        buffer_minutes=10, breaks=breaks,
+    )
+    assert validate_schedule(s) == []
+
+    arena_runs = sorted(
+        [a for a in s.assignments if a.resource.kind == "arena"],
+        key=lambda a: (day_specs.index(next(d for d in day_specs if d.startswith(a.slot.day))), a.slot.start),
+    )
+    assert len(arena_runs) == 16  # 4 teams × 4 rounds
+
+    _reset_base = date(2000, 1, 1)
+    day_index = {spec.split(":")[0]: i for i, spec in enumerate(day_specs)}
+
+    def slot_start_dt(a):
+        return datetime.combine(_reset_base + timedelta(days=day_index[a.slot.day]), a.slot.start)
+
+    def slot_end_dt(a):
+        return datetime.combine(_reset_base + timedelta(days=day_index[a.slot.day]), a.slot.end)
+
+    round_size = 4
+    num_rounds = 4
+
+    def break_gap_between(end_dt, start_dt):
+        """Minutes of break time that fall between two datetime instants."""
+        total = 0.0
+        for b in breaks:
+            b_day_idx = day_index.get(b.day, -1)
+            b_start = datetime.combine(_reset_base + timedelta(days=b_day_idx), b.start)
+            b_end = datetime.combine(_reset_base + timedelta(days=b_day_idx), b.end)
+            overlap = min(start_dt, b_end) - max(end_dt, b_start)
+            if overlap.total_seconds() > 0:
+                total += overlap.total_seconds() / 60
+        return total
+
+    # Within each round: gap should only come from break time, not a reset gap
+    for r in range(num_rounds):
+        for i in range(round_size - 1):
+            idx = r * round_size + i
+            end_dt = slot_end_dt(arena_runs[idx])
+            start_dt = slot_start_dt(arena_runs[idx + 1])
+            gap = (start_dt - end_dt).total_seconds() / 60
+            max_expected = break_gap_between(end_dt, start_dt)
+            assert gap <= max_expected, (
+                f"Round {r}, run {i}: gap of {gap:.0f} min exceeds break time "
+                f"({max_expected:.0f} min) — unexpected reset gap within a round"
+            )
+
+    # Between rounds: gap >= arena_reset (60 min)
+    for r in range(num_rounds - 1):
+        end_of_round = slot_end_dt(arena_runs[(r + 1) * round_size - 1])
+        start_of_next = slot_start_dt(arena_runs[(r + 1) * round_size])
+        gap = (start_of_next - end_of_round).total_seconds() / 60
+        assert gap >= 60, f"Inter-round gap after round {r} is only {gap:.0f} min (expected >= 60)"
+
+
 def test_early_day_loading_buffer_respected():
     DAYS_2 = ["Day1:09:00-17:00", "Day2:09:00-17:00"]
     teams = [Team(f"Team{i}", "DivA") for i in range(4)]
