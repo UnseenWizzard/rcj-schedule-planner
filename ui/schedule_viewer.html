@@ -223,6 +223,42 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
 #app { display: none; }
 .app-body { padding: 18px 24px 32px; }
 
+/* ── Info banner (edited schedule) ── */
+#info-banner {
+  display: none;
+  background: #fff7ed;
+  border: 1.5px solid #f97316;
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+#info-banner.visible { display: block; }
+.info-banner-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #9a3412;
+  margin-bottom: 6px;
+}
+.info-banner-title svg { flex-shrink: 0; }
+.info-banner-body {
+  font-size: 0.82rem;
+  color: #7c2d12;
+  line-height: 1.5;
+}
+.info-banner-section { margin-top: 8px; }
+.info-banner-section-title {
+  font-weight: 700;
+  color: #92400e;
+  margin-bottom: 2px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.info-banner-change { padding: 1px 0; }
+
 /* ── Compact mode ── */
 body.compact .slot-cell { padding: 2px 3px; min-width: 80px; font-size: 0.75rem; }
 body.compact .time-cell { padding: 3px 7px; font-size: 0.72rem; }
@@ -612,6 +648,7 @@ body.wallboard-mode .app-body {
   overflow: hidden;
   padding: 0;
 }
+body.wallboard-mode #info-banner { display: none !important; }
 body.wallboard-mode #view-container {
   flex: 1;
   display: flex;
@@ -819,6 +856,17 @@ body.wallboard-mode #view-container {
 
 <div id="app">
   <div class="app-body">
+    <div id="info-banner">
+      <div class="info-banner-title">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.346 0-2.189-1.458-1.515-2.625L8.485 2.495z" fill="#f97316"/>
+          <path d="M10 7v4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="10" cy="14" r="0.75" fill="#fff"/>
+        </svg>
+        Edited Schedule
+      </div>
+      <div class="info-banner-body" id="info-banner-body"></div>
+    </div>
     <div class="view-selector">
       <button class="view-btn active" data-view="day">By Day</button>
       <button class="view-btn" data-view="interview">Interviews</button>
@@ -836,6 +884,7 @@ body.wallboard-mode #view-container {
 const state = {
   days: {},           // { "Day1": [{time_slot, resource, teams}, …] }
   breaks: {},         // { "Day1": [{start, end, label}, …] }
+  infoText: null,     // info field from edited schedule.json, or null
   view: 'day',
   selectedDay: null,
   teamSearch: '',
@@ -917,7 +966,8 @@ function parseScheduleJSON(text) {
       (breaks[day] ??= []).push({ start: b.start, end: b.end, label: b.label || 'Break', division: b.division ?? null });
     });
   }
-  return { days, breaks };
+  const infoText = data.info || null;
+  return { days, breaks, infoText };
 }
 
 // ─────────────────────────────────────────────
@@ -982,21 +1032,22 @@ function loadFiles(files) {
     const reader = new FileReader();
     reader.onload = e => {
       if (file.name.toLowerCase().endsWith('.json')) {
-        const { days, breaks } = parseScheduleJSON(e.target.result);
-        resolve({ days, breaks });
+        const { days, breaks, infoText } = parseScheduleJSON(e.target.result);
+        resolve({ days, breaks, infoText });
       } else {
         const day = file.name.replace(/\.csv$/i, '');
-        resolve({ days: { [day]: parseCSV(e.target.result) }, breaks: {} });
+        resolve({ days: { [day]: parseCSV(e.target.result) }, breaks: {}, infoText: null });
       }
     };
     reader.readAsText(file);
   }));
   Promise.all(promises).then(results => {
-    results.forEach(({ days, breaks }) => {
+    results.forEach(({ days, breaks, infoText }) => {
       Object.assign(state.days, days);
       Object.entries(breaks || {}).forEach(([day, bs]) => {
         (state.breaks[day] ??= []).push(...bs);
       });
+      if (infoText) state.infoText = infoText;
     });
     if (!state.selectedDay || !state.days[state.selectedDay]) {
       state.selectedDay = Object.keys(state.days).sort()[0];
@@ -1634,6 +1685,49 @@ function renderWallboardView() {
 // ─────────────────────────────────────────────
 //  Render dispatcher
 // ─────────────────────────────────────────────
+// ─────────────────────────────────────────────
+//  Info banner (edited schedule)
+// ─────────────────────────────────────────────
+function renderInfoBanner() {
+  const banner = document.getElementById('info-banner');
+  const body = document.getElementById('info-banner-body');
+  if (!state.infoText) {
+    banner.classList.remove('visible');
+    return;
+  }
+  // Parse info text: first line(s) are header (before "Changes:"), rest are change lines
+  const lines = state.infoText.split('\n');
+  const headerLines = [];
+  const changeLines = [];
+  let inChanges = false;
+  for (const line of lines) {
+    if (line.trim().toLowerCase() === 'changes:') { inChanges = true; continue; }
+    if (inChanges) { if (line.trim()) changeLines.push(line.replace(/^-\s*/, '')); }
+    else { if (line.trim()) headerLines.push(line); }
+  }
+
+  // Group changes by team name (text before the first colon)
+  const byTeam = {};
+  for (const line of changeLines) {
+    const colon = line.indexOf(':');
+    const team = colon > -1 ? line.slice(0, colon).trim() : 'Unknown';
+    const detail = colon > -1 ? line.slice(colon + 1).trim() : line;
+    (byTeam[team] ??= []).push(detail);
+  }
+
+  let html = headerLines.map(l => `<div>${esc(l)}</div>`).join('');
+  if (Object.keys(byTeam).length > 0) {
+    html += '<div class="info-banner-section"><div class="info-banner-section-title">Changes</div>';
+    for (const [team, details] of Object.entries(byTeam)) {
+      html += `<div class="info-banner-change"><strong>${esc(team)}:</strong> ${details.map(esc).join('; ')}</div>`;
+    }
+    html += '</div>';
+  }
+
+  body.innerHTML = html;
+  banner.classList.add('visible');
+}
+
 function render() {
   if (state.wallboardTimer !== null) {
     clearTimeout(state.wallboardTimer);
@@ -1642,6 +1736,7 @@ function render() {
   cancelWallboardScroll();
   document.body.classList.toggle('compact', state.compact);
   document.body.classList.toggle('wallboard-mode', state.view === 'wallboard');
+  renderInfoBanner();
   const container = document.getElementById('view-container');
   if (state.view === 'day') container.innerHTML = renderDayView();
   else if (state.view === 'interview') container.innerHTML = renderInterviewView();
@@ -1800,11 +1895,12 @@ function loadFromURL(url) {
     .then(text => {
       clearInterval(elapsedTimer);
       elapsedEl.style.display = 'none';
-      const { days, breaks } = parseScheduleJSON(text);
+      const { days, breaks, infoText } = parseScheduleJSON(text);
       Object.assign(state.days, days);
       Object.entries(breaks || {}).forEach(([day, bs]) => {
         (state.breaks[day] ??= []).push(...bs);
       });
+      if (infoText) state.infoText = infoText;
       if (!state.selectedDay || !state.days[state.selectedDay]) {
         state.selectedDay = Object.keys(state.days).sort()[0];
       }
