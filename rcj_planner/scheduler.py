@@ -83,64 +83,99 @@ def build_schedule(
             if not any(b.blocks_slot(s) for b in div_breaks)
         ]
         arenas = [Resource("arena", f"{div_label} – Arena {i+1}") for i in range(num_arenas)]
-        # Each team should get num_arenas * runs_per_arena runs (one per arena per round)
         num_teams = len(teams)
         team_runs = {team: 0 for team in teams}
-        team_day_runs = defaultdict(lambda: defaultdict(int))  # team -> day -> count
-        team_arena_runs = {(team, arena): 0 for team in teams for arena in arenas}
-        last_slot_for_arena = {arena: None for arena in arenas}
-        arena_run_count = {arena: 0 for arena in arenas}
         total_runs_per_team = num_arenas * runs_per_arena
-        # Build a list of all (team, arena) pairs that need to be scheduled, each repeated runs_per_arena times
-        required_pairs = []
-        for team in teams:
-            for arena in arenas:
-                required_pairs.extend([(team, arena)] * runs_per_arena)
-        # Assign by timeslot: for each slot, try to fill all arenas with a team that still needs a run on that arena
-        for slot in run_slots:
-            used_teams = set()
-            for arena in arenas:
-                # Arena reset: skip if not enough time since last run on this arena
-                if last_slot_for_arena[arena] is not None and div_arena_reset > 0:
-                    prev_slot = last_slot_for_arena[arena]
-                    prev_end = _slot_end_dt(prev_slot)
-                    curr_start = _slot_start_dt(slot)
-                    if curr_start < prev_end + timedelta(minutes=div_arena_reset):
+
+        if num_arenas == 1 and div_arena_reset > 0:
+            # Simplified path: schedule round-by-round, back-to-back within each round
+            arena = arenas[0]
+            slot_cursor = 0
+            last_assigned_slot = None
+
+            for round_num in range(runs_per_arena):
+                if round_num > 0:
+                    last_end = _slot_end_dt(last_assigned_slot)
+                    required_start = last_end + timedelta(minutes=div_arena_reset)
+                    while slot_cursor < len(run_slots) and _slot_start_dt(run_slots[slot_cursor]) < required_start:
+                        slot_cursor += 1
+
+                for team in teams:
+                    scheduled = False
+                    while slot_cursor < len(run_slots):
+                        slot = run_slots[slot_cursor]
+                        slot_cursor += 1
+                        if _resource_conflicts(slot, arena, assignments):
+                            continue
+                        if _team_conflicts(slot, team, assignments, buffer_minutes):
+                            continue
+                        assignments.append(Assignment(slot, arena, [team]))
+                        team_runs[team] += 1
+                        last_assigned_slot = slot
+                        scheduled = True
+                        break
+                    if not scheduled:
+                        raise SchedulingError(
+                            f"No valid run slot found for team '{team.name}' in division '{div_label}' round {round_num + 1}. "
+                            "Try extending the day or reducing teams/arenas."
+                        )
+        else:
+            # General path: fill each timeslot across all arenas
+            team_day_runs = defaultdict(lambda: defaultdict(int))  # team -> day -> count
+            team_arena_runs = {(team, arena): 0 for team in teams for arena in arenas}
+            last_slot_for_arena = {arena: None for arena in arenas}
+            arena_run_count = {arena: 0 for arena in arenas}
+            # Build a list of all (team, arena) pairs that need to be scheduled, each repeated runs_per_arena times
+            required_pairs = []
+            for team in teams:
+                for arena in arenas:
+                    required_pairs.extend([(team, arena)] * runs_per_arena)
+            # Assign by timeslot: for each slot, try to fill all arenas with a team that still needs a run on that arena
+            for slot in run_slots:
+                used_teams = set()
+                for arena in arenas:
+                    # Arena reset: skip if not enough time since last run on this arena
+                    if last_slot_for_arena[arena] is not None and div_arena_reset > 0:
+                        prev_slot = last_slot_for_arena[arena]
+                        prev_end = _slot_end_dt(prev_slot)
+                        curr_start = _slot_start_dt(slot)
+                        if curr_start < prev_end + timedelta(minutes=div_arena_reset):
+                            continue
+                    if _resource_conflicts(slot, arena, assignments):
                         continue
-                if _resource_conflicts(slot, arena, assignments):
-                    continue
-                # Collect all valid candidates for this (slot, arena)
-                candidates = []
-                for i, (team, candidate_arena) in enumerate(required_pairs):
-                    if candidate_arena != arena:
+                    # Collect all valid candidates for this (slot, arena)
+                    candidates = []
+                    for i, (team, candidate_arena) in enumerate(required_pairs):
+                        if candidate_arena != arena:
+                            continue
+                        if team in used_teams:
+                            continue
+                        if team_arena_runs[(team, arena)] >= runs_per_arena:
+                            continue
+                        if team_runs[team] >= total_runs_per_team:
+                            continue
+                        if _team_conflicts(slot, team, assignments, buffer_minutes):
+                            continue
+                        candidates.append((i, team))
+                    if not candidates:
                         continue
-                    if team in used_teams:
-                        continue
-                    if team_arena_runs[(team, arena)] >= runs_per_arena:
-                        continue
-                    if team_runs[team] >= total_runs_per_team:
-                        continue
-                    if _team_conflicts(slot, team, assignments, buffer_minutes):
-                        continue
-                    candidates.append((i, team))
-                if not candidates:
-                    continue
-                # Pick best candidate: fewest runs on this day → fewest total runs → original order
-                best_idx, best_team = min(
-                    candidates,
-                    key=lambda x: (team_day_runs[x[1]][slot.day], team_runs[x[1]], x[0])
-                )
-                assignments.append(Assignment(slot, arena, [best_team]))
-                team_arena_runs[(best_team, arena)] += 1
-                team_runs[best_team] += 1
-                team_day_runs[best_team][slot.day] += 1
-                arena_run_count[arena] += 1
-                if arena_run_count[arena] % num_teams == 0:
-                    last_slot_for_arena[arena] = slot
-                used_teams.add(best_team)
-                required_pairs.pop(best_idx)
-            if not required_pairs:
-                break
+                    # Pick best candidate: fewest runs on this day → fewest total runs → original order
+                    best_idx, best_team = min(
+                        candidates,
+                        key=lambda x: (team_day_runs[x[1]][slot.day], team_runs[x[1]], x[0])
+                    )
+                    assignments.append(Assignment(slot, arena, [best_team]))
+                    team_arena_runs[(best_team, arena)] += 1
+                    team_runs[best_team] += 1
+                    team_day_runs[best_team][slot.day] += 1
+                    arena_run_count[arena] += 1
+                    if arena_run_count[arena] % num_teams == 0:
+                        last_slot_for_arena[arena] = slot
+                    used_teams.add(best_team)
+                    required_pairs.pop(best_idx)
+                if not required_pairs:
+                    break
+
         # After scheduling, check if all teams have the required number of runs
         for team in teams:
             if team_runs[team] != total_runs_per_team:
