@@ -77,7 +77,8 @@ def test_arena_resources_namespaced():
 
 
 def test_arena_reset_between_rounds():
-    """After each round (all 3 teams run once on the arena), a 30-min gap must follow."""
+    """After each complete round (all 3 teams run once on the arena), a 30-min gap must
+    follow. Within a round, consecutive runs are separated only by run_time — no reset gap."""
     divisions = make_divisions(num_teams=3, num_arenas=1, runs_per_arena=3, arena_reset=30)
     s = build_schedule(
         divisions, ["Day1:09:00-17:00"],
@@ -92,6 +93,19 @@ def test_arena_reset_between_rounds():
     assert len(arena_runs) == 9  # 3 teams × 3 rounds
 
     round_size = 3
+    # Within each round: consecutive runs must NOT have a reset gap (gap == run_time == 10)
+    for r in range(3):
+        for i in range(round_size - 1):
+            idx = r * round_size + i
+            end_of_run = arena_runs[idx].slot.end
+            start_of_next_run = arena_runs[idx + 1].slot.start
+            intra_gap = (datetime.combine(date.today(), start_of_next_run)
+                         - datetime.combine(date.today(), end_of_run)).seconds // 60
+            assert intra_gap < 30, (
+                f"Round {r}, run {i}: unexpected reset gap of {intra_gap} min within a round"
+            )
+
+    # Between rounds: gap after the last slot of a round must be >= arena_reset (30 min)
     for r in range(2):  # gap after round 0 and round 1 (round 2 has no round after it)
         end_of_round = arena_runs[(r + 1) * round_size - 1].slot.end
         start_of_next = arena_runs[(r + 1) * round_size].slot.start
