@@ -713,7 +713,7 @@ function parseScheduleJSON(text) {
     // meta.breaks is an array of {day, start, end, label?}
     meta.breaks.forEach(b => {
       const day = b.day || Object.keys(days)[0];
-      (breaks[day] ??= []).push({ start: b.start, end: b.end, label: b.label || 'Break' });
+      (breaks[day] ??= []).push({ start: b.start, end: b.end, label: b.label || 'Break', division: b.division ?? null });
     });
   }
   return { days, breaks };
@@ -863,7 +863,7 @@ function renderDayView() {
   ).join('');
 
   // Build break rows: insert after the last slot before each break
-  const dayBreaks = (state.breaks[day] || []).slice().sort((a,b) => a.start.localeCompare(b.start));
+  const dayBreaks = (state.breaks[day] || []).filter(b => b.division === null).slice().sort((a,b) => a.start.localeCompare(b.start));
   const colCount = resources.length + 1;
 
   // Data rows
