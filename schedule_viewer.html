@@ -350,6 +350,10 @@ body.compact .team-tag  { padding: 1px 5px; font-size: 0.72rem; }
 .team-tag-link { cursor: pointer; }
 .team-tag-link:hover { opacity: 0.75; }
 
+/* ── Now row ── */
+.now-row td { border-left: 3px solid var(--primary); }
+.now-row .time-cell { color: var(--primary); font-weight: 700; background: #eef2ff; }
+
 /* ── Break rows ── */
 .break-row td {
   background: repeating-linear-gradient(
@@ -826,7 +830,8 @@ function renderDayView() {
       ).join('');
       return `<td class="slot-cell">${chips}</td>`;
     }).join('');
-    dataRows.push(`<tr><td class="time-cell">${ts}</td>${cells}</tr>`);
+    const isNow = isCurrentSlot(ts);
+    dataRows.push(`<tr${isNow ? ' class="now-row"' : ''}><td class="time-cell">${ts}</td>${cells}</tr>`);
   }
 
   // Mobile: vertical list grouped by timeslot
@@ -975,6 +980,16 @@ function teamDivision(team) {
   });
   const top = Object.entries(counts).sort((a,b) => b[1]-a[1])[0];
   return top ? top[0] : 'Other';
+}
+
+function isCurrentSlot(timeSlot) {
+  const now = new Date();
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  const parts = timeSlot.split(EN_DASH).map(x => x.trim());
+  if (parts.length < 2) return false;
+  const start = timeToMinutes(parts[0]);
+  const end   = timeToMinutes(parts[1]);
+  return !isNaN(start) && !isNaN(end) && nowMin >= start && nowMin < end;
 }
 
 function timeToMinutes(t) {
@@ -1139,6 +1154,10 @@ function render() {
   else if (state.view === 'division') container.innerHTML = renderDivisionView();
   else if (state.view === 'interview') container.innerHTML = renderInterviewView();
   else container.innerHTML = renderTeamView();
+
+  // Scroll now-row into view
+  const nowRow = container.querySelector('.now-row');
+  if (nowRow) nowRow.scrollIntoView({ block: 'center', behavior: 'smooth' });
 
   // Day tab clicks
   container.querySelectorAll('.tab[data-day]').forEach(btn =>
