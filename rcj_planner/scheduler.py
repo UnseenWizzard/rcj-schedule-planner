@@ -58,7 +58,7 @@ def build_schedule(
 
     assignments: list[Assignment] = []
 
-    # Phase 1 — Arena runs per division (greedy round-robin, namespaced arenas)
+    # Phase 1 — Arena runs per division (prioritize filling each timeslot across all arenas)
     for div_label, teams, num_arenas, runs_per_arena in divisions:
         div_breaks = global_breaks + [b for b in breaks if b.division == div_label]
         run_slots = [
@@ -66,41 +66,68 @@ def build_schedule(
             if not any(b.blocks_slot(s) for b in div_breaks)
         ]
         arenas = [Resource("arena", f"{div_label} – Arena {i+1}") for i in range(num_arenas)]
-        for arena in arenas:
-            cursor = 0
-            for _ in range(runs_per_arena):
-                assignments_before = len(assignments)
-                for team in teams:
-                    found = False
-                    for i in range(cursor, len(run_slots)):
-                        slot = run_slots[i]
-                        if _resource_conflicts(slot, arena, assignments):
-                            continue
-                        if _team_conflicts(slot, team, assignments, buffer_minutes):
-                            continue
-                        assignments.append(Assignment(slot, arena, [team]))
-                        cursor = i + 1
-                        found = True
-                        break
-                    if not found:
-                        raise SchedulingError(
-                            f"No valid run slot found for team '{team.name}' on arena '{arena.name}'. "
-                            "Try extending the day or reducing teams/arenas."
-                        )
-
-                # Advance cursor past the post-round reset window
-                if arena_reset_minutes > 0:
-                    round_slots = [a.slot for a in assignments[assignments_before:] if a.resource == arena]
-                    last_slot = max(round_slots, key=lambda s: s.end)
-                    cutoff = (
-                        datetime.combine(date.today(), last_slot.end)
-                        + timedelta(minutes=arena_reset_minutes)
-                    ).time()
-                    while cursor < len(run_slots) and (
-                        run_slots[cursor].day == last_slot.day
-                        and run_slots[cursor].start < cutoff
-                    ):
-                        cursor += 1
+        # Each team should get num_arenas * runs_per_arena runs (one per arena per round)
+        team_runs = {team: 0 for team in teams}
+        team_arena_runs = {(team, arena): 0 for team in teams for arena in arenas}
+        last_slot_for_arena = {arena: None for arena in arenas}
+        total_runs_per_team = num_arenas * runs_per_arena
+        # Build a list of all (team, arena) pairs that need to be scheduled, each repeated runs_per_arena times
+        required_pairs = []
+        for team in teams:
+            for arena in arenas:
+                required_pairs.extend([(team, arena)] * runs_per_arena)
+        pair_idx = 0
+        # Assign by timeslot: for each slot, try to fill all arenas with a team that still needs a run on that arena
+        for slot in run_slots:
+            used_teams = set()
+            for arena in arenas:
+                # Arena reset: skip if not enough time since last run on this arena
+                if last_slot_for_arena[arena] is not None and arena_reset_minutes > 0:
+                    prev_slot = last_slot_for_arena[arena]
+                    prev_end = datetime.combine(date.today(), prev_slot.end)
+                    curr_start = datetime.combine(date.today(), slot.start)
+                    if curr_start < prev_end + timedelta(minutes=arena_reset_minutes):
+                        continue
+                # Find a team for this arena in this slot
+                found = False
+                for i in range(len(required_pairs)):
+                    idx = (pair_idx + i) % len(required_pairs)
+                    team, candidate_arena = required_pairs[idx]
+                    if candidate_arena != arena:
+                        continue
+                    if team in used_teams:
+                        continue
+                    if team_arena_runs[(team, arena)] >= runs_per_arena:
+                        continue
+                    if team_runs[team] >= total_runs_per_team:
+                        continue
+                    if _resource_conflicts(slot, arena, assignments):
+                        continue
+                    if _team_conflicts(slot, team, assignments, buffer_minutes):
+                        continue
+                    assignments.append(Assignment(slot, arena, [team]))
+                    team_arena_runs[(team, arena)] += 1
+                    team_runs[team] += 1
+                    last_slot_for_arena[arena] = slot
+                    used_teams.add(team)
+                    # Remove this pair from required_pairs so it doesn't get scheduled again
+                    required_pairs.pop(idx)
+                    # Adjust pair_idx if needed
+                    if idx < pair_idx:
+                        pair_idx -= 1
+                    found = True
+                    break
+                if not found:
+                    continue
+            if not required_pairs:
+                break
+        # After scheduling, check if all teams have the required number of runs
+        for team in teams:
+            if team_runs[team] != total_runs_per_team:
+                raise SchedulingError(
+                    f"Team '{team.name}' in division '{div_label}' was assigned {team_runs[team]} runs, expected {total_runs_per_team}. "
+                    "Try extending the day or reducing teams/arenas."
+                )
 
     # Phase 2 — Interviews grouped by division (shared interview resource)
     for div_label, teams, _, _runs in divisions:
