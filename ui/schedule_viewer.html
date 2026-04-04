@@ -773,7 +773,7 @@ body.wallboard-mode #view-container {
     </div>
     <div class="view-selector">
       <button class="view-btn active" data-view="day">By Day</button>
-      <button class="view-btn" data-view="interview">Interviews</button>
+      <button class="view-btn" data-view="location">By Location</button>
       <button class="view-btn" data-view="team">By Team</button>
       <button class="view-btn" data-view="wallboard">Wallboard</button>
     </div>
@@ -1661,7 +1661,7 @@ function render() {
   renderInfoBanner();
   const container = document.getElementById('view-container');
   if (state.view === 'day') container.innerHTML = renderDayView();
-  else if (state.view === 'interview') container.innerHTML = renderInterviewView();
+  else if (state.view === 'location') container.innerHTML = renderLocationView();
   else if (state.view === 'wallboard') container.innerHTML = renderWallboardView();
   else container.innerHTML = renderTeamView();
 
@@ -1872,7 +1872,7 @@ document.addEventListener('keydown', e => {
   const tag = document.activeElement.tagName;
   if (tag === 'INPUT' || tag === 'TEXTAREA') return;
   if (e.key === '1') switchView('day');
-  else if (e.key === '2') switchView('interview');
+  else if (e.key === '2') switchView('location');
   else if (e.key === '3') switchView('team');
   else if (e.key === '4') switchView('wallboard');
   else if (e.key === '/' ) { e.preventDefault(); focusTeamSearch(); }
