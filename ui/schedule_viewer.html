@@ -1041,37 +1041,31 @@ function renderDayView() {
   const allResources = resourcesForDay(day, intResDivs);
   const timeSlots = timeSlotsForDay(day);
 
-  // Build per-division team sets from arena rows (needed to filter interview cells per division)
-  const divTeamSets = {};
+  // Build team→division map from arena rows (for coloring teams in interview cells)
+  const teamToDiv = {};
   rows.forEach(row => {
     if (!isInterviewResource(row.resource)) {
       const d = divisionOf(row.resource);
-      (divTeamSets[d] ??= new Set());
-      row.teams.split(',').forEach(t => { const tr = t.trim(); if (tr) divTeamSets[d].add(tr); });
+      row.teams.split(',').forEach(t => { const tr = t.trim(); if (tr) teamToDiv[tr] = d; });
     }
   });
 
-  // Build expanded resource list: interview resources appear once per division they serve,
-  // grouped after that division's arena resources. Each entry: {resource, div, divFilter}.
-  // divFilter is the team set to restrict interview cells to (null for arena resources).
+  // Build expanded resource list: arena resources grouped by division, interview resources
+  // collected into a single grey "Interview" group at the end.
+  // Each entry: {resource, div}
   const expandedResources = [];
   const divOrder = [...new Set(allResources.filter(r => !isInterviewResource(r)).map(r => divisionOf(r)))].sort();
   const interviewResources = allResources.filter(r => isInterviewResource(r));
   divOrder.forEach(div => {
     allResources.filter(r => !isInterviewResource(r) && divisionOf(r) === div)
-      .forEach(r => expandedResources.push({ resource: r, div, divFilter: null }));
-    interviewResources.forEach(r => {
-      const divSet = intResDivs[r];
-      if (divSet && divSet.has(div)) {
-        expandedResources.push({ resource: r, div, divFilter: divTeamSets[div] || new Set() });
-      }
-    });
+      .forEach(r => expandedResources.push({ resource: r, div }));
   });
+  interviewResources.forEach(r => expandedResources.push({ resource: r, div: 'Interview' }));
 
   const visibleResources = expandedResources.filter(e => !state.hiddenDivisions.has(e.div));
 
-  // Division filter toggles
-  const divisions = [...new Set(expandedResources.map(e => e.div))];
+  // Division filter toggles — exclude the Interview group (no pill for it)
+  const divisions = [...new Set(expandedResources.map(e => e.div).filter(d => d !== 'Interview'))];
   const filterPills = divisions.map(div => {
     const c = divColor(div);
     const active = !state.hiddenDivisions.has(div);
@@ -1133,7 +1127,7 @@ function renderDayView() {
       </td></tr>`);
     }
     const cells = visibleResources.map(e => {
-      const { resource: r, div, divFilter } = e;
+      const { resource: r, div } = e;
       const divBr = (divBreaksByDiv[div] || []).find(b => tsStart >= b.start && tsStart < b.end);
       if (divBr) {
         const key = div + divBr.start;
@@ -1141,12 +1135,11 @@ function renderDayView() {
         divBreakLabelShown.add(key);
         return `<td class="break-row">${label}</td>`;
       }
-      let teams = lookup[ts]?.[r] ?? [];
-      if (divFilter) teams = teams.filter(t => divFilter.has(t));
-      const c = divColor(div);
-      const chips = teams.map(t =>
-        `<span class="team-tag team-tag-link" style="background:${c}1a;color:${c}" data-team="${esc(t)}">${esc(t)}</span>`
-      ).join('');
+      const teams = lookup[ts]?.[r] ?? [];
+      const chips = teams.map(t => {
+        const c = divColor(isInterviewResource(r) ? (teamToDiv[t] || div) : div);
+        return `<span class="team-tag team-tag-link" style="background:${c}1a;color:${c}" data-team="${esc(t)}">${esc(t)}</span>`;
+      }).join('');
       return `<td class="slot-cell">${chips}</td>`;
     }).join('');
     const isNow = isCurrentSlot(ts);
@@ -1156,16 +1149,16 @@ function renderDayView() {
   // Mobile: vertical list grouped by timeslot
   const mobileCards = timeSlots.map(ts => {
     const rowItems = visibleResources.map(e => {
-      const { resource: r, div, divFilter } = e;
-      let teams = lookup[ts]?.[r] ?? [];
-      if (divFilter) teams = teams.filter(t => divFilter.has(t));
+      const { resource: r, div } = e;
+      const teams = lookup[ts]?.[r] ?? [];
       if (!teams.length) return '';
-      const c = divColor(div);
-      const chips = teams.map(t =>
-        `<span class="team-tag team-tag-link" style="background:${c}1a;color:${c}" data-team="${esc(t)}">${esc(t)}</span>`
-      ).join('');
+      const headerColor = divColor(div);
+      const chips = teams.map(t => {
+        const c = divColor(isInterviewResource(r) ? (teamToDiv[t] || div) : div);
+        return `<span class="team-tag team-tag-link" style="background:${c}1a;color:${c}" data-team="${esc(t)}">${esc(t)}</span>`;
+      }).join('');
       return `<div class="mobile-slot-row">
-        <span class="mobile-resource" style="color:${c}">${esc(shortName(r))}</span>
+        <span class="mobile-resource" style="color:${headerColor}">${esc(shortName(r))}</span>
         <span class="mobile-teams">${chips}</span>
       </div>`;
     }).filter(Boolean).join('');
