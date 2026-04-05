@@ -3,56 +3,173 @@
     "divisions": {
       "Line": {
         "arenas": 3,
-        "runs_per_arena": 2
+        "runs_per_arena": 2,
+        "arena_reset_minutes": 0
       },
       "Line Entry": {
         "arenas": 3,
-        "runs_per_arena": 1
+        "runs_per_arena": 1,
+        "arena_reset_minutes": 0
       },
       "Maze": {
         "arenas": 1,
-        "runs_per_arena": 4
+        "runs_per_arena": 4,
+        "arena_reset_minutes": 50
+      },
+      "Online_Simulation": {
+        "arenas": 1,
+        "runs_per_arena": 4,
+        "arena_reset_minutes": 30
       }
     },
     "run_time_minutes": 10,
     "interview_time_minutes": 15,
     "interview_group_size": 2,
     "buffer_minutes": 10,
-    "arena_reset_minutes": 0,
     "days": [
-      "Day1:11:00-17:15",
-      "Day2:09:00-14:00"
+      "Day1:10:30-17:00",
+      "Day2:09:00-13:00"
     ],
+    "interview_days": [
+      "Day1:12:00-17:30",
+      "Day2:09:00-13:00"
+    ],
+    "interview_rooms": 2,
     "breaks": [
       {
         "day": "Day1",
         "start": "12:30",
         "end": "13:30",
         "division": null
-      },
-      {
-        "day": "Day1",
-        "start": "14:00",
-        "end": "14:40",
-        "division": "Maze"
-      },
-      {
-        "day": "Day1",
-        "start": "11:00",
-        "end": "11:40",
-        "division": "Maze"
       }
     ]
   },
   "assignments": [
     {
       "day": "Day1",
+      "start": "10:30",
+      "end": "10:40",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 1",
+      "teams": [
+        "Mechanic Team"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "10:30",
+      "end": "10:40",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 2",
+      "teams": [
+        "Eurobot"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "10:30",
+      "end": "10:40",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 3",
+      "teams": [
+        "Library"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "10:40",
+      "end": "10:50",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 1",
+      "teams": [
+        "Die Haftelmacher"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "10:40",
+      "end": "10:50",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 2",
+      "teams": [
+        "Das Original"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "10:40",
+      "end": "10:50",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 3",
+      "teams": [
+        "we:bots"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "10:50",
+      "end": "11:00",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 1",
+      "teams": [
+        "GearUp"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "10:50",
+      "end": "11:00",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 2",
+      "teams": [
+        "Die Glorreichen 4"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "10:50",
+      "end": "11:00",
+      "resource_kind": "arena",
+      "resource_name": "Line \u2013 Arena 3",
+      "teams": [
+        "Kaktus"
+      ],
+      "divisions": [
+        "Line"
+      ]
+    },
+    {
+      "day": "Day1",
       "start": "11:00",
       "end": "11:10",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
-        "Mechanic Team"
+        "Nebenniere"
       ],
       "divisions": [
         "Line"
@@ -65,7 +182,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
-        "Eurobot"
+        "Kepler 404"
       ],
       "divisions": [
         "Line"
@@ -78,7 +195,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
-        "Library"
+        "2 Geh\u00f6rnzellen"
       ],
       "divisions": [
         "Line"
@@ -91,7 +208,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
-        "Die Haftelmacher"
+        "Project William"
       ],
       "divisions": [
         "Line"
@@ -104,7 +221,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
-        "Das Original"
+        "Project X"
       ],
       "divisions": [
         "Line"
@@ -117,7 +234,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
-        "we:bots"
+        "TriByte"
       ],
       "divisions": [
         "Line"
@@ -130,7 +247,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
-        "GearUp"
+        "NanoRobots"
       ],
       "divisions": [
         "Line"
@@ -143,7 +260,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
-        "Die Glorreichen 4"
+        "Angora Goasbock"
       ],
       "divisions": [
         "Line"
@@ -156,7 +273,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
-        "Kaktus"
+        "Project PVP"
       ],
       "divisions": [
         "Line"
@@ -169,7 +286,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
-        "Nebenniere"
+        "Deep-Drive"
       ],
       "divisions": [
         "Line"
@@ -182,7 +299,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
-        "Kepler 404"
+        "Die (3) 2 Robomenschen"
       ],
       "divisions": [
         "Line"
@@ -195,7 +312,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
-        "2 Geh\u00f6rnzellen"
+        "HTL Trieben Engineering"
       ],
       "divisions": [
         "Line"
@@ -208,7 +325,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
-        "Project William"
+        "NLO Rescue CRO Team"
       ],
       "divisions": [
         "Line"
@@ -221,7 +338,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
-        "Project X"
+        "Mechanic Team"
       ],
       "divisions": [
         "Line"
@@ -234,7 +351,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
-        "TriByte"
+        "Eurobot"
       ],
       "divisions": [
         "Line"
@@ -247,7 +364,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
-        "NanoRobots"
+        "Library"
       ],
       "divisions": [
         "Line"
@@ -260,7 +377,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
-        "Angora Goasbock"
+        "Die Haftelmacher"
       ],
       "divisions": [
         "Line"
@@ -273,7 +390,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
-        "Project PVP"
+        "Das Original"
       ],
       "divisions": [
         "Line"
@@ -286,7 +403,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
-        "Deep-Drive"
+        "we:bots"
       ],
       "divisions": [
         "Line"
@@ -299,7 +416,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
-        "Die (3) 2 Robomenschen"
+        "GearUp"
       ],
       "divisions": [
         "Line"
@@ -312,7 +429,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
-        "HTL Trieben Engineering"
+        "Die Glorreichen 4"
       ],
       "divisions": [
         "Line"
@@ -325,7 +442,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
-        "NLO Rescue CRO Team"
+        "Kaktus"
       ],
       "divisions": [
         "Line"
@@ -338,7 +455,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
-        "Mechanic Team"
+        "Nebenniere"
       ],
       "divisions": [
         "Line"
@@ -351,7 +468,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
-        "Eurobot"
+        "Kepler 404"
       ],
       "divisions": [
         "Line"
@@ -364,7 +481,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
-        "Library"
+        "2 Geh\u00f6rnzellen"
       ],
       "divisions": [
         "Line"
@@ -377,7 +494,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
-        "Die Haftelmacher"
+        "Project William"
       ],
       "divisions": [
         "Line"
@@ -390,7 +507,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
-        "Das Original"
+        "Project X"
       ],
       "divisions": [
         "Line"
@@ -403,7 +520,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
-        "we:bots"
+        "TriByte"
       ],
       "divisions": [
         "Line"
@@ -416,7 +533,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
-        "GearUp"
+        "NanoRobots"
       ],
       "divisions": [
         "Line"
@@ -429,7 +546,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
-        "Die Glorreichen 4"
+        "Angora Goasbock"
       ],
       "divisions": [
         "Line"
@@ -442,7 +559,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
-        "Kaktus"
+        "Project PVP"
       ],
       "divisions": [
         "Line"
@@ -455,7 +572,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
-        "Nebenniere"
+        "Deep-Drive"
       ],
       "divisions": [
         "Line"
@@ -468,7 +585,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
-        "Kepler 404"
+        "Die (3) 2 Robomenschen"
       ],
       "divisions": [
         "Line"
@@ -481,7 +598,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
-        "2 Geh\u00f6rnzellen"
+        "HTL Trieben Engineering"
       ],
       "divisions": [
         "Line"
@@ -494,7 +611,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
-        "Project William"
+        "NLO Rescue CRO Team"
       ],
       "divisions": [
         "Line"
@@ -507,7 +624,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
-        "Project X"
+        "Mechanic Team"
       ],
       "divisions": [
         "Line"
@@ -520,7 +637,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
-        "TriByte"
+        "Eurobot"
       ],
       "divisions": [
         "Line"
@@ -533,7 +650,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
-        "NanoRobots"
+        "Library"
       ],
       "divisions": [
         "Line"
@@ -546,7 +663,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
-        "Angora Goasbock"
+        "Die Haftelmacher"
       ],
       "divisions": [
         "Line"
@@ -559,7 +676,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
-        "Project PVP"
+        "Das Original"
       ],
       "divisions": [
         "Line"
@@ -572,7 +689,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
-        "Deep-Drive"
+        "we:bots"
       ],
       "divisions": [
         "Line"
@@ -585,7 +702,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
-        "Die (3) 2 Robomenschen"
+        "GearUp"
       ],
       "divisions": [
         "Line"
@@ -598,7 +715,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
-        "HTL Trieben Engineering"
+        "Die Glorreichen 4"
       ],
       "divisions": [
         "Line"
@@ -611,7 +728,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
-        "NLO Rescue CRO Team"
+        "Kaktus"
       ],
       "divisions": [
         "Line"
@@ -624,7 +741,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
-        "Mechanic Team"
+        "Nebenniere"
       ],
       "divisions": [
         "Line"
@@ -637,7 +754,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
-        "Eurobot"
+        "Kepler 404"
       ],
       "divisions": [
         "Line"
@@ -650,7 +767,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
-        "Library"
+        "2 Geh\u00f6rnzellen"
       ],
       "divisions": [
         "Line"
@@ -663,7 +780,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
-        "Die Haftelmacher"
+        "Project William"
       ],
       "divisions": [
         "Line"
@@ -676,7 +793,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
-        "Das Original"
+        "Project X"
       ],
       "divisions": [
         "Line"
@@ -689,7 +806,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
-        "we:bots"
+        "TriByte"
       ],
       "divisions": [
         "Line"
@@ -702,7 +819,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
-        "GearUp"
+        "NanoRobots"
       ],
       "divisions": [
         "Line"
@@ -715,7 +832,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
-        "Die Glorreichen 4"
+        "Angora Goasbock"
       ],
       "divisions": [
         "Line"
@@ -728,7 +845,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
-        "Kaktus"
+        "Project PVP"
       ],
       "divisions": [
         "Line"
@@ -741,7 +858,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
-        "Nebenniere"
+        "Deep-Drive"
       ],
       "divisions": [
         "Line"
@@ -754,7 +871,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
-        "Kepler 404"
+        "Die (3) 2 Robomenschen"
       ],
       "divisions": [
         "Line"
@@ -767,7 +884,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
-        "2 Geh\u00f6rnzellen"
+        "HTL Trieben Engineering"
       ],
       "divisions": [
         "Line"
@@ -780,7 +897,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
-        "Project William"
+        "NLO Rescue CRO Team"
       ],
       "divisions": [
         "Line"
@@ -793,7 +910,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
-        "Project X"
+        "Mechanic Team"
       ],
       "divisions": [
         "Line"
@@ -806,7 +923,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
-        "TriByte"
+        "Eurobot"
       ],
       "divisions": [
         "Line"
@@ -819,7 +936,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
-        "NanoRobots"
+        "Library"
       ],
       "divisions": [
         "Line"
@@ -832,7 +949,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
-        "Angora Goasbock"
+        "Die Haftelmacher"
       ],
       "divisions": [
         "Line"
@@ -845,7 +962,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
-        "Project PVP"
+        "Das Original"
       ],
       "divisions": [
         "Line"
@@ -858,7 +975,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
-        "Deep-Drive"
+        "we:bots"
       ],
       "divisions": [
         "Line"
@@ -871,7 +988,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
-        "Die (3) 2 Robomenschen"
+        "GearUp"
       ],
       "divisions": [
         "Line"
@@ -884,7 +1001,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
-        "HTL Trieben Engineering"
+        "Die Glorreichen 4"
       ],
       "divisions": [
         "Line"
@@ -897,7 +1014,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
-        "NLO Rescue CRO Team"
+        "Kaktus"
       ],
       "divisions": [
         "Line"
@@ -910,7 +1027,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
-        "Mechanic Team"
+        "Nebenniere"
       ],
       "divisions": [
         "Line"
@@ -923,7 +1040,7 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
-        "Eurobot"
+        "Kepler 404"
       ],
       "divisions": [
         "Line"
@@ -936,123 +1053,6 @@
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
-        "Library"
-      ],
-      "divisions": [
-        "Line"
-      ]
-    },
-    {
-      "day": "Day1",
-      "start": "15:50",
-      "end": "16:00",
-      "resource_kind": "arena",
-      "resource_name": "Line \u2013 Arena 1",
-      "teams": [
-        "Die Haftelmacher"
-      ],
-      "divisions": [
-        "Line"
-      ]
-    },
-    {
-      "day": "Day1",
-      "start": "15:50",
-      "end": "16:00",
-      "resource_kind": "arena",
-      "resource_name": "Line \u2013 Arena 2",
-      "teams": [
-        "Das Original"
-      ],
-      "divisions": [
-        "Line"
-      ]
-    },
-    {
-      "day": "Day1",
-      "start": "15:50",
-      "end": "16:00",
-      "resource_kind": "arena",
-      "resource_name": "Line \u2013 Arena 3",
-      "teams": [
-        "we:bots"
-      ],
-      "divisions": [
-        "Line"
-      ]
-    },
-    {
-      "day": "Day1",
-      "start": "16:00",
-      "end": "16:10",
-      "resource_kind": "arena",
-      "resource_name": "Line \u2013 Arena 1",
-      "teams": [
-        "GearUp"
-      ],
-      "divisions": [
-        "Line"
-      ]
-    },
-    {
-      "day": "Day1",
-      "start": "16:00",
-      "end": "16:10",
-      "resource_kind": "arena",
-      "resource_name": "Line \u2013 Arena 2",
-      "teams": [
-        "Die Glorreichen 4"
-      ],
-      "divisions": [
-        "Line"
-      ]
-    },
-    {
-      "day": "Day1",
-      "start": "16:00",
-      "end": "16:10",
-      "resource_kind": "arena",
-      "resource_name": "Line \u2013 Arena 3",
-      "teams": [
-        "Kaktus"
-      ],
-      "divisions": [
-        "Line"
-      ]
-    },
-    {
-      "day": "Day1",
-      "start": "16:10",
-      "end": "16:20",
-      "resource_kind": "arena",
-      "resource_name": "Line \u2013 Arena 1",
-      "teams": [
-        "Nebenniere"
-      ],
-      "divisions": [
-        "Line"
-      ]
-    },
-    {
-      "day": "Day1",
-      "start": "16:10",
-      "end": "16:20",
-      "resource_kind": "arena",
-      "resource_name": "Line \u2013 Arena 2",
-      "teams": [
-        "Kepler 404"
-      ],
-      "divisions": [
-        "Line"
-      ]
-    },
-    {
-      "day": "Day1",
-      "start": "16:10",
-      "end": "16:20",
-      "resource_kind": "arena",
-      "resource_name": "Line \u2013 Arena 3",
-      "teams": [
         "2 Geh\u00f6rnzellen"
       ],
       "divisions": [
@@ -1061,8 +1061,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:20",
-      "end": "16:30",
+      "start": "15:50",
+      "end": "16:00",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
@@ -1074,8 +1074,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:20",
-      "end": "16:30",
+      "start": "15:50",
+      "end": "16:00",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
@@ -1087,8 +1087,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:20",
-      "end": "16:30",
+      "start": "15:50",
+      "end": "16:00",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
@@ -1100,8 +1100,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:30",
-      "end": "16:40",
+      "start": "16:00",
+      "end": "16:10",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
@@ -1113,8 +1113,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:30",
-      "end": "16:40",
+      "start": "16:00",
+      "end": "16:10",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
@@ -1126,8 +1126,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:30",
-      "end": "16:40",
+      "start": "16:00",
+      "end": "16:10",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
@@ -1139,8 +1139,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:40",
-      "end": "16:50",
+      "start": "16:10",
+      "end": "16:20",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
@@ -1152,8 +1152,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:40",
-      "end": "16:50",
+      "start": "16:10",
+      "end": "16:20",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
@@ -1165,8 +1165,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:40",
-      "end": "16:50",
+      "start": "16:10",
+      "end": "16:20",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
@@ -1178,8 +1178,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:50",
-      "end": "17:00",
+      "start": "16:20",
+      "end": "16:30",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
@@ -1191,8 +1191,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:50",
-      "end": "17:00",
+      "start": "16:20",
+      "end": "16:30",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
@@ -1204,8 +1204,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:50",
-      "end": "17:00",
+      "start": "16:20",
+      "end": "16:30",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
@@ -1217,8 +1217,8 @@
     },
     {
       "day": "Day1",
-      "start": "17:00",
-      "end": "17:10",
+      "start": "16:30",
+      "end": "16:40",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
@@ -1230,8 +1230,8 @@
     },
     {
       "day": "Day1",
-      "start": "17:00",
-      "end": "17:10",
+      "start": "16:30",
+      "end": "16:40",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
@@ -1243,8 +1243,8 @@
     },
     {
       "day": "Day1",
-      "start": "17:00",
-      "end": "17:10",
+      "start": "16:30",
+      "end": "16:40",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
@@ -1255,9 +1255,9 @@
       ]
     },
     {
-      "day": "Day2",
-      "start": "09:00",
-      "end": "09:10",
+      "day": "Day1",
+      "start": "16:40",
+      "end": "16:50",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
@@ -1268,9 +1268,9 @@
       ]
     },
     {
-      "day": "Day2",
-      "start": "09:00",
-      "end": "09:10",
+      "day": "Day1",
+      "start": "16:40",
+      "end": "16:50",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
@@ -1281,9 +1281,9 @@
       ]
     },
     {
-      "day": "Day2",
-      "start": "09:00",
-      "end": "09:10",
+      "day": "Day1",
+      "start": "16:40",
+      "end": "16:50",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
@@ -1294,9 +1294,9 @@
       ]
     },
     {
-      "day": "Day2",
-      "start": "09:10",
-      "end": "09:20",
+      "day": "Day1",
+      "start": "16:50",
+      "end": "17:00",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
@@ -1307,9 +1307,9 @@
       ]
     },
     {
-      "day": "Day2",
-      "start": "09:10",
-      "end": "09:20",
+      "day": "Day1",
+      "start": "16:50",
+      "end": "17:00",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
@@ -1320,9 +1320,9 @@
       ]
     },
     {
-      "day": "Day2",
-      "start": "09:10",
-      "end": "09:20",
+      "day": "Day1",
+      "start": "16:50",
+      "end": "17:00",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
@@ -1334,8 +1334,8 @@
     },
     {
       "day": "Day2",
-      "start": "09:20",
-      "end": "09:30",
+      "start": "09:00",
+      "end": "09:10",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
@@ -1347,8 +1347,8 @@
     },
     {
       "day": "Day2",
-      "start": "09:20",
-      "end": "09:30",
+      "start": "09:00",
+      "end": "09:10",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
@@ -1360,8 +1360,8 @@
     },
     {
       "day": "Day2",
-      "start": "09:20",
-      "end": "09:30",
+      "start": "09:00",
+      "end": "09:10",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
@@ -1373,8 +1373,8 @@
     },
     {
       "day": "Day2",
-      "start": "09:30",
-      "end": "09:40",
+      "start": "09:10",
+      "end": "09:20",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
@@ -1386,8 +1386,8 @@
     },
     {
       "day": "Day2",
-      "start": "09:30",
-      "end": "09:40",
+      "start": "09:10",
+      "end": "09:20",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
@@ -1399,8 +1399,8 @@
     },
     {
       "day": "Day2",
-      "start": "09:30",
-      "end": "09:40",
+      "start": "09:10",
+      "end": "09:20",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
@@ -1412,8 +1412,8 @@
     },
     {
       "day": "Day2",
-      "start": "09:40",
-      "end": "09:50",
+      "start": "09:20",
+      "end": "09:30",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
@@ -1425,8 +1425,8 @@
     },
     {
       "day": "Day2",
-      "start": "09:40",
-      "end": "09:50",
+      "start": "09:20",
+      "end": "09:30",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
@@ -1438,8 +1438,8 @@
     },
     {
       "day": "Day2",
-      "start": "09:40",
-      "end": "09:50",
+      "start": "09:20",
+      "end": "09:30",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
@@ -1451,8 +1451,8 @@
     },
     {
       "day": "Day2",
-      "start": "09:50",
-      "end": "10:00",
+      "start": "09:30",
+      "end": "09:40",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
@@ -1464,8 +1464,8 @@
     },
     {
       "day": "Day2",
-      "start": "09:50",
-      "end": "10:00",
+      "start": "09:30",
+      "end": "09:40",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
@@ -1477,8 +1477,8 @@
     },
     {
       "day": "Day2",
-      "start": "09:50",
-      "end": "10:00",
+      "start": "09:30",
+      "end": "09:40",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
@@ -1490,8 +1490,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:00",
-      "end": "10:10",
+      "start": "09:40",
+      "end": "09:50",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
@@ -1503,8 +1503,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:00",
-      "end": "10:10",
+      "start": "09:40",
+      "end": "09:50",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
@@ -1516,8 +1516,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:00",
-      "end": "10:10",
+      "start": "09:40",
+      "end": "09:50",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
@@ -1529,8 +1529,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:10",
-      "end": "10:20",
+      "start": "09:50",
+      "end": "10:00",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
@@ -1542,8 +1542,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:10",
-      "end": "10:20",
+      "start": "09:50",
+      "end": "10:00",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
@@ -1555,8 +1555,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:10",
-      "end": "10:20",
+      "start": "09:50",
+      "end": "10:00",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
@@ -1568,8 +1568,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:20",
-      "end": "10:30",
+      "start": "10:00",
+      "end": "10:10",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
@@ -1581,8 +1581,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:20",
-      "end": "10:30",
+      "start": "10:00",
+      "end": "10:10",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
@@ -1594,8 +1594,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:20",
-      "end": "10:30",
+      "start": "10:00",
+      "end": "10:10",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
@@ -1607,8 +1607,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:30",
-      "end": "10:40",
+      "start": "10:10",
+      "end": "10:20",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
@@ -1620,8 +1620,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:30",
-      "end": "10:40",
+      "start": "10:10",
+      "end": "10:20",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
@@ -1633,8 +1633,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:30",
-      "end": "10:40",
+      "start": "10:10",
+      "end": "10:20",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
@@ -1646,8 +1646,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:40",
-      "end": "10:50",
+      "start": "10:20",
+      "end": "10:30",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
@@ -1659,8 +1659,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:40",
-      "end": "10:50",
+      "start": "10:20",
+      "end": "10:30",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
@@ -1672,8 +1672,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:40",
-      "end": "10:50",
+      "start": "10:20",
+      "end": "10:30",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
@@ -1685,8 +1685,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:50",
-      "end": "11:00",
+      "start": "10:30",
+      "end": "10:40",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
@@ -1698,8 +1698,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:50",
-      "end": "11:00",
+      "start": "10:30",
+      "end": "10:40",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
@@ -1711,8 +1711,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:50",
-      "end": "11:00",
+      "start": "10:30",
+      "end": "10:40",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
@@ -1724,8 +1724,8 @@
     },
     {
       "day": "Day2",
-      "start": "11:00",
-      "end": "11:10",
+      "start": "10:40",
+      "end": "10:50",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 1",
       "teams": [
@@ -1737,8 +1737,8 @@
     },
     {
       "day": "Day2",
-      "start": "11:00",
-      "end": "11:10",
+      "start": "10:40",
+      "end": "10:50",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 2",
       "teams": [
@@ -1750,8 +1750,8 @@
     },
     {
       "day": "Day2",
-      "start": "11:00",
-      "end": "11:10",
+      "start": "10:40",
+      "end": "10:50",
       "resource_kind": "arena",
       "resource_name": "Line \u2013 Arena 3",
       "teams": [
@@ -1763,8 +1763,8 @@
     },
     {
       "day": "Day1",
-      "start": "11:00",
-      "end": "11:10",
+      "start": "10:30",
+      "end": "10:40",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -1776,8 +1776,8 @@
     },
     {
       "day": "Day1",
-      "start": "11:00",
-      "end": "11:10",
+      "start": "10:30",
+      "end": "10:40",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -1789,8 +1789,8 @@
     },
     {
       "day": "Day1",
-      "start": "11:00",
-      "end": "11:10",
+      "start": "10:30",
+      "end": "10:40",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -1802,8 +1802,8 @@
     },
     {
       "day": "Day1",
-      "start": "11:10",
-      "end": "11:20",
+      "start": "10:40",
+      "end": "10:50",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -1815,8 +1815,8 @@
     },
     {
       "day": "Day1",
-      "start": "11:10",
-      "end": "11:20",
+      "start": "10:40",
+      "end": "10:50",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -1828,8 +1828,8 @@
     },
     {
       "day": "Day1",
-      "start": "11:10",
-      "end": "11:20",
+      "start": "10:40",
+      "end": "10:50",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -1841,8 +1841,8 @@
     },
     {
       "day": "Day1",
-      "start": "11:20",
-      "end": "11:30",
+      "start": "10:50",
+      "end": "11:00",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -1854,8 +1854,8 @@
     },
     {
       "day": "Day1",
-      "start": "11:20",
-      "end": "11:30",
+      "start": "10:50",
+      "end": "11:00",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -1867,8 +1867,8 @@
     },
     {
       "day": "Day1",
-      "start": "11:20",
-      "end": "11:30",
+      "start": "10:50",
+      "end": "11:00",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -1880,8 +1880,8 @@
     },
     {
       "day": "Day1",
-      "start": "11:30",
-      "end": "11:40",
+      "start": "11:00",
+      "end": "11:10",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -1893,8 +1893,8 @@
     },
     {
       "day": "Day1",
-      "start": "11:30",
-      "end": "11:40",
+      "start": "11:00",
+      "end": "11:10",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -1906,8 +1906,8 @@
     },
     {
       "day": "Day1",
-      "start": "11:30",
-      "end": "11:40",
+      "start": "11:00",
+      "end": "11:10",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -1919,8 +1919,8 @@
     },
     {
       "day": "Day1",
-      "start": "11:40",
-      "end": "11:50",
+      "start": "11:10",
+      "end": "11:20",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -1932,8 +1932,8 @@
     },
     {
       "day": "Day1",
-      "start": "11:40",
-      "end": "11:50",
+      "start": "11:10",
+      "end": "11:20",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -1945,8 +1945,8 @@
     },
     {
       "day": "Day1",
-      "start": "11:40",
-      "end": "11:50",
+      "start": "11:10",
+      "end": "11:20",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -1958,8 +1958,8 @@
     },
     {
       "day": "Day1",
-      "start": "11:50",
-      "end": "12:00",
+      "start": "11:20",
+      "end": "11:30",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -1971,8 +1971,8 @@
     },
     {
       "day": "Day1",
-      "start": "11:50",
-      "end": "12:00",
+      "start": "11:20",
+      "end": "11:30",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -1984,8 +1984,8 @@
     },
     {
       "day": "Day1",
-      "start": "11:50",
-      "end": "12:00",
+      "start": "11:20",
+      "end": "11:30",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -1997,8 +1997,8 @@
     },
     {
       "day": "Day1",
-      "start": "12:00",
-      "end": "12:10",
+      "start": "11:30",
+      "end": "11:40",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -2010,8 +2010,8 @@
     },
     {
       "day": "Day1",
-      "start": "12:00",
-      "end": "12:10",
+      "start": "11:30",
+      "end": "11:40",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -2023,8 +2023,8 @@
     },
     {
       "day": "Day1",
-      "start": "12:00",
-      "end": "12:10",
+      "start": "11:30",
+      "end": "11:40",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -2036,8 +2036,8 @@
     },
     {
       "day": "Day1",
-      "start": "12:10",
-      "end": "12:20",
+      "start": "11:40",
+      "end": "11:50",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -2049,8 +2049,8 @@
     },
     {
       "day": "Day1",
-      "start": "12:10",
-      "end": "12:20",
+      "start": "11:40",
+      "end": "11:50",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -2062,8 +2062,8 @@
     },
     {
       "day": "Day1",
-      "start": "12:10",
-      "end": "12:20",
+      "start": "11:40",
+      "end": "11:50",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -2075,8 +2075,8 @@
     },
     {
       "day": "Day1",
-      "start": "12:20",
-      "end": "12:30",
+      "start": "11:50",
+      "end": "12:00",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -2088,8 +2088,8 @@
     },
     {
       "day": "Day1",
-      "start": "12:20",
-      "end": "12:30",
+      "start": "11:50",
+      "end": "12:00",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -2101,8 +2101,8 @@
     },
     {
       "day": "Day1",
-      "start": "12:20",
-      "end": "12:30",
+      "start": "11:50",
+      "end": "12:00",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -2114,8 +2114,8 @@
     },
     {
       "day": "Day1",
-      "start": "13:30",
-      "end": "13:40",
+      "start": "12:00",
+      "end": "12:10",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -2127,8 +2127,8 @@
     },
     {
       "day": "Day1",
-      "start": "13:30",
-      "end": "13:40",
+      "start": "12:00",
+      "end": "12:10",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -2140,8 +2140,8 @@
     },
     {
       "day": "Day1",
-      "start": "13:30",
-      "end": "13:40",
+      "start": "12:00",
+      "end": "12:10",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -2153,8 +2153,8 @@
     },
     {
       "day": "Day1",
-      "start": "13:40",
-      "end": "13:50",
+      "start": "12:10",
+      "end": "12:20",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -2166,8 +2166,8 @@
     },
     {
       "day": "Day1",
-      "start": "13:40",
-      "end": "13:50",
+      "start": "12:10",
+      "end": "12:20",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -2179,8 +2179,8 @@
     },
     {
       "day": "Day1",
-      "start": "13:40",
-      "end": "13:50",
+      "start": "12:10",
+      "end": "12:20",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -2192,8 +2192,8 @@
     },
     {
       "day": "Day1",
-      "start": "13:50",
-      "end": "14:00",
+      "start": "12:20",
+      "end": "12:30",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -2205,8 +2205,8 @@
     },
     {
       "day": "Day1",
-      "start": "13:50",
-      "end": "14:00",
+      "start": "12:20",
+      "end": "12:30",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -2218,8 +2218,8 @@
     },
     {
       "day": "Day1",
-      "start": "13:50",
-      "end": "14:00",
+      "start": "12:20",
+      "end": "12:30",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -2231,8 +2231,8 @@
     },
     {
       "day": "Day1",
-      "start": "14:00",
-      "end": "14:10",
+      "start": "13:30",
+      "end": "13:40",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -2244,8 +2244,8 @@
     },
     {
       "day": "Day1",
-      "start": "14:00",
-      "end": "14:10",
+      "start": "13:30",
+      "end": "13:40",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -2257,8 +2257,8 @@
     },
     {
       "day": "Day1",
-      "start": "14:00",
-      "end": "14:10",
+      "start": "13:30",
+      "end": "13:40",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -2270,8 +2270,8 @@
     },
     {
       "day": "Day1",
-      "start": "14:10",
-      "end": "14:20",
+      "start": "13:40",
+      "end": "13:50",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -2283,8 +2283,8 @@
     },
     {
       "day": "Day1",
-      "start": "14:10",
-      "end": "14:20",
+      "start": "13:40",
+      "end": "13:50",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -2296,8 +2296,8 @@
     },
     {
       "day": "Day1",
-      "start": "14:10",
-      "end": "14:20",
+      "start": "13:40",
+      "end": "13:50",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -2309,8 +2309,8 @@
     },
     {
       "day": "Day1",
-      "start": "14:20",
-      "end": "14:30",
+      "start": "13:50",
+      "end": "14:00",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -2322,8 +2322,8 @@
     },
     {
       "day": "Day1",
-      "start": "14:20",
-      "end": "14:30",
+      "start": "13:50",
+      "end": "14:00",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -2335,8 +2335,8 @@
     },
     {
       "day": "Day1",
-      "start": "14:20",
-      "end": "14:30",
+      "start": "13:50",
+      "end": "14:00",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -2348,8 +2348,8 @@
     },
     {
       "day": "Day1",
-      "start": "14:30",
-      "end": "14:40",
+      "start": "14:00",
+      "end": "14:10",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -2361,8 +2361,8 @@
     },
     {
       "day": "Day1",
-      "start": "14:30",
-      "end": "14:40",
+      "start": "14:00",
+      "end": "14:10",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -2374,8 +2374,8 @@
     },
     {
       "day": "Day1",
-      "start": "14:30",
-      "end": "14:40",
+      "start": "14:00",
+      "end": "14:10",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -2387,8 +2387,8 @@
     },
     {
       "day": "Day1",
-      "start": "14:40",
-      "end": "14:50",
+      "start": "14:10",
+      "end": "14:20",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -2400,8 +2400,8 @@
     },
     {
       "day": "Day1",
-      "start": "14:40",
-      "end": "14:50",
+      "start": "14:10",
+      "end": "14:20",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -2413,8 +2413,8 @@
     },
     {
       "day": "Day1",
-      "start": "14:40",
-      "end": "14:50",
+      "start": "14:10",
+      "end": "14:20",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -2426,8 +2426,8 @@
     },
     {
       "day": "Day1",
-      "start": "14:50",
-      "end": "15:00",
+      "start": "14:20",
+      "end": "14:30",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -2439,8 +2439,8 @@
     },
     {
       "day": "Day1",
-      "start": "14:50",
-      "end": "15:00",
+      "start": "14:20",
+      "end": "14:30",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -2452,8 +2452,8 @@
     },
     {
       "day": "Day1",
-      "start": "14:50",
-      "end": "15:00",
+      "start": "14:20",
+      "end": "14:30",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -2465,8 +2465,8 @@
     },
     {
       "day": "Day1",
-      "start": "15:00",
-      "end": "15:10",
+      "start": "14:30",
+      "end": "14:40",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -2478,8 +2478,8 @@
     },
     {
       "day": "Day1",
-      "start": "15:00",
-      "end": "15:10",
+      "start": "14:30",
+      "end": "14:40",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -2491,8 +2491,8 @@
     },
     {
       "day": "Day1",
-      "start": "15:00",
-      "end": "15:10",
+      "start": "14:30",
+      "end": "14:40",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -2504,8 +2504,8 @@
     },
     {
       "day": "Day1",
-      "start": "15:10",
-      "end": "15:20",
+      "start": "14:40",
+      "end": "14:50",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -2517,8 +2517,8 @@
     },
     {
       "day": "Day1",
-      "start": "15:10",
-      "end": "15:20",
+      "start": "14:40",
+      "end": "14:50",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -2530,8 +2530,8 @@
     },
     {
       "day": "Day1",
-      "start": "15:10",
-      "end": "15:20",
+      "start": "14:40",
+      "end": "14:50",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -2543,8 +2543,8 @@
     },
     {
       "day": "Day1",
-      "start": "15:20",
-      "end": "15:30",
+      "start": "14:50",
+      "end": "15:00",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -2556,8 +2556,8 @@
     },
     {
       "day": "Day1",
-      "start": "15:20",
-      "end": "15:30",
+      "start": "14:50",
+      "end": "15:00",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -2569,8 +2569,8 @@
     },
     {
       "day": "Day1",
-      "start": "15:20",
-      "end": "15:30",
+      "start": "14:50",
+      "end": "15:00",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -2582,8 +2582,8 @@
     },
     {
       "day": "Day1",
-      "start": "15:30",
-      "end": "15:40",
+      "start": "15:00",
+      "end": "15:10",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -2595,8 +2595,8 @@
     },
     {
       "day": "Day1",
-      "start": "15:30",
-      "end": "15:40",
+      "start": "15:00",
+      "end": "15:10",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -2608,8 +2608,8 @@
     },
     {
       "day": "Day1",
-      "start": "15:30",
-      "end": "15:40",
+      "start": "15:00",
+      "end": "15:10",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -2621,8 +2621,8 @@
     },
     {
       "day": "Day1",
-      "start": "15:40",
-      "end": "15:50",
+      "start": "15:10",
+      "end": "15:20",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -2634,8 +2634,8 @@
     },
     {
       "day": "Day1",
-      "start": "15:40",
-      "end": "15:50",
+      "start": "15:10",
+      "end": "15:20",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -2647,8 +2647,8 @@
     },
     {
       "day": "Day1",
-      "start": "15:40",
-      "end": "15:50",
+      "start": "15:10",
+      "end": "15:20",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -2660,8 +2660,8 @@
     },
     {
       "day": "Day1",
-      "start": "15:50",
-      "end": "16:00",
+      "start": "15:20",
+      "end": "15:30",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -2673,8 +2673,8 @@
     },
     {
       "day": "Day1",
-      "start": "15:50",
-      "end": "16:00",
+      "start": "15:20",
+      "end": "15:30",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -2686,8 +2686,8 @@
     },
     {
       "day": "Day1",
-      "start": "15:50",
-      "end": "16:00",
+      "start": "15:20",
+      "end": "15:30",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -2699,8 +2699,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:00",
-      "end": "16:10",
+      "start": "15:30",
+      "end": "15:40",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -2712,8 +2712,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:00",
-      "end": "16:10",
+      "start": "15:30",
+      "end": "15:40",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -2725,8 +2725,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:00",
-      "end": "16:10",
+      "start": "15:30",
+      "end": "15:40",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -2738,8 +2738,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:10",
-      "end": "16:20",
+      "start": "15:40",
+      "end": "15:50",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -2751,8 +2751,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:10",
-      "end": "16:20",
+      "start": "15:40",
+      "end": "15:50",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -2764,8 +2764,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:10",
-      "end": "16:20",
+      "start": "15:40",
+      "end": "15:50",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -2777,8 +2777,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:20",
-      "end": "16:30",
+      "start": "15:50",
+      "end": "16:00",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -2790,8 +2790,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:20",
-      "end": "16:30",
+      "start": "15:50",
+      "end": "16:00",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -2803,8 +2803,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:20",
-      "end": "16:30",
+      "start": "15:50",
+      "end": "16:00",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -2816,8 +2816,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:30",
-      "end": "16:40",
+      "start": "16:00",
+      "end": "16:10",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -2829,8 +2829,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:30",
-      "end": "16:40",
+      "start": "16:00",
+      "end": "16:10",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -2842,8 +2842,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:30",
-      "end": "16:40",
+      "start": "16:00",
+      "end": "16:10",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -2855,8 +2855,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:40",
-      "end": "16:50",
+      "start": "16:10",
+      "end": "16:20",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -2868,8 +2868,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:40",
-      "end": "16:50",
+      "start": "16:10",
+      "end": "16:20",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -2881,8 +2881,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:40",
-      "end": "16:50",
+      "start": "16:10",
+      "end": "16:20",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -2894,8 +2894,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:50",
-      "end": "17:00",
+      "start": "16:20",
+      "end": "16:30",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -2907,8 +2907,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:50",
-      "end": "17:00",
+      "start": "16:20",
+      "end": "16:30",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -2920,8 +2920,8 @@
     },
     {
       "day": "Day1",
-      "start": "16:50",
-      "end": "17:00",
+      "start": "16:20",
+      "end": "16:30",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -2933,8 +2933,8 @@
     },
     {
       "day": "Day1",
-      "start": "17:00",
-      "end": "17:10",
+      "start": "16:30",
+      "end": "16:40",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -2946,8 +2946,8 @@
     },
     {
       "day": "Day1",
-      "start": "17:00",
-      "end": "17:10",
+      "start": "16:30",
+      "end": "16:40",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -2959,8 +2959,8 @@
     },
     {
       "day": "Day1",
-      "start": "17:00",
-      "end": "17:10",
+      "start": "16:30",
+      "end": "16:40",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -2971,9 +2971,9 @@
       ]
     },
     {
-      "day": "Day2",
-      "start": "09:00",
-      "end": "09:10",
+      "day": "Day1",
+      "start": "16:40",
+      "end": "16:50",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -2984,9 +2984,9 @@
       ]
     },
     {
-      "day": "Day2",
-      "start": "09:00",
-      "end": "09:10",
+      "day": "Day1",
+      "start": "16:40",
+      "end": "16:50",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -2997,9 +2997,9 @@
       ]
     },
     {
-      "day": "Day2",
-      "start": "09:00",
-      "end": "09:10",
+      "day": "Day1",
+      "start": "16:40",
+      "end": "16:50",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -3010,9 +3010,9 @@
       ]
     },
     {
-      "day": "Day2",
-      "start": "09:10",
-      "end": "09:20",
+      "day": "Day1",
+      "start": "16:50",
+      "end": "17:00",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -3023,9 +3023,9 @@
       ]
     },
     {
-      "day": "Day2",
-      "start": "09:10",
-      "end": "09:20",
+      "day": "Day1",
+      "start": "16:50",
+      "end": "17:00",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -3036,9 +3036,9 @@
       ]
     },
     {
-      "day": "Day2",
-      "start": "09:10",
-      "end": "09:20",
+      "day": "Day1",
+      "start": "16:50",
+      "end": "17:00",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -3050,8 +3050,8 @@
     },
     {
       "day": "Day2",
-      "start": "09:20",
-      "end": "09:30",
+      "start": "09:00",
+      "end": "09:10",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -3063,8 +3063,8 @@
     },
     {
       "day": "Day2",
-      "start": "09:20",
-      "end": "09:30",
+      "start": "09:00",
+      "end": "09:10",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -3076,8 +3076,8 @@
     },
     {
       "day": "Day2",
-      "start": "09:20",
-      "end": "09:30",
+      "start": "09:00",
+      "end": "09:10",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -3089,8 +3089,8 @@
     },
     {
       "day": "Day2",
-      "start": "09:30",
-      "end": "09:40",
+      "start": "09:10",
+      "end": "09:20",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -3102,8 +3102,8 @@
     },
     {
       "day": "Day2",
-      "start": "09:30",
-      "end": "09:40",
+      "start": "09:10",
+      "end": "09:20",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -3115,8 +3115,8 @@
     },
     {
       "day": "Day2",
-      "start": "09:30",
-      "end": "09:40",
+      "start": "09:10",
+      "end": "09:20",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -3128,8 +3128,8 @@
     },
     {
       "day": "Day2",
-      "start": "09:40",
-      "end": "09:50",
+      "start": "09:20",
+      "end": "09:30",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -3141,8 +3141,8 @@
     },
     {
       "day": "Day2",
-      "start": "09:40",
-      "end": "09:50",
+      "start": "09:20",
+      "end": "09:30",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -3154,8 +3154,8 @@
     },
     {
       "day": "Day2",
-      "start": "09:40",
-      "end": "09:50",
+      "start": "09:20",
+      "end": "09:30",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -3167,8 +3167,8 @@
     },
     {
       "day": "Day2",
-      "start": "09:50",
-      "end": "10:00",
+      "start": "09:30",
+      "end": "09:40",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -3180,8 +3180,8 @@
     },
     {
       "day": "Day2",
-      "start": "09:50",
-      "end": "10:00",
+      "start": "09:30",
+      "end": "09:40",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -3193,8 +3193,8 @@
     },
     {
       "day": "Day2",
-      "start": "09:50",
-      "end": "10:00",
+      "start": "09:30",
+      "end": "09:40",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -3206,8 +3206,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:00",
-      "end": "10:10",
+      "start": "09:40",
+      "end": "09:50",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -3219,8 +3219,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:00",
-      "end": "10:10",
+      "start": "09:40",
+      "end": "09:50",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -3232,8 +3232,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:00",
-      "end": "10:10",
+      "start": "09:40",
+      "end": "09:50",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -3245,8 +3245,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:10",
-      "end": "10:20",
+      "start": "09:50",
+      "end": "10:00",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -3258,8 +3258,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:10",
-      "end": "10:20",
+      "start": "09:50",
+      "end": "10:00",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -3271,8 +3271,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:10",
-      "end": "10:20",
+      "start": "09:50",
+      "end": "10:00",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -3284,8 +3284,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:20",
-      "end": "10:30",
+      "start": "10:00",
+      "end": "10:10",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -3297,8 +3297,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:20",
-      "end": "10:30",
+      "start": "10:00",
+      "end": "10:10",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -3310,8 +3310,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:20",
-      "end": "10:30",
+      "start": "10:00",
+      "end": "10:10",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -3323,8 +3323,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:30",
-      "end": "10:40",
+      "start": "10:10",
+      "end": "10:20",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -3336,8 +3336,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:30",
-      "end": "10:40",
+      "start": "10:10",
+      "end": "10:20",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -3349,8 +3349,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:30",
-      "end": "10:40",
+      "start": "10:10",
+      "end": "10:20",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -3362,8 +3362,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:40",
-      "end": "10:50",
+      "start": "10:20",
+      "end": "10:30",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -3375,8 +3375,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:40",
-      "end": "10:50",
+      "start": "10:20",
+      "end": "10:30",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -3388,8 +3388,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:40",
-      "end": "10:50",
+      "start": "10:20",
+      "end": "10:30",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -3401,8 +3401,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:50",
-      "end": "11:00",
+      "start": "10:30",
+      "end": "10:40",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 1",
       "teams": [
@@ -3414,8 +3414,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:50",
-      "end": "11:00",
+      "start": "10:30",
+      "end": "10:40",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 2",
       "teams": [
@@ -3427,8 +3427,8 @@
     },
     {
       "day": "Day2",
-      "start": "10:50",
-      "end": "11:00",
+      "start": "10:30",
+      "end": "10:40",
       "resource_kind": "arena",
       "resource_name": "Line Entry \u2013 Arena 3",
       "teams": [
@@ -3440,12 +3440,103 @@
     },
     {
       "day": "Day1",
+      "start": "10:30",
+      "end": "10:40",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "B.Robots Seniors"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "10:40",
+      "end": "10:50",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "B.Robots"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "10:50",
+      "end": "11:00",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "B.Robots Juniors"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:00",
+      "end": "11:10",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "Lugner"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:10",
+      "end": "11:20",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "Fight Club"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:20",
+      "end": "11:30",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "Monstar in Muul"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:30",
+      "end": "11:40",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "Gebr\u00fcder Weiss CRO Team"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
       "start": "11:40",
       "end": "11:50",
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "B.Robots Seniors"
+        "TechTitans"
       ],
       "divisions": [
         "Maze"
@@ -3458,7 +3549,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "B.Robots"
+        "DIPH"
       ],
       "divisions": [
         "Maze"
@@ -3471,7 +3562,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "B.Robots Juniors"
+        "(Entry) Stars"
       ],
       "divisions": [
         "Maze"
@@ -3484,20 +3575,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "Lugner"
-      ],
-      "divisions": [
-        "Maze"
-      ]
-    },
-    {
-      "day": "Day1",
-      "start": "12:20",
-      "end": "12:30",
-      "resource_kind": "arena",
-      "resource_name": "Maze \u2013 Arena 1",
-      "teams": [
-        "Fight Club"
+        "(Entry) Mazetrix Vienna"
       ],
       "divisions": [
         "Maze"
@@ -3510,7 +3588,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "Monstar in Muul"
+        "B.Robots Seniors"
       ],
       "divisions": [
         "Maze"
@@ -3523,7 +3601,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "Gebr\u00fcder Weiss CRO Team"
+        "B.Robots"
       ],
       "divisions": [
         "Maze"
@@ -3536,7 +3614,59 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "TechTitans"
+        "B.Robots Juniors"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:00",
+      "end": "14:10",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "Lugner"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:10",
+      "end": "14:20",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "Fight Club"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:20",
+      "end": "14:30",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "Monstar in Muul"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:30",
+      "end": "14:40",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
+        "Gebr\u00fcder Weiss CRO Team"
       ],
       "divisions": [
         "Maze"
@@ -3549,7 +3679,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "DIPH"
+        "TechTitans"
       ],
       "divisions": [
         "Maze"
@@ -3562,7 +3692,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "(Entry) Stars"
+        "DIPH"
       ],
       "divisions": [
         "Maze"
@@ -3575,7 +3705,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "(Entry) Mazetrix Vienna"
+        "(Entry) Stars"
       ],
       "divisions": [
         "Maze"
@@ -3588,72 +3718,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "B.Robots Seniors"
-      ],
-      "divisions": [
-        "Maze"
-      ]
-    },
-    {
-      "day": "Day1",
-      "start": "15:20",
-      "end": "15:30",
-      "resource_kind": "arena",
-      "resource_name": "Maze \u2013 Arena 1",
-      "teams": [
-        "B.Robots"
-      ],
-      "divisions": [
-        "Maze"
-      ]
-    },
-    {
-      "day": "Day1",
-      "start": "15:30",
-      "end": "15:40",
-      "resource_kind": "arena",
-      "resource_name": "Maze \u2013 Arena 1",
-      "teams": [
-        "B.Robots Juniors"
-      ],
-      "divisions": [
-        "Maze"
-      ]
-    },
-    {
-      "day": "Day1",
-      "start": "15:40",
-      "end": "15:50",
-      "resource_kind": "arena",
-      "resource_name": "Maze \u2013 Arena 1",
-      "teams": [
-        "Lugner"
-      ],
-      "divisions": [
-        "Maze"
-      ]
-    },
-    {
-      "day": "Day1",
-      "start": "15:50",
-      "end": "16:00",
-      "resource_kind": "arena",
-      "resource_name": "Maze \u2013 Arena 1",
-      "teams": [
-        "Fight Club"
-      ],
-      "divisions": [
-        "Maze"
-      ]
-    },
-    {
-      "day": "Day1",
-      "start": "16:00",
-      "end": "16:10",
-      "resource_kind": "arena",
-      "resource_name": "Maze \u2013 Arena 1",
-      "teams": [
-        "Monstar in Muul"
+        "(Entry) Mazetrix Vienna"
       ],
       "divisions": [
         "Maze"
@@ -3666,7 +3731,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "Gebr\u00fcder Weiss CRO Team"
+        "B.Robots Seniors"
       ],
       "divisions": [
         "Maze"
@@ -3679,7 +3744,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "TechTitans"
+        "B.Robots"
       ],
       "divisions": [
         "Maze"
@@ -3692,7 +3757,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "DIPH"
+        "B.Robots Juniors"
       ],
       "divisions": [
         "Maze"
@@ -3705,7 +3770,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "(Entry) Stars"
+        "Lugner"
       ],
       "divisions": [
         "Maze"
@@ -3718,20 +3783,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "(Entry) Mazetrix Vienna"
-      ],
-      "divisions": [
-        "Maze"
-      ]
-    },
-    {
-      "day": "Day1",
-      "start": "17:00",
-      "end": "17:10",
-      "resource_kind": "arena",
-      "resource_name": "Maze \u2013 Arena 1",
-      "teams": [
-        "B.Robots Seniors"
+        "Fight Club"
       ],
       "divisions": [
         "Maze"
@@ -3744,7 +3796,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "B.Robots"
+        "Monstar in Muul"
       ],
       "divisions": [
         "Maze"
@@ -3757,7 +3809,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "B.Robots Juniors"
+        "Gebr\u00fcder Weiss CRO Team"
       ],
       "divisions": [
         "Maze"
@@ -3770,7 +3822,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "Lugner"
+        "TechTitans"
       ],
       "divisions": [
         "Maze"
@@ -3783,7 +3835,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "Fight Club"
+        "DIPH"
       ],
       "divisions": [
         "Maze"
@@ -3796,7 +3848,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "Monstar in Muul"
+        "(Entry) Stars"
       ],
       "divisions": [
         "Maze"
@@ -3809,72 +3861,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "Gebr\u00fcder Weiss CRO Team"
-      ],
-      "divisions": [
-        "Maze"
-      ]
-    },
-    {
-      "day": "Day2",
-      "start": "10:00",
-      "end": "10:10",
-      "resource_kind": "arena",
-      "resource_name": "Maze \u2013 Arena 1",
-      "teams": [
-        "TechTitans"
-      ],
-      "divisions": [
-        "Maze"
-      ]
-    },
-    {
-      "day": "Day2",
-      "start": "10:10",
-      "end": "10:20",
-      "resource_kind": "arena",
-      "resource_name": "Maze \u2013 Arena 1",
-      "teams": [
-        "DIPH"
-      ],
-      "divisions": [
-        "Maze"
-      ]
-    },
-    {
-      "day": "Day2",
-      "start": "10:20",
-      "end": "10:30",
-      "resource_kind": "arena",
-      "resource_name": "Maze \u2013 Arena 1",
-      "teams": [
-        "(Entry) Stars"
-      ],
-      "divisions": [
-        "Maze"
-      ]
-    },
-    {
-      "day": "Day2",
-      "start": "10:30",
-      "end": "10:40",
-      "resource_kind": "arena",
-      "resource_name": "Maze \u2013 Arena 1",
-      "teams": [
         "(Entry) Mazetrix Vienna"
-      ],
-      "divisions": [
-        "Maze"
-      ]
-    },
-    {
-      "day": "Day2",
-      "start": "10:40",
-      "end": "10:50",
-      "resource_kind": "arena",
-      "resource_name": "Maze \u2013 Arena 1",
-      "teams": [
-        "B.Robots Seniors"
       ],
       "divisions": [
         "Maze"
@@ -3887,7 +3874,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "B.Robots"
+        "B.Robots Seniors"
       ],
       "divisions": [
         "Maze"
@@ -3900,7 +3887,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "B.Robots Juniors"
+        "B.Robots"
       ],
       "divisions": [
         "Maze"
@@ -3913,7 +3900,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "Lugner"
+        "B.Robots Juniors"
       ],
       "divisions": [
         "Maze"
@@ -3926,7 +3913,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "Fight Club"
+        "Lugner"
       ],
       "divisions": [
         "Maze"
@@ -3939,7 +3926,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "Monstar in Muul"
+        "Fight Club"
       ],
       "divisions": [
         "Maze"
@@ -3952,7 +3939,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "Gebr\u00fcder Weiss CRO Team"
+        "Monstar in Muul"
       ],
       "divisions": [
         "Maze"
@@ -3965,7 +3952,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "TechTitans"
+        "Gebr\u00fcder Weiss CRO Team"
       ],
       "divisions": [
         "Maze"
@@ -3978,7 +3965,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "DIPH"
+        "TechTitans"
       ],
       "divisions": [
         "Maze"
@@ -3991,7 +3978,7 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
-        "(Entry) Stars"
+        "DIPH"
       ],
       "divisions": [
         "Maze"
@@ -4004,6 +3991,19 @@
       "resource_kind": "arena",
       "resource_name": "Maze \u2013 Arena 1",
       "teams": [
+        "(Entry) Stars"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day2",
+      "start": "12:30",
+      "end": "12:40",
+      "resource_kind": "arena",
+      "resource_name": "Maze \u2013 Arena 1",
+      "teams": [
         "(Entry) Mazetrix Vienna"
       ],
       "divisions": [
@@ -4012,10 +4012,321 @@
     },
     {
       "day": "Day1",
-      "start": "11:30",
-      "end": "11:45",
+      "start": "15:30",
+      "end": "15:45",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 1",
+      "teams": [
+        "B.Robots Seniors",
+        "B.Robots"
+      ],
+      "divisions": [
+        "Maze",
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:30",
+      "end": "15:45",
+      "resource_kind": "interview",
+      "resource_name": "Interview 2",
+      "teams": [
+        "B.Robots Juniors",
+        "Lugner"
+      ],
+      "divisions": [
+        "Maze",
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:45",
+      "end": "16:00",
+      "resource_kind": "interview",
+      "resource_name": "Interview 1",
+      "teams": [
+        "Fight Club",
+        "Monstar in Muul"
+      ],
+      "divisions": [
+        "Maze",
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:45",
+      "end": "16:00",
+      "resource_kind": "interview",
+      "resource_name": "Interview 2",
+      "teams": [
+        "Gebr\u00fcder Weiss CRO Team",
+        "TechTitans"
+      ],
+      "divisions": [
+        "Maze",
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day2",
+      "start": "10:00",
+      "end": "10:15",
+      "resource_kind": "interview",
+      "resource_name": "Interview 1",
+      "teams": [
+        "DIPH",
+        "(Entry) Stars"
+      ],
+      "divisions": [
+        "Maze",
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day2",
+      "start": "10:15",
+      "end": "10:30",
+      "resource_kind": "interview",
+      "resource_name": "Interview 1",
+      "teams": [
+        "(Entry) Mazetrix Vienna"
+      ],
+      "divisions": [
+        "Maze"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "10:30",
+      "end": "10:40",
+      "resource_kind": "arena",
+      "resource_name": "Online_Simulation \u2013 Arena 1",
+      "teams": [
+        "Metal Minds"
+      ],
+      "divisions": [
+        "Online_Simulation"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "10:40",
+      "end": "10:50",
+      "resource_kind": "arena",
+      "resource_name": "Online_Simulation \u2013 Arena 1",
+      "teams": [
+        "MS LaH\u00f6"
+      ],
+      "divisions": [
+        "Online_Simulation"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "10:50",
+      "end": "11:00",
+      "resource_kind": "arena",
+      "resource_name": "Online_Simulation \u2013 Arena 1",
+      "teams": [
+        "O-Dorf"
+      ],
+      "divisions": [
+        "Online_Simulation"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:00",
+      "end": "11:10",
+      "resource_kind": "arena",
+      "resource_name": "Online_Simulation \u2013 Arena 1",
+      "teams": [
+        "MS H\u00f6We"
+      ],
+      "divisions": [
+        "Online_Simulation"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:40",
+      "end": "11:50",
+      "resource_kind": "arena",
+      "resource_name": "Online_Simulation \u2013 Arena 1",
+      "teams": [
+        "Metal Minds"
+      ],
+      "divisions": [
+        "Online_Simulation"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "11:50",
+      "end": "12:00",
+      "resource_kind": "arena",
+      "resource_name": "Online_Simulation \u2013 Arena 1",
+      "teams": [
+        "MS LaH\u00f6"
+      ],
+      "divisions": [
+        "Online_Simulation"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:00",
+      "end": "12:10",
+      "resource_kind": "arena",
+      "resource_name": "Online_Simulation \u2013 Arena 1",
+      "teams": [
+        "O-Dorf"
+      ],
+      "divisions": [
+        "Online_Simulation"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:10",
+      "end": "12:20",
+      "resource_kind": "arena",
+      "resource_name": "Online_Simulation \u2013 Arena 1",
+      "teams": [
+        "MS H\u00f6We"
+      ],
+      "divisions": [
+        "Online_Simulation"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:30",
+      "end": "13:40",
+      "resource_kind": "arena",
+      "resource_name": "Online_Simulation \u2013 Arena 1",
+      "teams": [
+        "Metal Minds"
+      ],
+      "divisions": [
+        "Online_Simulation"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:40",
+      "end": "13:50",
+      "resource_kind": "arena",
+      "resource_name": "Online_Simulation \u2013 Arena 1",
+      "teams": [
+        "MS LaH\u00f6"
+      ],
+      "divisions": [
+        "Online_Simulation"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "13:50",
+      "end": "14:00",
+      "resource_kind": "arena",
+      "resource_name": "Online_Simulation \u2013 Arena 1",
+      "teams": [
+        "O-Dorf"
+      ],
+      "divisions": [
+        "Online_Simulation"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:00",
+      "end": "14:10",
+      "resource_kind": "arena",
+      "resource_name": "Online_Simulation \u2013 Arena 1",
+      "teams": [
+        "MS H\u00f6We"
+      ],
+      "divisions": [
+        "Online_Simulation"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:40",
+      "end": "14:50",
+      "resource_kind": "arena",
+      "resource_name": "Online_Simulation \u2013 Arena 1",
+      "teams": [
+        "Metal Minds"
+      ],
+      "divisions": [
+        "Online_Simulation"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:50",
+      "end": "15:00",
+      "resource_kind": "arena",
+      "resource_name": "Online_Simulation \u2013 Arena 1",
+      "teams": [
+        "MS LaH\u00f6"
+      ],
+      "divisions": [
+        "Online_Simulation"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:00",
+      "end": "15:10",
+      "resource_kind": "arena",
+      "resource_name": "Online_Simulation \u2013 Arena 1",
+      "teams": [
+        "O-Dorf"
+      ],
+      "divisions": [
+        "Online_Simulation"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "15:10",
+      "end": "15:20",
+      "resource_kind": "arena",
+      "resource_name": "Online_Simulation \u2013 Arena 1",
+      "teams": [
+        "MS H\u00f6We"
+      ],
+      "divisions": [
+        "Online_Simulation"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "14:15",
+      "end": "14:30",
+      "resource_kind": "interview",
+      "resource_name": "Interview 1",
+      "teams": [
+        "Metal Minds",
+        "MS LaH\u00f6"
+      ],
+      "divisions": [
+        "Online_Simulation",
+        "Online_Simulation"
+      ]
+    },
+    {
+      "day": "Day1",
+      "start": "12:00",
+      "end": "12:15",
+      "resource_kind": "interview",
+      "resource_name": "Interview 1",
       "teams": [
         "Mechanic Team",
         "Eurobot"
@@ -4027,10 +4338,10 @@
     },
     {
       "day": "Day1",
-      "start": "11:45",
-      "end": "12:00",
+      "start": "12:15",
+      "end": "12:30",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 1",
       "teams": [
         "Library",
         "Die Haftelmacher"
@@ -4042,10 +4353,10 @@
     },
     {
       "day": "Day1",
-      "start": "14:00",
-      "end": "14:15",
+      "start": "13:30",
+      "end": "13:45",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 1",
       "teams": [
         "Das Original",
         "we:bots"
@@ -4057,10 +4368,10 @@
     },
     {
       "day": "Day1",
-      "start": "14:15",
-      "end": "14:30",
+      "start": "13:30",
+      "end": "13:45",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 2",
       "teams": [
         "GearUp",
         "Die Glorreichen 4"
@@ -4072,10 +4383,10 @@
     },
     {
       "day": "Day1",
-      "start": "15:15",
-      "end": "15:30",
+      "start": "13:45",
+      "end": "14:00",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 1",
       "teams": [
         "Kaktus",
         "Nebenniere"
@@ -4087,10 +4398,10 @@
     },
     {
       "day": "Day1",
-      "start": "15:30",
-      "end": "15:45",
+      "start": "13:45",
+      "end": "14:00",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 2",
       "teams": [
         "Kepler 404",
         "2 Geh\u00f6rnzellen"
@@ -4102,10 +4413,10 @@
     },
     {
       "day": "Day1",
-      "start": "15:45",
-      "end": "16:00",
+      "start": "14:00",
+      "end": "14:15",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 1",
       "teams": [
         "Project William",
         "Project X"
@@ -4117,10 +4428,10 @@
     },
     {
       "day": "Day1",
-      "start": "17:00",
-      "end": "17:15",
+      "start": "14:00",
+      "end": "14:15",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 2",
       "teams": [
         "TriByte",
         "NanoRobots"
@@ -4131,11 +4442,11 @@
       ]
     },
     {
-      "day": "Day2",
-      "start": "09:00",
-      "end": "09:15",
+      "day": "Day1",
+      "start": "14:15",
+      "end": "14:30",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 2",
       "teams": [
         "Angora Goasbock",
         "Project PVP"
@@ -4146,11 +4457,11 @@
       ]
     },
     {
-      "day": "Day2",
-      "start": "09:15",
-      "end": "09:30",
+      "day": "Day1",
+      "start": "16:30",
+      "end": "16:45",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 1",
       "teams": [
         "Deep-Drive",
         "Die (3) 2 Robomenschen"
@@ -4161,11 +4472,11 @@
       ]
     },
     {
-      "day": "Day2",
-      "start": "10:15",
-      "end": "10:30",
+      "day": "Day1",
+      "start": "14:30",
+      "end": "14:45",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 1",
       "teams": [
         "HTL Trieben Engineering",
         "NLO Rescue CRO Team"
@@ -4180,7 +4491,7 @@
       "start": "12:00",
       "end": "12:15",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 2",
       "teams": [
         "Negativ",
         "Botzilla"
@@ -4195,7 +4506,7 @@
       "start": "12:15",
       "end": "12:30",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 2",
       "teams": [
         "Ifhungryeat",
         "Schwainsbraten_Hooligans"
@@ -4207,10 +4518,10 @@
     },
     {
       "day": "Day1",
-      "start": "13:30",
-      "end": "13:45",
+      "start": "14:30",
+      "end": "14:45",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 2",
       "teams": [
         "Gulaschpanzer",
         "Cyberh\u00fchner"
@@ -4222,10 +4533,10 @@
     },
     {
       "day": "Day1",
-      "start": "13:45",
-      "end": "14:00",
+      "start": "14:45",
+      "end": "15:00",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 1",
       "teams": [
         "CyberStorm",
         "Die Linienrichter"
@@ -4237,10 +4548,10 @@
     },
     {
       "day": "Day1",
-      "start": "16:00",
-      "end": "16:15",
+      "start": "14:45",
+      "end": "15:00",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 2",
       "teams": [
         "Night Strikers",
         "Stroke_of_Genius"
@@ -4252,10 +4563,10 @@
     },
     {
       "day": "Day1",
-      "start": "16:15",
-      "end": "16:30",
+      "start": "15:00",
+      "end": "15:15",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 1",
       "teams": [
         "Code4U Line",
         "Salamibrot"
@@ -4267,10 +4578,10 @@
     },
     {
       "day": "Day1",
-      "start": "16:30",
-      "end": "16:45",
+      "start": "15:00",
+      "end": "15:15",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 2",
       "teams": [
         "Made in China",
         "Miss klickt"
@@ -4282,10 +4593,10 @@
     },
     {
       "day": "Day1",
-      "start": "16:45",
-      "end": "17:00",
+      "start": "15:15",
+      "end": "15:30",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 1",
       "teams": [
         "The Ninjas",
         "Project Pommes"
@@ -4296,11 +4607,11 @@
       ]
     },
     {
-      "day": "Day2",
-      "start": "10:00",
-      "end": "10:15",
+      "day": "Day1",
+      "start": "15:15",
+      "end": "15:30",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 2",
       "teams": [
         "Potato Girls",
         "Kampfzwerge"
@@ -4311,11 +4622,11 @@
       ]
     },
     {
-      "day": "Day2",
-      "start": "10:30",
-      "end": "10:45",
+      "day": "Day1",
+      "start": "16:00",
+      "end": "16:15",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 1",
       "teams": [
         "Ninja Turtles",
         "Big R\u00f6sti"
@@ -4326,11 +4637,11 @@
       ]
     },
     {
-      "day": "Day2",
-      "start": "10:45",
-      "end": "11:00",
+      "day": "Day1",
+      "start": "16:00",
+      "end": "16:15",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 2",
       "teams": [
         "No pain no gain",
         "Panzerabwehrflugger\u00e4t"
@@ -4341,11 +4652,11 @@
       ]
     },
     {
-      "day": "Day2",
-      "start": "11:00",
-      "end": "11:15",
+      "day": "Day1",
+      "start": "16:15",
+      "end": "16:30",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 1",
       "teams": [
         "Byte Me",
         "Pixelbauer"
@@ -4356,11 +4667,11 @@
       ]
     },
     {
-      "day": "Day2",
-      "start": "11:15",
-      "end": "11:30",
+      "day": "Day1",
+      "start": "16:15",
+      "end": "16:30",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 2",
       "teams": [
         "Tobix",
         "Astrogix"
@@ -4371,11 +4682,11 @@
       ]
     },
     {
-      "day": "Day2",
-      "start": "11:30",
-      "end": "11:45",
+      "day": "Day1",
+      "start": "16:30",
+      "end": "16:45",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 2",
       "teams": [
         "Keine Ahnung",
         "Team Talentlosen"
@@ -4386,11 +4697,11 @@
       ]
     },
     {
-      "day": "Day2",
-      "start": "11:45",
-      "end": "12:00",
+      "day": "Day1",
+      "start": "16:45",
+      "end": "17:00",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 1",
       "teams": [
         "Doofuse",
         "Wowa 2.0"
@@ -4401,11 +4712,11 @@
       ]
     },
     {
-      "day": "Day2",
-      "start": "12:00",
-      "end": "12:15",
+      "day": "Day1",
+      "start": "16:45",
+      "end": "17:00",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 2",
       "teams": [
         "Renegade",
         "Queens of the Robots"
@@ -4416,11 +4727,11 @@
       ]
     },
     {
-      "day": "Day2",
-      "start": "12:15",
-      "end": "12:30",
+      "day": "Day1",
+      "start": "17:00",
+      "end": "17:15",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 1",
       "teams": [
         "Frederik Squad",
         "The Bots"
@@ -4431,11 +4742,11 @@
       ]
     },
     {
-      "day": "Day2",
-      "start": "12:30",
-      "end": "12:45",
+      "day": "Day1",
+      "start": "17:00",
+      "end": "17:15",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 2",
       "teams": [
         "The Prime",
         "Volte Bot"
@@ -4446,11 +4757,11 @@
       ]
     },
     {
-      "day": "Day2",
-      "start": "12:45",
-      "end": "13:00",
+      "day": "Day1",
+      "start": "17:15",
+      "end": "17:30",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 1",
       "teams": [
         "Chaos-Piloten",
         "DDHS"
@@ -4461,11 +4772,11 @@
       ]
     },
     {
-      "day": "Day2",
-      "start": "13:00",
-      "end": "13:15",
+      "day": "Day1",
+      "start": "17:15",
+      "end": "17:30",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 2",
       "teams": [
         "Die Grafen",
         "Team G\u00fcnther 7"
@@ -4477,10 +4788,10 @@
     },
     {
       "day": "Day2",
-      "start": "13:15",
-      "end": "13:30",
+      "start": "09:00",
+      "end": "09:15",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 1",
       "teams": [
         "PlaKaRaNi",
         "E&E"
@@ -4492,10 +4803,10 @@
     },
     {
       "day": "Day2",
-      "start": "13:30",
-      "end": "13:45",
+      "start": "09:00",
+      "end": "09:15",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 2",
       "teams": [
         "Klaka Robotics"
       ],
@@ -4504,91 +4815,18 @@
       ]
     },
     {
-      "day": "Day1",
-      "start": "11:00",
-      "end": "11:15",
-      "resource_kind": "interview",
-      "resource_name": "Interview",
-      "teams": [
-        "B.Robots Seniors",
-        "B.Robots"
-      ],
-      "divisions": [
-        "Maze",
-        "Maze"
-      ]
-    },
-    {
-      "day": "Day1",
-      "start": "11:15",
-      "end": "11:30",
-      "resource_kind": "interview",
-      "resource_name": "Interview",
-      "teams": [
-        "B.Robots Juniors",
-        "Lugner"
-      ],
-      "divisions": [
-        "Maze",
-        "Maze"
-      ]
-    },
-    {
-      "day": "Day1",
-      "start": "14:30",
-      "end": "14:45",
-      "resource_kind": "interview",
-      "resource_name": "Interview",
-      "teams": [
-        "Fight Club",
-        "Monstar in Muul"
-      ],
-      "divisions": [
-        "Maze",
-        "Maze"
-      ]
-    },
-    {
-      "day": "Day1",
-      "start": "14:45",
-      "end": "15:00",
-      "resource_kind": "interview",
-      "resource_name": "Interview",
-      "teams": [
-        "Gebr\u00fcder Weiss CRO Team",
-        "TechTitans"
-      ],
-      "divisions": [
-        "Maze",
-        "Maze"
-      ]
-    },
-    {
       "day": "Day2",
-      "start": "09:30",
-      "end": "09:45",
+      "start": "09:15",
+      "end": "09:30",
       "resource_kind": "interview",
-      "resource_name": "Interview",
+      "resource_name": "Interview 1",
       "teams": [
-        "DIPH",
-        "(Entry) Stars"
+        "O-Dorf",
+        "MS H\u00f6We"
       ],
       "divisions": [
-        "Maze",
-        "Maze"
-      ]
-    },
-    {
-      "day": "Day2",
-      "start": "09:45",
-      "end": "10:00",
-      "resource_kind": "interview",
-      "resource_name": "Interview",
-      "teams": [
-        "(Entry) Mazetrix Vienna"
-      ],
-      "divisions": [
-        "Maze"
+        "Online_Simulation",
+        "Online_Simulation"
       ]
     }
   ]

@@ -1,116 +1,86 @@
 time_slot,resource,teams
-09:00-09:15,Interview,"Angora Goasbock, Project PVP"
-09:00-09:10,Line Entry – Arena 1,Die Linienrichter
-09:00-09:10,Line Entry – Arena 2,Night Strikers
-09:00-09:10,Line Entry – Arena 3,Stroke_of_Genius
-09:00-09:10,Line – Arena 1,we:bots
-09:00-09:10,Line – Arena 2,GearUp
-09:00-09:10,Line – Arena 3,Die Glorreichen 4
-09:00-09:10,Maze – Arena 1,B.Robots
-09:10-09:20,Line Entry – Arena 1,Code4U Line
-09:10-09:20,Line Entry – Arena 2,Salamibrot
-09:10-09:20,Line Entry – Arena 3,Made in China
-09:10-09:20,Line – Arena 1,Kaktus
-09:10-09:20,Line – Arena 2,Nebenniere
-09:10-09:20,Line – Arena 3,Kepler 404
-09:10-09:20,Maze – Arena 1,B.Robots Juniors
-09:15-09:30,Interview,"Deep-Drive, Die (3) 2 Robomenschen"
-09:20-09:30,Line Entry – Arena 1,Miss klickt
-09:20-09:30,Line Entry – Arena 2,The Ninjas
-09:20-09:30,Line Entry – Arena 3,Project Pommes
-09:20-09:30,Line – Arena 1,2 Gehörnzellen
-09:20-09:30,Line – Arena 2,Project William
-09:20-09:30,Line – Arena 3,Project X
-09:20-09:30,Maze – Arena 1,Lugner
-09:30-09:45,Interview,"DIPH, (Entry) Stars"
-09:30-09:40,Line Entry – Arena 1,Potato Girls
-09:30-09:40,Line Entry – Arena 2,Kampfzwerge
-09:30-09:40,Line Entry – Arena 3,Ninja Turtles
-09:30-09:40,Line – Arena 1,TriByte
-09:30-09:40,Line – Arena 2,NanoRobots
-09:30-09:40,Line – Arena 3,Angora Goasbock
-09:30-09:40,Maze – Arena 1,Fight Club
-09:40-09:50,Line Entry – Arena 1,Big Rösti
-09:40-09:50,Line Entry – Arena 2,No pain no gain
-09:40-09:50,Line Entry – Arena 3,Panzerabwehrfluggerät
-09:40-09:50,Line – Arena 1,Project PVP
-09:40-09:50,Line – Arena 2,Deep-Drive
-09:40-09:50,Line – Arena 3,Die (3) 2 Robomenschen
-09:40-09:50,Maze – Arena 1,Monstar in Muul
-09:45-10:00,Interview,(Entry) Mazetrix Vienna
-09:50-10:00,Line Entry – Arena 1,Byte Me
-09:50-10:00,Line Entry – Arena 2,Pixelbauer
-09:50-10:00,Line Entry – Arena 3,Tobix
-09:50-10:00,Line – Arena 1,HTL Trieben Engineering
-09:50-10:00,Line – Arena 2,NLO Rescue CRO Team
-09:50-10:00,Line – Arena 3,Mechanic Team
-09:50-10:00,Maze – Arena 1,Gebrüder Weiss CRO Team
-10:00-10:15,Interview,"Potato Girls, Kampfzwerge"
-10:00-10:10,Line Entry – Arena 1,Astrogix
-10:00-10:10,Line Entry – Arena 2,Keine Ahnung
-10:00-10:10,Line Entry – Arena 3,Team Talentlosen
-10:00-10:10,Line – Arena 1,Eurobot
-10:00-10:10,Line – Arena 2,Library
-10:00-10:10,Line – Arena 3,Die Haftelmacher
-10:00-10:10,Maze – Arena 1,TechTitans
-10:10-10:20,Line Entry – Arena 1,Doofuse
-10:10-10:20,Line Entry – Arena 2,Wowa 2.0
-10:10-10:20,Line Entry – Arena 3,Renegade
-10:10-10:20,Line – Arena 1,Das Original
-10:10-10:20,Line – Arena 2,we:bots
-10:10-10:20,Line – Arena 3,GearUp
-10:10-10:20,Maze – Arena 1,DIPH
-10:15-10:30,Interview,"HTL Trieben Engineering, NLO Rescue CRO Team"
-10:20-10:30,Line Entry – Arena 1,Queens of the Robots
-10:20-10:30,Line Entry – Arena 2,Frederik Squad
-10:20-10:30,Line Entry – Arena 3,The Bots
-10:20-10:30,Line – Arena 1,Die Glorreichen 4
-10:20-10:30,Line – Arena 2,Kaktus
-10:20-10:30,Line – Arena 3,Nebenniere
-10:20-10:30,Maze – Arena 1,(Entry) Stars
-10:30-10:45,Interview,"Ninja Turtles, Big Rösti"
-10:30-10:40,Line Entry – Arena 1,The Prime
-10:30-10:40,Line Entry – Arena 2,Volte Bot
-10:30-10:40,Line Entry – Arena 3,Chaos-Piloten
-10:30-10:40,Line – Arena 1,Kepler 404
-10:30-10:40,Line – Arena 2,2 Gehörnzellen
-10:30-10:40,Line – Arena 3,Project William
-10:30-10:40,Maze – Arena 1,(Entry) Mazetrix Vienna
-10:40-10:50,Line Entry – Arena 1,DDHS
-10:40-10:50,Line Entry – Arena 2,Die Grafen
-10:40-10:50,Line Entry – Arena 3,Team Günther 7
-10:40-10:50,Line – Arena 1,Project X
-10:40-10:50,Line – Arena 2,TriByte
-10:40-10:50,Line – Arena 3,NanoRobots
-10:40-10:50,Maze – Arena 1,B.Robots Seniors
-10:45-11:00,Interview,"No pain no gain, Panzerabwehrfluggerät"
-10:50-11:00,Line Entry – Arena 1,PlaKaRaNi
-10:50-11:00,Line Entry – Arena 2,E&E
-10:50-11:00,Line Entry – Arena 3,Klaka Robotics
-10:50-11:00,Line – Arena 1,Angora Goasbock
-10:50-11:00,Line – Arena 2,Project PVP
-10:50-11:00,Line – Arena 3,Deep-Drive
-10:50-11:00,Maze – Arena 1,B.Robots
-11:00-11:15,Interview,"Byte Me, Pixelbauer"
-11:00-11:10,Line – Arena 1,Die (3) 2 Robomenschen
-11:00-11:10,Line – Arena 2,HTL Trieben Engineering
-11:00-11:10,Line – Arena 3,NLO Rescue CRO Team
-11:00-11:10,Maze – Arena 1,B.Robots Juniors
-11:10-11:20,Maze – Arena 1,Lugner
-11:15-11:30,Interview,"Tobix, Astrogix"
-11:20-11:30,Maze – Arena 1,Fight Club
-11:30-11:45,Interview,"Keine Ahnung, Team Talentlosen"
-11:30-11:40,Maze – Arena 1,Monstar in Muul
-11:40-11:50,Maze – Arena 1,Gebrüder Weiss CRO Team
-11:45-12:00,Interview,"Doofuse, Wowa 2.0"
-11:50-12:00,Maze – Arena 1,TechTitans
-12:00-12:15,Interview,"Renegade, Queens of the Robots"
-12:00-12:10,Maze – Arena 1,DIPH
-12:10-12:20,Maze – Arena 1,(Entry) Stars
-12:15-12:30,Interview,"Frederik Squad, The Bots"
-12:20-12:30,Maze – Arena 1,(Entry) Mazetrix Vienna
-12:30-12:45,Interview,"The Prime, Volte Bot"
-12:45-13:00,Interview,"Chaos-Piloten, DDHS"
-13:00-13:15,Interview,"Die Grafen, Team Günther 7"
-13:15-13:30,Interview,"PlaKaRaNi, E&E"
-13:30-13:45,Interview,Klaka Robotics
+09:00-09:15,Interview 1,"PlaKaRaNi, E&E"
+09:00-09:15,Interview 2,Klaka Robotics
+09:00-09:10,Line Entry – Arena 1,Miss klickt
+09:00-09:10,Line Entry – Arena 2,The Ninjas
+09:00-09:10,Line Entry – Arena 3,Project Pommes
+09:00-09:10,Line – Arena 1,2 Gehörnzellen
+09:00-09:10,Line – Arena 2,Project William
+09:00-09:10,Line – Arena 3,Project X
+09:00-09:10,Maze – Arena 1,Monstar in Muul
+09:10-09:20,Line Entry – Arena 1,Potato Girls
+09:10-09:20,Line Entry – Arena 2,Kampfzwerge
+09:10-09:20,Line Entry – Arena 3,Ninja Turtles
+09:10-09:20,Line – Arena 1,TriByte
+09:10-09:20,Line – Arena 2,NanoRobots
+09:10-09:20,Line – Arena 3,Angora Goasbock
+09:10-09:20,Maze – Arena 1,Gebrüder Weiss CRO Team
+09:15-09:30,Interview 1,"O-Dorf, MS HöWe"
+09:20-09:30,Line Entry – Arena 1,Big Rösti
+09:20-09:30,Line Entry – Arena 2,No pain no gain
+09:20-09:30,Line Entry – Arena 3,Panzerabwehrfluggerät
+09:20-09:30,Line – Arena 1,Project PVP
+09:20-09:30,Line – Arena 2,Deep-Drive
+09:20-09:30,Line – Arena 3,Die (3) 2 Robomenschen
+09:20-09:30,Maze – Arena 1,TechTitans
+09:30-09:40,Line Entry – Arena 1,Byte Me
+09:30-09:40,Line Entry – Arena 2,Pixelbauer
+09:30-09:40,Line Entry – Arena 3,Tobix
+09:30-09:40,Line – Arena 1,HTL Trieben Engineering
+09:30-09:40,Line – Arena 2,NLO Rescue CRO Team
+09:30-09:40,Line – Arena 3,Mechanic Team
+09:30-09:40,Maze – Arena 1,DIPH
+09:40-09:50,Line Entry – Arena 1,Astrogix
+09:40-09:50,Line Entry – Arena 2,Keine Ahnung
+09:40-09:50,Line Entry – Arena 3,Team Talentlosen
+09:40-09:50,Line – Arena 1,Eurobot
+09:40-09:50,Line – Arena 2,Library
+09:40-09:50,Line – Arena 3,Die Haftelmacher
+09:40-09:50,Maze – Arena 1,(Entry) Stars
+09:50-10:00,Line Entry – Arena 1,Doofuse
+09:50-10:00,Line Entry – Arena 2,Wowa 2.0
+09:50-10:00,Line Entry – Arena 3,Renegade
+09:50-10:00,Line – Arena 1,Das Original
+09:50-10:00,Line – Arena 2,we:bots
+09:50-10:00,Line – Arena 3,GearUp
+09:50-10:00,Maze – Arena 1,(Entry) Mazetrix Vienna
+10:00-10:15,Interview 1,"DIPH, (Entry) Stars"
+10:00-10:10,Line Entry – Arena 1,Queens of the Robots
+10:00-10:10,Line Entry – Arena 2,Frederik Squad
+10:00-10:10,Line Entry – Arena 3,The Bots
+10:00-10:10,Line – Arena 1,Die Glorreichen 4
+10:00-10:10,Line – Arena 2,Kaktus
+10:00-10:10,Line – Arena 3,Nebenniere
+10:10-10:20,Line Entry – Arena 1,The Prime
+10:10-10:20,Line Entry – Arena 2,Volte Bot
+10:10-10:20,Line Entry – Arena 3,Chaos-Piloten
+10:10-10:20,Line – Arena 1,Kepler 404
+10:10-10:20,Line – Arena 2,2 Gehörnzellen
+10:10-10:20,Line – Arena 3,Project William
+10:15-10:30,Interview 1,(Entry) Mazetrix Vienna
+10:20-10:30,Line Entry – Arena 1,DDHS
+10:20-10:30,Line Entry – Arena 2,Die Grafen
+10:20-10:30,Line Entry – Arena 3,Team Günther 7
+10:20-10:30,Line – Arena 1,Project X
+10:20-10:30,Line – Arena 2,TriByte
+10:20-10:30,Line – Arena 3,NanoRobots
+10:30-10:40,Line Entry – Arena 1,PlaKaRaNi
+10:30-10:40,Line Entry – Arena 2,E&E
+10:30-10:40,Line Entry – Arena 3,Klaka Robotics
+10:30-10:40,Line – Arena 1,Angora Goasbock
+10:30-10:40,Line – Arena 2,Project PVP
+10:30-10:40,Line – Arena 3,Deep-Drive
+10:40-10:50,Line – Arena 1,Die (3) 2 Robomenschen
+10:40-10:50,Line – Arena 2,HTL Trieben Engineering
+10:40-10:50,Line – Arena 3,NLO Rescue CRO Team
+10:50-11:00,Maze – Arena 1,B.Robots Seniors
+11:00-11:10,Maze – Arena 1,B.Robots
+11:10-11:20,Maze – Arena 1,B.Robots Juniors
+11:20-11:30,Maze – Arena 1,Lugner
+11:30-11:40,Maze – Arena 1,Fight Club
+11:40-11:50,Maze – Arena 1,Monstar in Muul
+11:50-12:00,Maze – Arena 1,Gebrüder Weiss CRO Team
+12:00-12:10,Maze – Arena 1,TechTitans
+12:10-12:20,Maze – Arena 1,DIPH
+12:20-12:30,Maze – Arena 1,(Entry) Stars
+12:30-12:40,Maze – Arena 1,(Entry) Mazetrix Vienna

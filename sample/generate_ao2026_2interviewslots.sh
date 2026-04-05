@@ -10,9 +10,8 @@ rcj-planner generate \
     --run-time 10 --interview-time 15 --interview-group-size 2 \
     --day "Day1:10:30-17:00" \
     --day "Day2:09:00-13:00" \
-    --interview-day "Day1:10:30-18:30" \
-    --interview-day "Day2:8:30-13:00" \
-    --interview-rooms 1 \
+    --interview-day "Day1:12:00-17:30" \
+    --interview-rooms 2 \
     --break "Day1:12:30-13:30" \
     --buffer 10 \
-    --output-dir schedule_ao2026
+    --output-dir schedule_ao2026_2interviewslots
