@@ -51,6 +51,8 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
 }
 #add-files-btn:hover, #print-btn:hover { background: rgba(255,255,255,0.22); }
 
+#mobile-day-list { display: none; }
+
 @media (max-width: 767px) {
   .app-body { padding: 10px 12px 24px; }
   .view-selector { flex-wrap: wrap; width: 100%; }
@@ -87,6 +89,7 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
     font-size: 0.83rem;
   }
   .mobile-slot-row:last-child { border-bottom: none; }
+  .mobile-slot-row-break { background: #fafafa; font-style: italic; }
   .mobile-resource { font-weight: 600; min-width: 80px; flex-shrink: 0; font-size: 0.78rem; }
   .mobile-teams { display: flex; flex-wrap: wrap; gap: 3px; }
   /* Team cards full-width, bigger tap targets */
@@ -94,8 +97,54 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
   .team-search { max-width: 100%; }
   /* Density toggle hidden on mobile */
   #density-toggle { display: none; }
+
+  /* Day tabs: scroll horizontally when many days don't fit */
+  .tabs { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { flex-shrink: 0; min-height: 36px; }
+
+  /* Striped card shown when a global break falls between timeslots */
+  .mobile-break-card {
+    background: repeating-linear-gradient(
+      45deg,
+      #f3f4f6,
+      #f3f4f6 6px,
+      #e9eaec 6px,
+      #e9eaec 12px
+    );
+    border-radius: 8px;
+    padding: 6px 12px;
+    margin-bottom: 8px;
+    border: 1px solid #d1d5db;
+  }
+
+  /* Division label above each group of resources within a timeslot card */
+  .mobile-div-group-header {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin: 4px 0 2px;
+  }
+
+  header { padding: 10px 14px; }
+  header h1 { font-size: 0.9rem; }
+  /* Division filter pills: scroll horizontally rather than wrapping */
+  .div-filter-bar { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .div-filter-bar::-webkit-scrollbar { display: none; }
+  .div-filter-btn { flex-shrink: 0; min-height: 36px; }
+
+  .team-card table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .team-search-wrap { flex-direction: column; align-items: stretch; }
+  .team-search { min-height: 44px; }
+  .div-group-body { gap: 8px; }
+  .team-browse-tag { min-height: 36px; display: inline-flex; align-items: center; }
+
+  .div-card table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .div-card-header { flex-wrap: wrap; }
 }
-#mobile-day-list { display: none; }
 
 @media print {
   header, .view-selector, .tabs, .team-search-wrap, #loader-screen { display: none !important; }
@@ -1147,26 +1196,59 @@ function renderDayView() {
   }
 
   // Mobile: vertical list grouped by timeslot
+  let mobileBreakIdx = 0;
+
   const mobileCards = timeSlots.map(ts => {
-    const rowItems = visibleResources.map(e => {
+    const tsStart = ts.split(EN_DASH)[0].trim();
+
+    const breakCards = [];
+    while (mobileBreakIdx < dayBreaks.length && dayBreaks[mobileBreakIdx].start <= tsStart) {
+      const br = dayBreaks[mobileBreakIdx++];
+      breakCards.push(`<div class="mobile-break-card"><span class="break-label">${esc(br.label)} ${br.start}–${br.end}</span></div>`);
+    }
+
+    const divGroups = [];
+    let lastMobileDiv = null;
+    for (const e of visibleResources) {
       const { resource: r, div } = e;
+      const divBrActive = (divBreaksByDiv[div] || []).find(b => tsStart >= b.start && tsStart < b.end);
       const teams = lookup[ts]?.[r] ?? [];
-      if (!teams.length) return '';
-      const headerColor = divColor(div);
-      const chips = teams.map(t => {
-        const c = divColor(isInterviewResource(r) ? (teamToDiv[t] || div) : div);
-        return `<span class="team-tag team-tag-link" style="background:${c}1a;color:${c}" data-team="${esc(t)}">${esc(t)}</span>`;
+      if (!teams.length && !divBrActive) continue;
+      if (div !== lastMobileDiv) {
+        divGroups.push({ div, rows: [] });
+        lastMobileDiv = div;
+      }
+      divGroups[divGroups.length - 1].rows.push({ r, div, teams, divBrActive });
+    }
+
+    const rowItems = divGroups.map(g => {
+      const headerColor = divColor(g.div);
+      const divHeader = `<div class="mobile-div-group-header" style="background:${headerColor}1a;color:${headerColor}">${esc(g.div)}</div>`;
+      const rows = g.rows.map(({ r, div, teams, divBrActive }) => {
+        if (divBrActive) {
+          return `<div class="mobile-slot-row mobile-slot-row-break">
+            <span class="mobile-resource" style="color:${divColor(div)}">${esc(shortName(r))}</span>
+            <span class="break-label" style="font-size:0.75rem">${esc(divBrActive.label)}</span>
+          </div>`;
+        }
+        const chips = teams.map(t => {
+          const c = divColor(isInterviewResource(r) ? (teamToDiv[t] || div) : div);
+          return `<span class="team-tag team-tag-link" style="background:${c}1a;color:${c}" data-team="${esc(t)}">${esc(t)}</span>`;
+        }).join('');
+        return `<div class="mobile-slot-row">
+          <span class="mobile-resource" style="color:${headerColor}">${esc(shortName(r))}</span>
+          <span class="mobile-teams">${chips}</span>
+        </div>`;
       }).join('');
-      return `<div class="mobile-slot-row">
-        <span class="mobile-resource" style="color:${headerColor}">${esc(shortName(r))}</span>
-        <span class="mobile-teams">${chips}</span>
-      </div>`;
-    }).filter(Boolean).join('');
-    if (!rowItems) return '';
-    return `<div class="mobile-slot-card">
+      return divHeader + rows;
+    }).join('');
+
+    if (!rowItems && !breakCards.length) return '';
+    const card = rowItems ? `<div class="mobile-slot-card">
       <div class="mobile-slot-time">${ts}</div>
       <div class="mobile-slot-rows">${rowItems}</div>
-    </div>`;
+    </div>` : '';
+    return breakCards.join('') + card;
   }).filter(Boolean).join('');
 
   return `
