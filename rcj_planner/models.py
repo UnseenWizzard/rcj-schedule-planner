@@ -16,6 +16,18 @@ class Team:
         return isinstance(other, Team) and self.name == other.name
 
 
+@dataclass
+class Division:
+    label: str
+    teams: list  # list[Team], avoid forward-ref issues
+    num_arenas: int
+    runs_per_arena: int = 1
+    arena_reset_minutes: int = 0
+    no_interviews: bool = False
+    day_specs: list | None = None  # None = use global day_specs
+    day_run_limits: dict = field(default_factory=dict)  # {day_label: int} max runs per team per day
+
+
 @dataclass(frozen=True)
 class TimeSlot:
     day: str

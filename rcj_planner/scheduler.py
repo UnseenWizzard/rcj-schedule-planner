@@ -1,7 +1,7 @@
 from __future__ import annotations
 from collections import defaultdict
 from datetime import datetime, date, timedelta
-from rcj_planner.models import Team, TimeSlot, Resource, Assignment, Schedule, Break
+from rcj_planner.models import Team, TimeSlot, Resource, Assignment, Schedule, Break, Division
 from rcj_planner.loader import generate_slots
 
 
@@ -27,8 +27,19 @@ def _resource_conflicts(slot: TimeSlot, resource: Resource, assignments: list[As
     return False
 
 
+def _to_division(entry) -> Division:
+    """Convert a legacy tuple entry to a Division object if needed."""
+    if isinstance(entry, Division):
+        return entry
+    label, teams, num_arenas = entry[0], entry[1], entry[2]
+    runs_per_arena = entry[3] if len(entry) > 3 else 1
+    arena_reset_minutes = entry[4] if len(entry) > 4 else 0
+    return Division(label=label, teams=teams, num_arenas=num_arenas,
+                    runs_per_arena=runs_per_arena, arena_reset_minutes=arena_reset_minutes)
+
+
 def build_schedule(
-    divisions: list[tuple[str, list[Team], int, int, int]],
+    divisions: list,
     day_specs: list[str],
     run_time: int,
     interview_time: int,
@@ -40,15 +51,16 @@ def build_schedule(
     num_interview_rooms: int = 1,
 ) -> Schedule:
     """
-    divisions: list of (division_label, teams, num_arenas, runs_per_arena, arena_reset_minutes)
+    divisions: list of Division objects (or legacy tuples for backward compat).
     Each division gets its own namespaced arena resources and independent run schedule.
     All divisions share interview resources (one or more, per num_interview_rooms).
-    arena_reset_minutes (kwarg) is a global fallback used only if the division tuple has 4 elements.
+    arena_reset_minutes (kwarg) is a global fallback used only if legacy tuple has 4 elements.
     """
+    divisions = [_to_division(e) for e in divisions]
     breaks = breaks or []
     global_breaks = [b for b in breaks if b.division is None]
 
-    all_run_slots = generate_slots(day_specs, run_time)
+    global_run_slots = generate_slots(day_specs, run_time)
     interview_specs = interview_day_specs if interview_day_specs is not None else day_specs
     all_interview_slots = generate_slots(interview_specs, interview_time)
 
@@ -84,12 +96,13 @@ def build_schedule(
     div_phase1_placed: dict[str, set[int]] = {}
 
     # Phase 1 — Arena runs per division (prioritize filling each timeslot across all arenas)
-    for div_entry in divisions:
-        div_label, teams, num_arenas, runs_per_arena = div_entry[:4]
-        div_arena_reset = div_entry[4] if len(div_entry) > 4 else arena_reset_minutes
+    for div in divisions:
+        div_label, teams, num_arenas, runs_per_arena = div.label, div.teams, div.num_arenas, div.runs_per_arena
+        div_arena_reset = div.arena_reset_minutes
         div_breaks = global_breaks + [b for b in breaks if b.division == div_label]
+        div_run_slots_all = generate_slots(div.day_specs, run_time) if div.day_specs is not None else global_run_slots
         run_slots = [
-            s for s in all_run_slots
+            s for s in div_run_slots_all
             if not any(b.blocks_slot(s) for b in div_breaks)
         ]
         arenas = [Resource("arena", f"{div_label} – Arena {i+1}") for i in range(num_arenas)]
@@ -104,6 +117,7 @@ def build_schedule(
             last_assigned_slot = None
             round_first_slots: list = []
             round_last_slots: list = []
+            team_day_runs_s: dict = defaultdict(lambda: defaultdict(int))
 
             for round_num in range(runs_per_arena):
                 if round_num > 0:
@@ -122,7 +136,12 @@ def build_schedule(
                             continue
                         if _team_conflicts(slot, team, assignments, buffer_minutes):
                             continue
+                        if div.day_run_limits:
+                            day_limit = div.day_run_limits.get(slot.day)
+                            if day_limit is not None and team_day_runs_s[team][slot.day] >= day_limit:
+                                continue
                         assignments.append(Assignment(slot, arena, [team]))
+                        team_day_runs_s[team][slot.day] += 1
                         team_runs[team] += 1
                         last_assigned_slot = slot
                         if round_first_slot is None:
@@ -138,34 +157,35 @@ def build_schedule(
                 round_last_slots.append(last_assigned_slot)
 
             # Try to schedule interviews in the reset gaps between rounds
-            chunks = [
-                teams[i:i + interview_group_size]
-                for i in range(0, len(teams), interview_group_size)
-            ]
-            placed_chunks: set[int] = set()
-            div_phase1_placed[div_label] = placed_chunks
-
-            for gap_idx in range(runs_per_arena - 1):
-                gap_start = _slot_end_dt(round_last_slots[gap_idx])
-                gap_end = _slot_start_dt(round_first_slots[gap_idx + 1])
-                gap_slots = [
-                    s for s in interview_slots
-                    if _slot_start_dt(s) >= gap_start and _slot_end_dt(s) <= gap_end
+            if not div.no_interviews:
+                chunks = [
+                    teams[i:i + interview_group_size]
+                    for i in range(0, len(teams), interview_group_size)
                 ]
-                for chunk_idx, chunk in enumerate(chunks):
-                    if chunk_idx in placed_chunks:
-                        continue
-                    for slot in gap_slots:
-                        if any(_team_conflicts(slot, t, assignments, buffer_minutes) for t in chunk):
-                            continue
-                        for ir in interview_resources:
-                            if _resource_conflicts(slot, ir, assignments):
-                                continue
-                            assignments.append(Assignment(slot, ir, list(chunk)))
-                            placed_chunks.add(chunk_idx)
-                            break
+                placed_chunks: set[int] = set()
+                div_phase1_placed[div_label] = placed_chunks
+
+                for gap_idx in range(runs_per_arena - 1):
+                    gap_start = _slot_end_dt(round_last_slots[gap_idx])
+                    gap_end = _slot_start_dt(round_first_slots[gap_idx + 1])
+                    gap_slots = [
+                        s for s in interview_slots
+                        if _slot_start_dt(s) >= gap_start and _slot_end_dt(s) <= gap_end
+                    ]
+                    for chunk_idx, chunk in enumerate(chunks):
                         if chunk_idx in placed_chunks:
-                            break
+                            continue
+                        for slot in gap_slots:
+                            if any(_team_conflicts(slot, t, assignments, buffer_minutes) for t in chunk):
+                                continue
+                            for ir in interview_resources:
+                                if _resource_conflicts(slot, ir, assignments):
+                                    continue
+                                assignments.append(Assignment(slot, ir, list(chunk)))
+                                placed_chunks.add(chunk_idx)
+                                break
+                            if chunk_idx in placed_chunks:
+                                break
         else:
             # General path: fill each timeslot across all arenas
             team_day_runs = defaultdict(lambda: defaultdict(int))  # team -> day -> count
@@ -201,6 +221,10 @@ def build_schedule(
                             continue
                         if team_runs[team] >= total_runs_per_team:
                             continue
+                        if div.day_run_limits:
+                            day_limit = div.day_run_limits.get(slot.day)
+                            if day_limit is not None and team_day_runs[team][slot.day] >= day_limit:
+                                continue
                         if _team_conflicts(slot, team, assignments, buffer_minutes):
                             continue
                         candidates.append((i, team))
@@ -231,9 +255,28 @@ def build_schedule(
                     "Try extending the day or reducing teams/arenas."
                 )
 
+        if div.day_run_limits:
+            for day_lbl, limit in div.day_run_limits.items():
+                for team in teams:
+                    actual = sum(
+                        1 for a in assignments
+                        if a.slot.day == day_lbl
+                        and a.resource.kind == "arena"
+                        and a.resource.name.startswith(div_label)
+                        and team in a.teams
+                    )
+                    if actual != limit:
+                        raise SchedulingError(
+                            f"Team '{team.name}' in '{div_label}' has {actual} runs on {day_lbl}, "
+                            f"expected {limit}. Try adjusting day timeframes or constraints."
+                        )
+
     # Phase 2 — Interviews grouped by division (shared interview resources)
     # Chunks already placed in Phase 1 (simplified mode) are skipped here.
-    for div_label, teams, _, _runs, *_ in divisions:
+    for div in divisions:
+        if div.no_interviews:
+            continue
+        div_label, teams = div.label, div.teams
         chunks = [
             teams[i:i + interview_group_size]
             for i in range(0, len(teams), interview_group_size)
@@ -266,11 +309,12 @@ def build_schedule(
 
     meta = {
         "divisions": {
-            label: {"arenas": num_arenas, "runs_per_arena": runs, "arena_reset_minutes": reset}
-            for label, _, num_arenas, runs, reset in (
-                (e[0], e[1], e[2], e[3], e[4] if len(e) > 4 else arena_reset_minutes)
-                for e in divisions
-            )
+            div.label: {
+                "arenas": div.num_arenas,
+                "runs_per_arena": div.runs_per_arena,
+                "arena_reset_minutes": div.arena_reset_minutes,
+            }
+            for div in divisions
         },
         "run_time_minutes": run_time,
         "interview_time_minutes": interview_time,

@@ -1,7 +1,8 @@
 from __future__ import annotations
 import sys
 import click
-from rcj_planner.loader import load_teams, parse_division_spec, parse_break_spec
+from rcj_planner.loader import load_teams, parse_division_spec, parse_break_spec, parse_division_day_spec, parse_division_day_runs_spec
+from rcj_planner.models import Division
 from rcj_planner.scheduler import build_schedule, validate_schedule, SchedulingError
 from rcj_planner.persistence import save, load
 from rcj_planner.exporter import export_day_csvs
@@ -28,8 +29,13 @@ def cli():
 @click.option("--buffer", default=None, type=int, help="Buffer gap in minutes (default: run-time)")
 @click.option("--break", "break_specs", multiple=True,
               help="Break spec: 'Day:HH:MM-HH:MM' (global) or 'Day:Division:HH:MM-HH:MM' (division-specific)")
+@click.option("--division-day", "division_day_specs", multiple=True,
+              help="Per-division day override: 'DivisionLabel:DayLabel:HH:MM-HH:MM'")
+@click.option("--division-day-runs", "division_day_runs_specs", multiple=True,
+              help="Per-division per-day run limit: 'DivisionLabel:DayLabel:N'")
 def generate(division_specs, run_time, interview_time, interview_group_size, days,
-             interview_days, interview_rooms, output_dir, save_path, buffer, break_specs):
+             interview_days, interview_rooms, output_dir, save_path, buffer, break_specs,
+             division_day_specs, division_day_runs_specs):
     """Generate a conflict-free schedule and export CSVs."""
     import os
     if save_path == "schedule.json":
@@ -39,13 +45,56 @@ def generate(division_specs, run_time, interview_time, interview_group_size, day
     try:
         divisions = []
         for spec in division_specs:
-            label, path, num_arenas, runs_per_arena, arena_reset = parse_division_spec(spec)
+            label, path, num_arenas, runs_per_arena, arena_reset, no_interviews = parse_division_spec(spec)
             teams = load_teams(path, division=label)
-            divisions.append((label, teams, num_arenas, runs_per_arena, arena_reset))
+            divisions.append(Division(
+                label=label, teams=teams, num_arenas=num_arenas,
+                runs_per_arena=runs_per_arena, arena_reset_minutes=arena_reset,
+                no_interviews=no_interviews,
+            ))
 
         parsed_breaks = [parse_break_spec(s) for s in break_specs]
 
+        div_labels = {div.label for div in divisions}
         day_labels = {d.split(":")[0] for d in days}
+        div_day_overrides: dict[str, dict[str, str]] = {}
+        for ddspec in division_day_specs:
+            div_label_dd, day_spec = parse_division_day_spec(ddspec)
+            if div_label_dd not in div_labels:
+                raise click.BadParameter(
+                    f"'{div_label_dd}' does not match any --division label",
+                    param_hint="--division-day"
+                )
+            day_label = day_spec.split(":")[0]
+            if day_label not in day_labels:
+                raise click.BadParameter(
+                    f"'{day_label}' does not match any --day label",
+                    param_hint="--division-day"
+                )
+            div_day_overrides.setdefault(div_label_dd, {})[day_label] = day_spec
+
+        for div in divisions:
+            if div.label in div_day_overrides:
+                overrides = div_day_overrides[div.label]
+                div.day_specs = [overrides.get(d.split(":")[0], d) for d in days]
+
+        for drspec in division_day_runs_specs:
+            div_lbl, day_lbl, n = parse_division_day_runs_spec(drspec)
+            if div_lbl not in div_labels:
+                raise click.BadParameter(
+                    f"'{div_lbl}' does not match any --division label",
+                    param_hint="--division-day-runs"
+                )
+            if day_lbl not in day_labels:
+                raise click.BadParameter(
+                    f"'{day_lbl}' does not match any --day label",
+                    param_hint="--division-day-runs"
+                )
+            for div in divisions:
+                if div.label == div_lbl:
+                    div.day_run_limits[day_lbl] = n
+                    break
+
         for iday in interview_days:
             label = iday.split(":")[0]
             if label not in day_labels:

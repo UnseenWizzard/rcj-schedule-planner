@@ -1,21 +1,23 @@
 import pytest
 from datetime import datetime, date, time
-from rcj_planner.models import Team, Break
+from rcj_planner.models import Team, Break, Division
 from rcj_planner.scheduler import build_schedule, validate_schedule, SchedulingError
 
 DAYS = ["Day1:09:00-17:00"]
 
 
-def make_divisions(num_teams=4, num_arenas=2, division="DivA", runs_per_arena=1, arena_reset=0):
+def make_divisions(num_teams=4, num_arenas=2, division="DivA", runs_per_arena=1, arena_reset=0, no_interviews=False):
     teams = [Team(f"Team{i}", division) for i in range(num_teams)]
-    return [(division, teams, num_arenas, runs_per_arena, arena_reset)]
+    return [Division(label=division, teams=teams, num_arenas=num_arenas,
+                     runs_per_arena=runs_per_arena, arena_reset_minutes=arena_reset,
+                     no_interviews=no_interviews)]
 
 
 def test_basic_schedule():
     divisions = make_divisions()
     s = build_schedule(divisions, DAYS, run_time=10, interview_time=20,
                        interview_group_size=2, buffer_minutes=10)
-    teams = divisions[0][1]
+    teams = divisions[0].teams
     for team in teams:
         arena_runs = [a for a in s.assignments_for_team(team) if a.resource.kind == "arena"]
         assert len(arena_runs) == 2
@@ -44,7 +46,7 @@ def test_runs_per_arena():
     s = build_schedule(divisions, DAYS, run_time=10, interview_time=20,
                        interview_group_size=2, buffer_minutes=10)
     assert validate_schedule(s) == []
-    teams = divisions[0][1]
+    teams = divisions[0].teams
     for team in teams:
         arena_runs = [a for a in s.assignments_for_team(team) if a.resource.kind == "arena"]
         assert len(arena_runs) == 4  # 2 arenas × 2 runs
@@ -340,7 +342,7 @@ def test_num_interview_rooms_1_single_resource():
 def test_num_interview_rooms_2_parallel_groups():
     """With num_interview_rooms=2, two groups can be interviewed at the same time."""
     teams = [Team(f"Team{i}", "DivA") for i in range(4)]
-    divisions = [("DivA", teams, 2, 1, 0)]
+    divisions = [Division(label="DivA", teams=teams, num_arenas=2, runs_per_arena=1, arena_reset_minutes=0)]
     s = build_schedule(divisions, DAYS, run_time=10, interview_time=20,
                        interview_group_size=1, buffer_minutes=10,
                        num_interview_rooms=2)
@@ -352,3 +354,164 @@ def test_num_interview_rooms_2_parallel_groups():
     interview_assignments = [a for a in s.assignments if a.resource.kind == "interview"]
     start_times = [a.slot.start for a in interview_assignments]
     assert len(start_times) > len(set(start_times)), "Expected parallel interviews at same time slot"
+
+
+def test_no_interviews_division_gets_no_interviews():
+    """A division with no_interviews=True should have zero interview assignments."""
+    divisions = make_divisions(num_teams=4, num_arenas=2, division="Soccer", no_interviews=True)
+    s = build_schedule(divisions, DAYS, run_time=10, interview_time=20,
+                       interview_group_size=2, buffer_minutes=10)
+    teams = divisions[0].teams
+    for team in teams:
+        interviews = [a for a in s.assignments_for_team(team) if a.resource.kind == "interview"]
+        assert len(interviews) == 0, f"Expected no interviews for {team.name}, got {len(interviews)}"
+
+
+def test_no_interviews_does_not_affect_other_divisions():
+    """no_interviews only skips that division; other divisions still get interviews."""
+    soccer_teams = [Team(f"S{i}", "Soccer") for i in range(4)]
+    rescue_teams = [Team(f"R{i}", "Rescue") for i in range(4)]
+    divisions = [
+        Division(label="Soccer", teams=soccer_teams, num_arenas=2, no_interviews=True),
+        Division(label="Rescue", teams=rescue_teams, num_arenas=2),
+    ]
+    s = build_schedule(divisions, DAYS, run_time=10, interview_time=20,
+                       interview_group_size=2, buffer_minutes=10)
+    assert validate_schedule(s) == []
+    for team in soccer_teams:
+        interviews = [a for a in s.assignments_for_team(team) if a.resource.kind == "interview"]
+        assert len(interviews) == 0, f"Soccer team {team.name} should have no interviews"
+    for team in rescue_teams:
+        interviews = [a for a in s.assignments_for_team(team) if a.resource.kind == "interview"]
+        assert len(interviews) == 1, f"Rescue team {team.name} should have 1 interview"
+
+
+def test_no_interviews_with_arena_reset_gap_path():
+    """Single arena, runs_per_arena=2, arena_reset=30, no_interviews=True: no interview assignments."""
+    teams = [Team(f"Team{i}", "DivA") for i in range(4)]
+    divisions = [Division(label="DivA", teams=teams, num_arenas=1, runs_per_arena=2,
+                          arena_reset_minutes=30, no_interviews=True)]
+    s = build_schedule(divisions, DAYS, run_time=10, interview_time=20,
+                       interview_group_size=2, buffer_minutes=10)
+    assert validate_schedule(s) == []
+    interview_assignments = [a for a in s.assignments if a.resource.kind == "interview"]
+    assert len(interview_assignments) == 0, "Expected no interviews when no_interviews=True"
+
+
+def test_per_division_day_restricts_run_slots():
+    """Division with day_specs=["Day1:09:00-10:00"] should have all arena runs end by 10:00."""
+    from datetime import time as dtime
+    teams = [Team(f"Team{i}", "Maze") for i in range(4)]
+    div = Division(label="Maze", teams=teams, num_arenas=2,
+                   day_specs=["Day1:09:00-10:00"])
+    s = build_schedule([div], ["Day1:09:00-17:00"], run_time=10, interview_time=20,
+                       interview_group_size=2, buffer_minutes=10)
+    assert validate_schedule(s) == []
+    for a in s.assignments:
+        if a.resource.kind == "arena" and "Maze" in a.resource.name:
+            assert a.slot.end <= dtime(10, 0), (
+                f"Maze arena slot ends at {a.slot.end}, expected <= 10:00"
+            )
+
+
+def test_per_division_day_other_division_uses_global():
+    """Division with day_specs=None uses global day_specs and gets slots throughout full window."""
+    from datetime import time as dtime
+    maze_teams = [Team(f"M{i}", "Maze") for i in range(4)]
+    line_teams = [Team(f"L{i}", "Line") for i in range(4)]
+    maze_div = Division(label="Maze", teams=maze_teams, num_arenas=2,
+                        day_specs=["Day1:09:00-10:00"])
+    line_div = Division(label="Line", teams=line_teams, num_arenas=2,
+                        day_specs=None)
+    s = build_schedule([maze_div, line_div], ["Day1:09:00-17:00"],
+                       run_time=10, interview_time=20,
+                       interview_group_size=2, buffer_minutes=10)
+    assert validate_schedule(s) == []
+    # Line has 4 teams × 2 arenas × 1 run = 8 arena assignments
+    line_arena_assignments = [a for a in s.assignments
+                              if a.resource.kind == "arena" and "Line" in a.resource.name]
+    assert len(line_arena_assignments) == 8, (
+        f"Expected 8 Line arena assignments (4 teams × 2 arenas), got {len(line_arena_assignments)}"
+    )
+
+
+def test_per_division_day_none_uses_global():
+    """Division with day_specs=None behaves same as providing the global day specs explicitly."""
+    teams = [Team(f"Team{i}", "DivA") for i in range(4)]
+    div_none = Division(label="DivA", teams=teams, num_arenas=2, day_specs=None)
+    div_explicit = Division(label="DivA", teams=teams, num_arenas=2, day_specs=["Day1:09:00-17:00"])
+    global_days = ["Day1:09:00-17:00"]
+    s_none = build_schedule([div_none], global_days, run_time=10, interview_time=20,
+                            interview_group_size=2, buffer_minutes=10)
+    s_explicit = build_schedule([div_explicit], global_days, run_time=10, interview_time=20,
+                                interview_group_size=2, buffer_minutes=10)
+    slots_none = sorted({(a.slot.start, a.slot.end) for a in s_none.assignments if a.resource.kind == "arena"})
+    slots_explicit = sorted({(a.slot.start, a.slot.end) for a in s_explicit.assignments if a.resource.kind == "arena"})
+    assert slots_none == slots_explicit
+
+
+DAYS_2 = ["Day1:09:00-17:00", "Day2:09:00-17:00"]
+
+
+def test_day_run_limits_two_day_schedule():
+    """day_run_limits={"Day1": 2} with runs_per_arena=3 should give 2 runs on Day1 and 1 on Day2."""
+    teams = [Team(f"Team{i}", "Maze") for i in range(4)]
+    divisions = [Division(label="Maze", teams=teams, num_arenas=1, runs_per_arena=3,
+                          day_run_limits={"Day1": 2})]
+    s = build_schedule(divisions, DAYS_2, run_time=10, interview_time=20,
+                       interview_group_size=2, buffer_minutes=10)
+    assert validate_schedule(s) == []
+    for team in teams:
+        day1_runs = [a for a in s.assignments_for_team(team)
+                     if a.resource.kind == "arena" and a.slot.day == "Day1"]
+        day2_runs = [a for a in s.assignments_for_team(team)
+                     if a.resource.kind == "arena" and a.slot.day == "Day2"]
+        assert len(day1_runs) == 2, f"{team.name}: expected 2 Day1 runs, got {len(day1_runs)}"
+        assert len(day2_runs) == 1, f"{team.name}: expected 1 Day2 run, got {len(day2_runs)}"
+
+
+def test_day_run_limits_zero_on_day():
+    """day_run_limits={"Day1": 0} forces all runs to Day2."""
+    teams = [Team(f"Team{i}", "Maze") for i in range(4)]
+    divisions = [Division(label="Maze", teams=teams, num_arenas=1, runs_per_arena=2,
+                          day_run_limits={"Day1": 0})]
+    s = build_schedule(divisions, DAYS_2, run_time=10, interview_time=20,
+                       interview_group_size=2, buffer_minutes=10)
+    assert validate_schedule(s) == []
+    for team in teams:
+        day1_runs = [a for a in s.assignments_for_team(team)
+                     if a.resource.kind == "arena" and a.slot.day == "Day1"]
+        assert len(day1_runs) == 0, f"{team.name}: expected 0 Day1 runs, got {len(day1_runs)}"
+
+
+def test_day_run_limits_multi_division_independent():
+    """Two divisions with different day_run_limits are each enforced independently."""
+    maze_teams = [Team(f"M{i}", "Maze") for i in range(4)]
+    rescue_teams = [Team(f"R{i}", "Rescue") for i in range(4)]
+    divisions = [
+        Division(label="Maze", teams=maze_teams, num_arenas=1, runs_per_arena=3,
+                 day_run_limits={"Day1": 2}),
+        Division(label="Rescue", teams=rescue_teams, num_arenas=1, runs_per_arena=3,
+                 day_run_limits={"Day1": 1}),
+    ]
+    s = build_schedule(divisions, DAYS_2, run_time=10, interview_time=20,
+                       interview_group_size=2, buffer_minutes=10)
+    assert validate_schedule(s) == []
+    for team in maze_teams:
+        day1 = [a for a in s.assignments_for_team(team)
+                if a.resource.kind == "arena" and a.slot.day == "Day1"]
+        assert len(day1) == 2, f"Maze {team.name}: expected 2 Day1 runs, got {len(day1)}"
+    for team in rescue_teams:
+        day1 = [a for a in s.assignments_for_team(team)
+                if a.resource.kind == "arena" and a.slot.day == "Day1"]
+        assert len(day1) == 1, f"Rescue {team.name}: expected 1 Day1 run, got {len(day1)}"
+
+
+def test_day_run_limits_impossible_raises():
+    """day_run_limits={"Day1": 0} with single-day schedule and runs_per_arena=2 should raise."""
+    teams = [Team(f"Team{i}", "Maze") for i in range(4)]
+    divisions = [Division(label="Maze", teams=teams, num_arenas=1, runs_per_arena=2,
+                          day_run_limits={"Day1": 0})]
+    with pytest.raises(SchedulingError):
+        build_schedule(divisions, ["Day1:09:00-17:00"], run_time=10, interview_time=20,
+                       interview_group_size=2, buffer_minutes=10)
