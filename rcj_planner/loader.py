@@ -13,8 +13,8 @@ def load_teams(path: str, division: str = "") -> list[Team]:
     return teams
 
 
-def parse_division_spec(spec: str) -> tuple[str, str, int, int, int]:
-    """Parse 'Label:path/to/teams.csv:arenas=N[:runs=M][:arena_reset=R]' into (label, path, num_arenas, runs_per_arena, arena_reset_minutes)."""
+def parse_division_spec(spec: str) -> tuple[str, str, int, int, int, bool]:
+    """Parse 'Label:path/to/teams.csv:arenas=N[:runs=M][:arena_reset=R][:no_interviews]' into (label, path, num_arenas, runs_per_arena, arena_reset_minutes, no_interviews)."""
     parts = spec.split(":")
     if len(parts) < 3:
         raise ValueError(f"Invalid division spec {spec!r}. Expected 'Label:path:arenas=N'")
@@ -24,14 +24,17 @@ def parse_division_spec(spec: str) -> tuple[str, str, int, int, int]:
     num_arenas = int(arenas_part.split("=", 1)[1])
     runs_per_arena = 1
     arena_reset_minutes = 0
+    no_interviews = False
     for extra in parts[3:]:
         if extra.startswith("runs="):
             runs_per_arena = int(extra.split("=", 1)[1])
         elif extra.startswith("arena_reset="):
             arena_reset_minutes = int(extra.split("=", 1)[1])
+        elif extra == "no_interviews":
+            no_interviews = True
         else:
-            raise ValueError(f"Unknown division spec option {extra!r}. Expected 'runs=N' or 'arena_reset=N'")
-    return label.strip(), path.strip(), num_arenas, runs_per_arena, arena_reset_minutes
+            raise ValueError(f"Unknown division spec option {extra!r}. Expected 'runs=N', 'arena_reset=N', or 'no_interviews'")
+    return label.strip(), path.strip(), num_arenas, runs_per_arena, arena_reset_minutes, no_interviews
 
 
 def parse_break_spec(spec: str) -> Break:
@@ -66,6 +69,37 @@ def parse_break_spec(spec: str) -> Break:
     start = datetime.strptime(start_str.strip(), "%H:%M").time()
     end = datetime.strptime(end_str.strip(), "%H:%M").time()
     return Break(day=day, start=start, end=end, division=division)
+
+
+def parse_division_day_runs_spec(spec: str) -> tuple[str, str, int]:
+    """Parse 'DivisionLabel:DayLabel:N' into (division_label, day_label, n).
+
+    N is the number of runs per team per day for this division.
+    """
+    parts = spec.split(":")
+    if len(parts) != 3:
+        raise ValueError(
+            f"Invalid division-day-runs spec {spec!r}. Expected 'DivisionLabel:DayLabel:N'"
+        )
+    division_label, day_label, n_str = parts
+    try:
+        n = int(n_str.strip())
+    except ValueError:
+        raise ValueError(f"Invalid run count {n_str!r} in spec {spec!r}. Must be an integer.")
+    return division_label.strip(), day_label.strip(), n
+
+
+def parse_division_day_spec(spec: str) -> tuple[str, str]:
+    """Parse 'DivisionLabel:DayLabel:HH:MM-HH:MM' into (division_label, day_spec).
+
+    Splits at the first colon only, so the division label cannot contain colons.
+    The remainder is a standard day spec string ('DayLabel:HH:MM-HH:MM').
+    """
+    sep = spec.index(":")
+    division_label = spec[:sep].strip()
+    day_spec = spec[sep + 1:].strip()
+    parse_day_spec(day_spec)  # validate; raises ValueError if invalid
+    return division_label, day_spec
 
 
 def parse_day_spec(spec: str) -> tuple[str, time, time]:
