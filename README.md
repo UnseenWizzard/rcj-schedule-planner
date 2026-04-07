@@ -45,11 +45,13 @@ rcj-planner generate \
 | `--break` | no (repeatable) | — | Break spec: `Day:HH:MM-HH:MM` (global) or `Day:Division:HH:MM-HH:MM` (division-specific) |
 | `--interview-day` | no (repeatable) | — | Override interview time window for a day: `Label:HH:MM-HH:MM`. Label must match an existing `--day` label. Days without an override use their `--day` window. |
 | `--interview-rooms` | no | `1` | Number of parallel interview resources. When `1`, the resource is named `"Interview"`; when `>1`, resources are named `"Interview 1"`, `"Interview 2"`, etc. |
+| `--division-day` | no (repeatable) | — | Override arena run time window for a division/day: `Label:DayLabel:HH:MM-HH:MM`. Label must match an existing `--division` label, DayLabel an existing `--day` label. |
+| `--division-day-runs` | no (repeatable) | — | Cap runs per team for a division on a given day: `Label:DayLabel:N`. Days not mentioned are unconstrained. |
 
 #### Division spec
 
 ```
-Label:path/to/teams.csv:arenas=N[:runs=M][:arena_reset=R]
+Label:path/to/teams.csv:arenas=N[:runs=M][:arena_reset=R][:no_interviews]
 ```
 
 | Key | Required | Default | Description |
@@ -59,14 +61,34 @@ Label:path/to/teams.csv:arenas=N[:runs=M][:arena_reset=R]
 | `arenas=N` | yes | — | Number of arenas available to this division |
 | `runs=M` | no | `1` | Number of runs each team must complete on each arena |
 | `arena_reset=R` | no | `0` | Minutes to block an arena after each complete round (one run per team) before the next round can begin |
+| `no_interviews` | no | — | Skip interview scheduling entirely for this division |
 
 Example:
 
 ```bash
 --division "Rescue Maze:input/maze.csv:arenas=2:runs=3:arena_reset=15"
+--division "Soccer Entry:input/entry.csv:arenas=1:no_interviews"
 ```
 
-This schedules the Rescue Maze division with 2 arenas, 3 runs per team per arena, and a 15-minute reset gap between rounds on each arena.
+The first schedules Rescue Maze with 2 arenas, 3 runs per team per arena, and a 15-minute reset gap between rounds. The second schedules Soccer Entry without any interview slots.
+
+#### Per-division day overrides
+
+Two additional flags let you fine-tune scheduling per division per day:
+
+| Flag | Description |
+|---|---|
+| `--division-day "Label:DayLabel:HH:MM-HH:MM"` | Override the arena run time window for a specific division on a given day. Days without an override use the global `--day` window. |
+| `--division-day-runs "Label:DayLabel:N"` | Limit how many runs per team a division gets on a given day. Days not mentioned are unconstrained. |
+
+Example:
+
+```bash
+--division-day "Rescue Maze:Day1:10:00-15:00" \
+--division-day-runs "Rescue Maze:Day1:2"
+```
+
+This restricts Rescue Maze arena slots on Day 1 to the 10:00–15:00 window, and caps each team at 2 runs that day.
 
 ### Inspect a schedule
 
@@ -117,7 +139,7 @@ Saved schedule for use with `show` and `validate` commands.
 ## Scheduling rules
 
 1. Each team gets one run per arena per run in their division (configurable via `runs=N` in the division spec, default 1).
-2. Each team gets exactly one interview assignment.
+2. Each team gets exactly one interview assignment, unless the division is marked `no_interviews`.
 3. No team has two assignments that overlap in time.
 4. No team has two consecutive assignments closer than `--buffer` minutes apart.
 5. No resource (arena or interview room) is double-booked.
