@@ -957,7 +957,8 @@ function updateDownloadButton() {
 
 function buildInfoField() {
   const today = new Date().toISOString().slice(0, 10);
-  const lines = [`Schedule edited on ${today}`, 'Changes:'];
+  const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const lines = [`Schedule edited on ${today} at ${time}`, 'Changes:'];
   changeLog.forEach(entry => {
     if (entry.type === 'move') {
       const teams = entry.teams.join(', ');
