@@ -1152,12 +1152,24 @@ function renderDayView() {
   ).join('');
 
   // Build break rows: insert after the last slot before each break
-  const dayBreaks = (state.breaks[day] || []).filter(b => b.division === null).slice().sort((a,b) => a.start.localeCompare(b.start));
+  // Deduplicate by (start, end, label) to guard against breaks being pushed multiple times
+  const _seenGlobal = new Set();
+  const dayBreaks = (state.breaks[day] || []).filter(b => {
+    if (b.division !== null) return false;
+    const k = `${b.start}|${b.end}|${b.label}`;
+    if (_seenGlobal.has(k)) return false;
+    _seenGlobal.add(k);
+    return true;
+  }).slice().sort((a,b) => a.start.localeCompare(b.start));
   const colCount = visibleResources.length + 1;
 
   // Division-specific breaks indexed by division for quick lookup
   const divBreaksByDiv = {};
+  const _seenDiv = new Set();
   (state.breaks[day] || []).filter(b => b.division !== null).forEach(b => {
+    const k = `${b.division}|${b.start}|${b.end}|${b.label}`;
+    if (_seenDiv.has(k)) return;
+    _seenDiv.add(k);
     (divBreaksByDiv[b.division] ??= []).push(b);
   });
   // Track which division breaks have shown their label (first slot only)
