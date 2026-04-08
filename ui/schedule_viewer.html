@@ -823,8 +823,6 @@ body.wallboard-mode #view-container {
 <header>
   <h1>🤖 RCJ Schedule Viewer</h1>
   <div class="header-actions">
-    <input type="file" id="add-file-input" multiple accept=".csv,.json" style="display:none">
-    <button id="add-files-btn">+ Add files</button>
     <button id="print-btn">Print</button>
   </div>
 </header>
@@ -969,7 +967,7 @@ function parseScheduleJSON(text) {
 const EN_DASH = '\u2013';
 
 function isInterviewResource(resource) {
-  return resource === 'Interview' || /^Interview \d+$/.test(resource);
+  return resource.startsWith(`Interview`);
 }
 
 function divisionOf(resource) {
@@ -1171,6 +1169,8 @@ function renderDayView() {
     if (e.div !== lastDiv) { groups.push({ div: e.div, resources: [] }); lastDiv = e.div; }
     groups[groups.length - 1].resources.push(e);
   }
+
+  console.log(groups);
 
   // Build lookup: timeSlot → resource → {teams[], training}
   const lookup = {};
@@ -2066,9 +2066,6 @@ const addBtn     = document.getElementById('add-files-btn');
 
 dropzone.addEventListener('click', () => fileInput.click());
 fileInput.addEventListener('change', e => e.target.files.length && loadFiles(e.target.files));
-
-addBtn.addEventListener('click', () => addInput.click());
-addInput.addEventListener('change', e => e.target.files.length && loadFiles(e.target.files));
 
 // Auto-load schedule.json from the same directory (works when served over HTTP/S)
 fetch('./schedule.json')
