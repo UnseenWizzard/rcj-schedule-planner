@@ -206,8 +206,8 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
 }
 .team-tag:active { cursor: grabbing; }
 .team-tag.interview { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
-.team-tag.run-interview { border-style: dashed; border-color: #a78bfa; }
-.team-tag.run-interview::after { content: " ★"; font-size: 0.65em; color: #7c3aed; vertical-align: super; }
+.team-tag.run-training { border-style: dashed; border-color: #a78bfa; }
+.team-tag.run-training::after { content: " ★"; font-size: 0.65em; color: #7c3aed; vertical-align: super; }
 
 /* ── Selection states ── */
 .slot-cell.selected-source { background: #eef2ff !important; outline: 2px solid var(--primary); outline-offset: -2px; }
@@ -373,9 +373,9 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
 }
 #cell-info-panel .cell-info-label { font-weight: 600; color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
 #cell-info-panel .cell-info-teams { color: var(--text); font-weight: 600; }
-#cell-info-interview { display: flex; align-items: center; gap: 6px; margin-left: auto; }
-#cell-info-interview label { font-size: 0.84rem; font-weight: 600; color: #7c3aed; cursor: pointer; user-select: none; }
-#cell-info-interview input[type="checkbox"] { accent-color: #7c3aed; width: 15px; height: 15px; cursor: pointer; }
+#cell-info-training { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+#cell-info-training label { font-size: 0.84rem; font-weight: 600; color: #7c3aed; cursor: pointer; user-select: none; }
+#cell-info-training input[type="checkbox"] { accent-color: #7c3aed; width: 15px; height: 15px; cursor: pointer; }
 
 /* ── Validation banner ── */
 #validation-banner {
@@ -436,9 +436,9 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
         <span class="cell-info-label">Selected:</span>
         <span class="cell-info-teams" id="cell-info-teams"></span>
         <span class="cell-info-label" id="cell-info-slot"></span>
-        <div id="cell-info-interview">
-          <input type="checkbox" id="interview-toggle">
-          <label for="interview-toggle">Interview</label>
+        <div id="cell-info-training">
+          <input type="checkbox" id="training-toggle">
+          <label for="training-toggle">Training</label>
         </div>
       </div>
       <div class="day-tabs" id="day-tabs"></div>
@@ -613,9 +613,9 @@ function renderAssignments() {
       if (a) {
         const aIdx = editedSchedule.assignments.indexOf(a);
         const isInterview = r.kind === 'interview';
-        const isRunInterview = r.kind === 'arena' && a.interview === true;
+        const isRunTraining = r.kind === 'arena' && a.training === true;
         const teamTags = (a.teams || []).map(t =>
-          `<span class="team-tag${isInterview ? ' interview' : ''}${isRunInterview ? ' run-interview' : ''}">${escHtml(t)}</span>`
+          `<span class="team-tag${isInterview ? ' interview' : ''}${isRunTraining ? ' run-training' : ''}">${escHtml(t)}</span>`
         ).join('');
         return `<td class="slot-cell occupied" data-start="${escAttr(slot.start)}" data-end="${escAttr(slot.end)}" data-resource="${escAttr(r.name)}" data-idx="${aIdx}">${teamTags}</td>`;
       }
@@ -760,16 +760,16 @@ function showCellInfoPanel(idx) {
   const a = editedSchedule.assignments[idx];
   document.getElementById('cell-info-teams').textContent = (a.teams || []).join(', ');
   document.getElementById('cell-info-slot').textContent = `${a.resource_name} ${a.start}–${a.end}`;
-  const toggle = document.getElementById('interview-toggle');
-  document.getElementById('cell-info-interview').style.display = a.resource_kind === 'arena' ? 'flex' : 'none';
-  toggle.checked = a.interview === true;
+  const toggle = document.getElementById('training-toggle');
+  document.getElementById('cell-info-training').style.display = a.resource_kind === 'arena' ? 'flex' : 'none';
+  toggle.checked = a.training === true;
   toggle.dataset.idx = idx;
   document.getElementById('cell-info-panel').style.display = 'flex';
 }
 
 function hideCellInfoPanel() {
   document.getElementById('cell-info-panel').style.display = 'none';
-  document.getElementById('interview-toggle').dataset.idx = '';
+  document.getElementById('training-toggle').dataset.idx = '';
 }
 
 function deselectAll() {
@@ -870,11 +870,11 @@ function formatChangeLines(entry) {
     const teams = entry.teams.join(', ');
     const text = `${teams}: ${entry.from.resource} ${entry.from.day} ${entry.from.start}–${entry.from.end} → ${entry.to.day} ${entry.to.start}–${entry.to.end}`;
     return [{ text, isSwap: false }];
-  } else if (entry.type === 'interview') {
+  } else if (entry.type === 'training') {
     const a = editedSchedule.assignments[entry.idx];
     const teams = (a.teams || []).join(', ');
     const flag = entry.value ? 'set' : 'cleared';
-    const text = `interview ${flag}: ${teams} @ ${a.resource_name} ${a.day} ${a.start}–${a.end}`;
+    const text = `training ${flag}: ${teams} @ ${a.resource_name} ${a.day} ${a.start}–${a.end}`;
     return [{ text, isSwap: false }];
   } else {
     // swap
@@ -899,12 +899,12 @@ function undoLastChange() {
     const b = editedSchedule.assignments[entry.bIdx];
     a.start = entry.aFrom.start;  a.end = entry.aFrom.end;
     b.start = entry.bFrom.start;  b.end = entry.bFrom.end;
-  } else if (entry.type === 'interview') {
+  } else if (entry.type === 'training') {
     const a = editedSchedule.assignments[entry.idx];
     if (entry.prev === undefined) {
-      delete a.interview;
+      delete a.training;
     } else {
-      a.interview = entry.prev;
+      a.training = entry.prev;
     }
   }
   deselectAll();
@@ -1007,15 +1007,15 @@ dropzone.addEventListener('drop', e => {
 document.getElementById('assignment-rows').addEventListener('click', handleCellClick);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') deselectAll(); });
 
-// Interview toggle
-document.getElementById('interview-toggle').addEventListener('change', e => {
+// Training toggle
+document.getElementById('training-toggle').addEventListener('change', e => {
   const idx = parseInt(e.target.dataset.idx, 10);
   if (isNaN(idx)) return;
   const a = editedSchedule.assignments[idx];
-  const prev = a.interview;
+  const prev = a.training;
   const value = e.target.checked;
-  if (value) { a.interview = true; } else { delete a.interview; }
-  changeLog.push({ type: 'interview', idx, prev, value });
+  if (value) { a.training = true; } else { delete a.training; }
+  changeLog.push({ type: 'training', idx, prev, value });
   renderAssignments();
   updateDownloadButton();
   const cell = document.querySelector(`.slot-cell[data-idx="${idx}"]`);
@@ -1046,11 +1046,11 @@ function buildInfoField() {
     if (entry.type === 'move') {
       const teams = entry.teams.join(', ');
       lines.push(`- ${teams}: ${entry.from.resource} ${entry.from.day} ${entry.from.start}-${entry.from.end} -> ${entry.to.day} ${entry.to.start}-${entry.to.end}`);
-    } else if (entry.type === 'interview') {
+    } else if (entry.type === 'training') {
       const a = editedSchedule.assignments[entry.idx];
       const teams = (a.teams || []).join(', ');
       const flag = entry.value ? 'set' : 'cleared';
-      lines.push(`- interview ${flag}: ${teams} @ ${a.resource_name} ${a.day} ${a.start}-${a.end}`);
+      lines.push(`- training ${flag}: ${teams} @ ${a.resource_name} ${a.day} ${a.start}-${a.end}`);
     } else {
       const aTeams = entry.aTeams.join(', ');
       const bTeams = entry.bTeams.join(', ');

@@ -573,15 +573,15 @@ body.compact .team-tag  { padding: 1px 5px; font-size: 0.72rem; }
   margin-top: 3px;
 }
 
-/* ── Run-interview flag ── */
-.team-tag.run-interview {
+/* ── Run-training flag ── */
+.team-tag.run-training {
   font-style: italic;
   border: 1.5px dashed currentColor;
   padding: 1px 6px;
 }
-.team-tag.run-interview::after {
-  content: ' 🎤';
-  font-style: normal;
+.team-tag.run-training::after {
+  content: ' (training)';
+  font-style: italic;
   font-size: 0.7em;
 }
 
@@ -859,12 +859,12 @@ body.wallboard-mode #view-container {
       <button class="view-btn" data-view="wallboard">Wallboard</button>
     </div>
     <div id="view-container"></div>
-    <div class="schedule-legend">
+    <!-- <div class="schedule-legend">
       <div class="schedule-legend-item">
-        <span class="team-tag run-interview" style="background:#4f46e51a;color:#4f46e5">Team</span>
-        <span>= arena run flagged for interview (added manually to schedule.json)</span>
+        <span class="team-tag run-training" style="background:#4f46e51a;color:#4f46e5">Team</span>
+        <span>= arena run flagged for training (added manually to schedule.json)</span>
       </div>
-    </div>
+    </div> -->
   </div>
 </div>
 
@@ -946,7 +946,7 @@ function parseScheduleJSON(text) {
       time_slot: a.start + '\u2013' + a.end,
       resource:  a.resource_name,
       teams:     (a.teams || []).join(', '),
-      interview: a.interview === true,
+      training: a.training === true,
     });
   });
   // Parse breaks per day from meta
@@ -1172,12 +1172,12 @@ function renderDayView() {
     groups[groups.length - 1].resources.push(e);
   }
 
-  // Build lookup: timeSlot → resource → {teams[], interview}
+  // Build lookup: timeSlot → resource → {teams[], training}
   const lookup = {};
   rows.forEach(row => {
     (lookup[row.time_slot] ??= {})[row.resource] = {
       teams: row.teams.split(',').map(t => t.trim()).filter(Boolean),
-      interview: row.interview,
+      training: row.training,
     };
   });
 
@@ -1237,10 +1237,10 @@ function renderDayView() {
         divBreakLabelShown.add(key);
         return `<td class="break-row">${label}</td>`;
       }
-      const slot = lookup[ts]?.[r] ?? { teams: [], interview: false };
+      const slot = lookup[ts]?.[r] ?? { teams: [], training: false };
       const chips = slot.teams.map(t => {
         const c = divColor(isInterviewResource(r) ? (teamToDiv[t] || div) : div);
-        const riClass = slot.interview ? ' run-interview' : '';
+        const riClass = slot.training ? ' run-training' : '';
         return `<span class="team-tag team-tag-link${riClass}" style="background:${c}1a;color:${c}" data-team="${esc(t)}">${esc(t)}</span>`;
       }).join('');
       return `<td class="slot-cell">${chips}</td>`;
@@ -1266,19 +1266,19 @@ function renderDayView() {
     for (const e of visibleResources) {
       const { resource: r, div } = e;
       const divBrActive = (divBreaksByDiv[div] || []).find(b => tsStart >= b.start && tsStart < b.end);
-      const { teams, interview } = lookup[ts]?.[r] ?? { teams: [], interview: false };
+      const { teams, training } = lookup[ts]?.[r] ?? { teams: [], training: false };
       if (!teams.length && !divBrActive) continue;
       if (div !== lastMobileDiv) {
         divGroups.push({ div, rows: [] });
         lastMobileDiv = div;
       }
-      divGroups[divGroups.length - 1].rows.push({ r, div, teams, interview, divBrActive });
+      divGroups[divGroups.length - 1].rows.push({ r, div, teams, training, divBrActive });
     }
 
     const rowItems = divGroups.map(g => {
       const headerColor = divColor(g.div);
       const divHeader = `<div class="mobile-div-group-header" style="background:${headerColor}1a;color:${headerColor}">${esc(g.div)}</div>`;
-      const rows = g.rows.map(({ r, div, teams, interview, divBrActive }) => {
+      const rows = g.rows.map(({ r, div, teams, training, divBrActive }) => {
         if (divBrActive) {
           return `<div class="mobile-slot-row mobile-slot-row-break">
             <span class="mobile-resource" style="color:${divColor(div)}">${esc(shortName(r))}</span>
@@ -1287,7 +1287,7 @@ function renderDayView() {
         }
         const chips = teams.map(t => {
           const c = divColor(isInterviewResource(r) ? (teamToDiv[t] || div) : div);
-          const riClass = interview ? ' run-interview' : '';
+          const riClass = training ? ' run-training' : '';
           return `<span class="team-tag team-tag-link${riClass}" style="background:${c}1a;color:${c}" data-team="${esc(t)}">${esc(t)}</span>`;
         }).join('');
         return `<div class="mobile-slot-row">
@@ -1377,7 +1377,7 @@ function renderLocationView() {
     byDay[day].sort((a, b) => a.time_slot.localeCompare(b.time_slot));
     const rows = byDay[day].map((r, i) => {
       const teams = r.teams.split(',').map(t => t.trim()).filter(Boolean);
-      const riClass = r.interview ? ' run-interview' : '';
+      const riClass = r.training ? ' run-training' : '';
       const chips = teams.map(t =>
         `<span class="team-tag${riClass}" style="background:${color}18;color:${color}">${esc(t)}</span>`
       ).join(' ');
@@ -1495,7 +1495,7 @@ function buildTeamCard(team, search = '') {
     const div = divisionOf(a.resource);
     const c = divColor(div);
     const co = a.teams.split(',').map(t => t.trim()).filter(t => t !== team);
-    const riClass = a.interview ? ' run-interview' : '';
+    const riClass = a.training ? ' run-training' : '';
     return `
       <tr>
         <td>${a.day}</td>
@@ -1758,7 +1758,7 @@ function renderWallboardView() {
 
     const arenaRowsHtml = arenaRows.map(r => {
       const teams = r.teams.split(',').map(t => t.trim()).filter(Boolean);
-      const riClass = r.interview ? ' run-interview' : '';
+      const riClass = r.training ? ' run-training' : '';
       const chips = teams.map(t =>
         `<span class="team-tag${riClass}" style="background:${color}1a;color:${color}">${esc(t)}</span>`
       ).join(' ');
