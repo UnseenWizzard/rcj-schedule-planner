@@ -187,7 +187,9 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
   min-width: 120px;
   height: 38px;
 }
-.slot-cell.empty { background: #fafafa; }
+.slot-cell.empty { background: #fafafa; cursor: pointer; }
+.slot-cell.empty:hover { background: #eef2ff; }
+.slot-cell.empty:hover::after { content: '+'; font-size: 1rem; color: #c7d2fe; font-weight: 700; }
 .slot-cell.occupied { background: white; }
 
 .team-tag {
@@ -400,6 +402,68 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
   color: #713f12;
   line-height: 1.7;
 }
+
+/* ── Add Slot Modal ── */
+#add-slot-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 500;
+  align-items: center;
+  justify-content: center;
+}
+#add-slot-overlay.open { display: flex; }
+#add-slot-modal {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  padding: 20px 24px 16px;
+  min-width: 320px;
+  max-width: 460px;
+  width: 100%;
+}
+#add-slot-modal h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+.add-slot-info {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-bottom: 14px;
+  font-weight: 500;
+}
+.add-slot-input-row { display: flex; gap: 0; margin-bottom: 14px; }
+#add-slot-input {
+  flex: 1;
+  padding: 7px 11px;
+  border: 1.5px solid var(--border);
+  border-right: none;
+  border-radius: 6px 0 0 6px;
+  font-size: 0.85rem;
+  outline: none;
+}
+#add-slot-input:focus { border-color: var(--primary); }
+#add-slot-confirm {
+  padding: 7px 16px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 0 6px 6px 0;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+#add-slot-confirm:hover { background: #4338ca; }
+.add-slot-actions { display: flex; justify-content: flex-end; }
+#add-slot-cancel {
+  padding: 6px 16px;
+  background: #f3f4f6;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+#add-slot-cancel:hover { background: #e5e7eb; }
 </style>
 </head>
 <body>
@@ -468,6 +532,25 @@ header h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
           <div id="diff-view"></div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Slot Modal -->
+<div id="add-slot-overlay">
+  <div id="add-slot-modal">
+    <h3>Add teams to slot</h3>
+    <div class="add-slot-info">
+      <span id="add-slot-time"></span> &middot; <span id="add-slot-resource"></span>
+    </div>
+    <div class="add-slot-input-row">
+      <input id="add-slot-input" type="text" list="add-slot-teams-list"
+             placeholder="Team name (comma-separated for multiple)" autocomplete="off">
+      <datalist id="add-slot-teams-list"></datalist>
+      <button id="add-slot-confirm">Add</button>
+    </div>
+    <div class="add-slot-actions">
+      <button id="add-slot-cancel">Cancel</button>
     </div>
   </div>
 </div>
@@ -811,6 +894,7 @@ function handleCellClick(e) {
 
   if (!sel) {
     if (cell.classList.contains('occupied')) selectCell(cell);
+    else openAddSlotModal(cell);
     return;
   }
 
@@ -862,11 +946,74 @@ function performMove(targetCell) {
 }
 
 // ─────────────────────────────────────────────
+//  Add Slot Modal
+// ─────────────────────────────────────────────
+let addSlotCtx = null; // { day, start, end, resourceName, resourceKind }
+
+function resourceKindFor(resourceName) {
+  const a = editedSchedule.assignments.find(a => a.resource_name === resourceName);
+  return a ? a.resource_kind : 'arena';
+}
+
+function openAddSlotModal(cell) {
+  addSlotCtx = {
+    day: state.selectedDay,
+    start: cell.dataset.start,
+    end: cell.dataset.end,
+    resourceName: cell.dataset.resource,
+    resourceKind: resourceKindFor(cell.dataset.resource),
+  };
+  document.getElementById('add-slot-time').textContent = `${addSlotCtx.start}–${addSlotCtx.end}`;
+  document.getElementById('add-slot-resource').textContent = addSlotCtx.resourceName;
+  document.getElementById('add-slot-input').value = '';
+  const dl = document.getElementById('add-slot-teams-list');
+  const known = new Set();
+  editedSchedule.assignments.forEach(a => a.teams.forEach(t => known.add(t)));
+  dl.innerHTML = [...known].sort().map(t => `<option value="${escAttr(t)}">`).join('');
+  document.getElementById('add-slot-overlay').classList.add('open');
+  document.getElementById('add-slot-input').focus();
+}
+
+function closeAddSlotModal() {
+  document.getElementById('add-slot-overlay').classList.remove('open');
+  addSlotCtx = null;
+}
+
+function confirmAddSlot() {
+  const input = document.getElementById('add-slot-input').value.trim();
+  if (!input || !addSlotCtx) return;
+  const teams = input.split(',').map(t => t.trim()).filter(Boolean);
+  if (!teams.length) return;
+  const { day, start, end, resourceName, resourceKind } = addSlotCtx;
+  const newAssignment = { day, start, end, resource_name: resourceName, resource_kind: resourceKind, teams };
+  editedSchedule.assignments.push(newAssignment);
+  const newIdx = editedSchedule.assignments.length - 1;
+  changeLog.push({ type: 'add', idx: newIdx, day, start, end, resourceName, teams: [...teams] });
+  closeAddSlotModal();
+  renderAssignments();
+  updateDownloadButton();
+  showToast(`Added ${teams.join(', ')} to ${resourceName} ${start}–${end}`);
+}
+
+document.getElementById('add-slot-confirm').addEventListener('click', confirmAddSlot);
+document.getElementById('add-slot-cancel').addEventListener('click', closeAddSlotModal);
+document.getElementById('add-slot-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('add-slot-overlay')) closeAddSlotModal();
+});
+document.getElementById('add-slot-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') confirmAddSlot();
+  if (e.key === 'Escape') closeAddSlotModal();
+});
+
+// ─────────────────────────────────────────────
 //  Changes & Diff tab
 // ─────────────────────────────────────────────
 function formatChangeLines(entry) {
   // Returns an array of {text, isSwap} objects (one or two lines per entry)
-  if (entry.type === 'move') {
+  if (entry.type === 'add') {
+    const text = `Added ${entry.teams.join(', ')} → ${entry.resourceName} ${entry.day} ${entry.start}–${entry.end}`;
+    return [{ text, isSwap: false }];
+  } else if (entry.type === 'move') {
     const teams = entry.teams.join(', ');
     const text = `${teams}: ${entry.from.resource} ${entry.from.day} ${entry.from.start}–${entry.from.end} → ${entry.to.day} ${entry.to.start}–${entry.to.end}`;
     return [{ text, isSwap: false }];
@@ -906,6 +1053,8 @@ function undoLastChange() {
     } else {
       a.training = entry.prev;
     }
+  } else if (entry.type === 'add') {
+    editedSchedule.assignments.splice(entry.idx, 1);
   }
   deselectAll();
   renderAssignments();
@@ -1005,7 +1154,12 @@ dropzone.addEventListener('drop', e => {
 
 // Cell click delegation (event listener persists across re-renders since tbody is static)
 document.getElementById('assignment-rows').addEventListener('click', handleCellClick);
-document.addEventListener('keydown', e => { if (e.key === 'Escape') deselectAll(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (addSlotCtx) closeAddSlotModal();
+    else deselectAll();
+  }
+});
 
 // Training toggle
 document.getElementById('training-toggle').addEventListener('change', e => {
@@ -1043,7 +1197,9 @@ function buildInfoField() {
   const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   const lines = [`Schedule edited on ${today} at ${time}`, 'Changes:'];
   changeLog.forEach(entry => {
-    if (entry.type === 'move') {
+    if (entry.type === 'add') {
+      lines.push(`- Added ${entry.teams.join(', ')}: ${entry.resourceName} ${entry.day} ${entry.start}-${entry.end}`);
+    } else if (entry.type === 'move') {
       const teams = entry.teams.join(', ');
       lines.push(`- ${teams}: ${entry.from.resource} ${entry.from.day} ${entry.from.start}-${entry.from.end} -> ${entry.to.day} ${entry.to.start}-${entry.to.end}`);
     } else if (entry.type === 'training') {
