@@ -72,24 +72,6 @@ Example:
 
 The first schedules Rescue Maze with 2 arenas, 3 runs per team per arena, and a 15-minute reset gap between rounds. The second schedules Soccer Entry without any interview slots.
 
-#### Per-division day overrides
-
-Two additional flags let you fine-tune scheduling per division per day:
-
-| Flag | Description |
-|---|---|
-| `--division-day "Label:DayLabel:HH:MM-HH:MM"` | Override the arena run time window for a specific division on a given day. Days without an override use the global `--day` window. |
-| `--division-day-runs "Label:DayLabel:N"` | Limit how many runs per team a division gets on a given day. Days not mentioned are unconstrained. |
-
-Example:
-
-```bash
---division-day "Rescue Maze:Day1:10:00-15:00" \
---division-day-runs "Rescue Maze:Day1:1:2"
-```
-
-This restricts Rescue Maze arena slots on Day 1 to the 10:00–15:00 window, and caps each team at 2 runs that day.
-
 ### Inspect a schedule
 
 ```bash
