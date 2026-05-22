@@ -33,9 +33,11 @@ def cli():
               help="Per-division day override: 'DivisionLabel:DayLabel:HH:MM-HH:MM'")
 @click.option("--division-day-runs", "division_day_runs_specs", multiple=True,
               help="Per-division per-day run limit: 'DivisionLabel:DayLabel:N'")
+@click.option("--no-repeat-arena", "no_repeat_arena", is_flag=True, default=False,
+              help="Avoid a team's consecutive runs being on the same arena (best-effort, multi-arena only)")
 def generate(division_specs, run_time, interview_time, interview_group_size, days,
              interview_days, interview_rooms, output_dir, save_path, buffer, break_specs,
-             division_day_specs, division_day_runs_specs):
+             division_day_specs, division_day_runs_specs, no_repeat_arena):
     """Generate a conflict-free schedule and export CSVs."""
     import os
     if save_path == "schedule.json":
@@ -117,6 +119,7 @@ def generate(division_specs, run_time, interview_time, interview_group_size, day
             breaks=parsed_breaks,
             interview_day_specs=resolved_interview_day_specs,
             num_interview_rooms=interview_rooms,
+            no_repeat_arena=no_repeat_arena,
         )
     except (SchedulingError, ValueError) as e:
         click.echo(f"Error: {e}", err=True)

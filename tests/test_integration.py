@@ -212,3 +212,97 @@ def test_generate_division_day_runs(tmp_path):
             assert len(team_rows) == expected_runs, (
                 f"{team_name} on {day_name}: expected {expected_runs} runs, got {len(team_rows)}"
             )
+
+
+def test_generate_division_day_runs_unknown_division(tmp_path):
+    """--division-day-runs with an unrecognized division label should exit non-zero."""
+    maze_csv = tmp_path / "maze.csv"
+    maze_csv.write_text("team_name\nTeam A\nTeam B\n")
+
+    runner = CliRunner()
+    result = runner.invoke(cli, [
+        "generate",
+        "--division", f"Maze:{maze_csv}:arenas=1:runs=2",
+        "--division-day-runs", "Unknown:Day1:1:2",
+        "--run-time", "10",
+        "--interview-time", "15",
+        "--interview-group-size", "2",
+        "--day", "Day1:09:00-17:00",
+        "--output-dir", str(tmp_path / "out"),
+    ])
+    assert result.exit_code != 0
+
+
+def test_generate_division_day_runs_unknown_day(tmp_path):
+    """--division-day-runs with an unrecognized day label should exit non-zero."""
+    maze_csv = tmp_path / "maze.csv"
+    maze_csv.write_text("team_name\nTeam A\nTeam B\n")
+
+    runner = CliRunner()
+    result = runner.invoke(cli, [
+        "generate",
+        "--division", f"Maze:{maze_csv}:arenas=1:runs=2",
+        "--division-day-runs", "Maze:Day99:1:2",
+        "--run-time", "10",
+        "--interview-time", "15",
+        "--interview-group-size", "2",
+        "--day", "Day1:09:00-17:00",
+        "--output-dir", str(tmp_path / "out"),
+    ])
+    assert result.exit_code != 0
+
+
+def test_generate_no_repeat_arena_flag(tmp_path):
+    """--no-repeat-arena with a multi-arena division should produce a valid schedule."""
+    maze_csv = tmp_path / "maze.csv"
+    maze_csv.write_text("team_name\nTeam A\nTeam B\nTeam C\nTeam D\n")
+    schedule_file = tmp_path / "schedule.json"
+    output_dir = tmp_path / "out"
+
+    runner = CliRunner()
+    result = runner.invoke(cli, [
+        "generate",
+        "--division", f"Maze:{maze_csv}:arenas=2:runs=2:no_interviews",
+        "--no-repeat-arena",
+        "--run-time", "10",
+        "--interview-time", "20",
+        "--interview-group-size", "2",
+        "--day", "Day1:09:00-17:00",
+        "--save", str(schedule_file),
+        "--output-dir", str(output_dir),
+    ])
+    assert result.exit_code == 0, result.output
+
+    result = runner.invoke(cli, ["validate", str(schedule_file)])
+    assert result.exit_code == 0, result.output
+    assert "valid" in result.output
+
+
+def test_generate_division_day_runs_multi_day_minimum(tmp_path):
+    """--division-day-runs Maze:Day1:2:3 ensures each team gets at least 2 runs on Day1."""
+    maze_csv = tmp_path / "maze.csv"
+    maze_csv.write_text("team_name\nTeam A\nTeam B\nTeam C\nTeam D\n")
+    output_dir = tmp_path / "out"
+
+    runner = CliRunner()
+    result = runner.invoke(cli, [
+        "generate",
+        "--division", f"Maze:{maze_csv}:arenas=1:runs=3",
+        "--division-day-runs", "Maze:Day1:2:3",
+        "--run-time", "10",
+        "--interview-time", "15",
+        "--interview-group-size", "2",
+        "--day", "Day1:09:00-17:00",
+        "--day", "Day2:09:00-17:00",
+        "--output-dir", str(output_dir),
+    ])
+    assert result.exit_code == 0, result.output
+
+    maze_teams = {"Team A", "Team B", "Team C", "Team D"}
+    day1_csv = output_dir / "Day1.csv"
+    with open(day1_csv) as f:
+        rows = list(csv.DictReader(f))
+    maze_arena_rows = [r for r in rows if "Maze" in r["resource"] and "Arena" in r["resource"]]
+    for team_name in maze_teams:
+        team_rows = [r for r in maze_arena_rows if r["teams"].strip() == team_name]
+        assert len(team_rows) >= 2, f"{team_name} on Day1: expected >= 2 runs, got {len(team_rows)}"

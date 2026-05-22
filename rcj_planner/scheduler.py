@@ -49,6 +49,7 @@ def build_schedule(
     arena_reset_minutes: int = 0,
     interview_day_specs: list[str] | None = None,
     num_interview_rooms: int = 1,
+    no_repeat_arena: bool = False,
 ) -> Schedule:
     """
     divisions: list of Division objects (or legacy tuples for backward compat).
@@ -192,6 +193,8 @@ def build_schedule(
             team_arena_runs = {(team, arena): 0 for team in teams for arena in arenas}
             last_slot_for_arena = {arena: None for arena in arenas}
             arena_run_count = {arena: 0 for arena in arenas}
+            apply_no_repeat = no_repeat_arena and num_arenas > 1
+            team_last_arena: dict = {}
             # Build a list of all (team, arena) pairs that need to be scheduled, each repeated runs_per_arena times
             required_pairs = []
             for team in teams:
@@ -238,28 +241,30 @@ def build_schedule(
                             "index": i,
                             "team": team,
                             "runsNeededToday": runsNeededToday,
-                            "runsNeededOnOtherDays": runsNeededOnOtherDays
+                            "runsNeededOnOtherDays": runsNeededOnOtherDays,
+                            "repeats_arena": 1 if (apply_no_repeat and team_last_arena.get(team) == arena) else 0,
                         })
                     if not candidates:
                         continue
                     
 
         
-                    # Pick best candidate: fewest runs needed on other days → max runs still needed today → fewest runs on this day → fewest total runs → original order
+                    # Pick best candidate: fewest runs needed on other days → max runs still needed today → avoid repeating arena → fewest runs on this day → fewest total runs → original order
                     best_team_details = min(
                         candidates,
-                        key=lambda x: (x["runsNeededOnOtherDays"], -x["runsNeededToday"], team_day_runs[x["team"]][slot.day], team_runs[x["team"]], x["index"])
+                        key=lambda x: (x["runsNeededOnOtherDays"], -x["runsNeededToday"], x["repeats_arena"], team_day_runs[x["team"]][slot.day], team_runs[x["team"]], x["index"])
                     )
                     best_idx = best_team_details["index"]
                     best_team = best_team_details["team"]
 
-                    print(f"Assigning team '{best_team.name}' to {arena.name} on {slot.day} at {slot.start.strftime('%H:%M')}. "
-                          f"Runs today: {team_day_runs[best_team][slot.day]}, "
-                          f"Runs needed today: {best_team_details['runsNeededToday']}, "
-                          f"Runs needed on other days: {best_team_details['runsNeededOnOtherDays']}, "
-                          f"Total runs: {team_runs[best_team]}.")
+                    # print(f"Assigning team '{best_team.name}' to {arena.name} on {slot.day} at {slot.start.strftime('%H:%M')}. "
+                    #       f"Runs today: {team_day_runs[best_team][slot.day]}, "
+                    #       f"Runs needed today: {best_team_details['runsNeededToday']}, "
+                    #       f"Runs needed on other days: {best_team_details['runsNeededOnOtherDays']}, "
+                    #       f"Total runs: {team_runs[best_team]}.")
 
                     assignments.append(Assignment(slot, arena, [best_team]))
+                    team_last_arena[best_team] = arena
                     team_arena_runs[(best_team, arena)] += 1
                     team_runs[best_team] += 1
                     team_day_runs[best_team][slot.day] += 1
@@ -299,7 +304,7 @@ def build_schedule(
             for day_lbl, minimum in div.day_run_minimums.items():
                 for team in teams:
                     
-                    print(f"{team.name} assignments: {[f'{a.resource.kind} on {a.slot.day}' for a in assignments if team in a.teams]}")
+                    # print(f"{team.name} assignments: {[f'{a.resource.kind} on {a.slot.day}' for a in assignments if team in a.teams]}")
                     
                     actual = sum(
                         1 for a in assignments
@@ -363,6 +368,7 @@ def build_schedule(
         "interview_time_minutes": interview_time,
         "interview_group_size": interview_group_size,
         "buffer_minutes": buffer_minutes,
+        "no_repeat_arena": no_repeat_arena,
         "days": day_specs,
         "interview_days": interview_specs,
         "interview_rooms": num_interview_rooms,
