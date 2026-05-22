@@ -227,14 +227,38 @@ def build_schedule(
                                 continue
                         if _team_conflicts(slot, team, assignments, buffer_minutes):
                             continue
-                        candidates.append((i, team))
+                        day_min = div.day_run_minimums.get(slot.day,0)
+                        days = div.day_specs if div.day_specs is not None else day_specs
+                        runsNeededOnOtherDays = sum(d != slot.day and team_day_runs[team][d.split(":")[0]] < day_min for d in days)
+                        runsNeededToday = div.day_run_minimums.get(slot.day, 0) - team_day_runs[team][slot.day]
+                        if runsNeededToday < 0 and runsNeededOnOtherDays > 0:
+                            continue # deprioritize teams that have already met today's minimum if they still need runs on other days
+
+                        candidates.append({
+                            "index": i,
+                            "team": team,
+                            "runsNeededToday": runsNeededToday,
+                            "runsNeededOnOtherDays": runsNeededOnOtherDays
+                        })
                     if not candidates:
                         continue
-                    # Pick best candidate: fewest runs on this day → fewest total runs → original order
-                    best_idx, best_team = min(
+                    
+
+        
+                    # Pick best candidate: fewest runs needed on other days → max runs still needed today → fewest runs on this day → fewest total runs → original order
+                    best_team_details = min(
                         candidates,
-                        key=lambda x: (team_day_runs[x[1]][slot.day], team_runs[x[1]], x[0])
+                        key=lambda x: (x["runsNeededOnOtherDays"], -x["runsNeededToday"], team_day_runs[x["team"]][slot.day], team_runs[x["team"]], x["index"])
                     )
+                    best_idx = best_team_details["index"]
+                    best_team = best_team_details["team"]
+
+                    print(f"Assigning team '{best_team.name}' to {arena.name} on {slot.day} at {slot.start.strftime('%H:%M')}. "
+                          f"Runs today: {team_day_runs[best_team][slot.day]}, "
+                          f"Runs needed today: {best_team_details['runsNeededToday']}, "
+                          f"Runs needed on other days: {best_team_details['runsNeededOnOtherDays']}, "
+                          f"Total runs: {team_runs[best_team]}.")
+
                     assignments.append(Assignment(slot, arena, [best_team]))
                     team_arena_runs[(best_team, arena)] += 1
                     team_runs[best_team] += 1
@@ -265,10 +289,29 @@ def build_schedule(
                         and a.resource.name.startswith(div_label)
                         and team in a.teams
                     )
-                    if actual != limit:
+                    if actual > limit:
                         raise SchedulingError(
                             f"Team '{team.name}' in '{div_label}' has {actual} runs on {day_lbl}, "
-                            f"expected {limit}. Try adjusting day timeframes or constraints."
+                            f"expected at most {limit}. Try adjusting day timeframes or constraints."
+                        )
+                    
+        if div.day_run_minimums:
+            for day_lbl, minimum in div.day_run_minimums.items():
+                for team in teams:
+                    
+                    print(f"{team.name} assignments: {[f'{a.resource.kind} on {a.slot.day}' for a in assignments if team in a.teams]}")
+                    
+                    actual = sum(
+                        1 for a in assignments
+                        if a.slot.day == day_lbl
+                        and a.resource.kind == "arena"
+                        and a.resource.name.startswith(div_label)
+                        and team in a.teams
+                    )
+                    if actual < minimum:
+                        raise SchedulingError(
+                            f"Team '{team.name}' in '{div_label}' has {actual} runs on {day_lbl}, "
+                            f"expected at least {minimum}. Try adjusting day timeframes or constraints."
                         )
 
     # Phase 2 — Interviews grouped by division (shared interview resources)

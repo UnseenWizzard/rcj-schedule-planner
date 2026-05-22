@@ -79,7 +79,7 @@ def generate(division_specs, run_time, interview_time, interview_group_size, day
                 div.day_specs = [overrides.get(d.split(":")[0], d) for d in days]
 
         for drspec in division_day_runs_specs:
-            div_lbl, day_lbl, n = parse_division_day_runs_spec(drspec)
+            div_lbl, day_lbl, min, max = parse_division_day_runs_spec(drspec)
             if div_lbl not in div_labels:
                 raise click.BadParameter(
                     f"'{div_lbl}' does not match any --division label",
@@ -92,7 +92,8 @@ def generate(division_specs, run_time, interview_time, interview_group_size, day
                 )
             for div in divisions:
                 if div.label == div_lbl:
-                    div.day_run_limits[day_lbl] = n
+                    div.day_run_minimums[day_lbl] = min
+                    div.day_run_limits[day_lbl] = max
                     break
 
         for iday in interview_days:

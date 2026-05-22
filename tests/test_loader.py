@@ -117,10 +117,15 @@ def test_parse_break_spec_invalid():
 
 
 def test_parse_division_day_runs_spec_valid():
-    div_lbl, day_lbl, n = parse_division_day_runs_spec("Maze:Day1:2")
+    div_lbl, day_lbl, min_runs, max_runs = parse_division_day_runs_spec("Maze:Day1:1:2")
     assert div_lbl == "Maze"
     assert day_lbl == "Day1"
-    assert n == 2
+    assert min_runs == 1
+    assert max_runs == 2
+
+def test_parse_division_day_runs_spec_invalid_misses_max():
+    with pytest.raises(ValueError):
+        parse_division_day_runs_spec("Maze:Day1:2")
 
 
 def test_parse_division_day_runs_spec_wrong_parts():

@@ -26,6 +26,7 @@ class Division:
     no_interviews: bool = False
     day_specs: list | None = None  # None = use global day_specs
     day_run_limits: dict = field(default_factory=dict)  # {day_label: int} max runs per team per day
+    day_run_minimums: dict = field(default_factory=dict)  # {day_label: int} minimum runs per team per day
 
 
 @dataclass(frozen=True)

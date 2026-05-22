@@ -71,22 +71,23 @@ def parse_break_spec(spec: str) -> Break:
     return Break(day=day, start=start, end=end, division=division)
 
 
-def parse_division_day_runs_spec(spec: str) -> tuple[str, str, int]:
-    """Parse 'DivisionLabel:DayLabel:N' into (division_label, day_label, n).
+def parse_division_day_runs_spec(spec: str) -> tuple[str, str, int, int]:
+    """Parse 'DivisionLabel:DayLabel:Min:Max' into (division_label, day_label, min, max).
 
-    N is the number of runs per team per day for this division.
+    Min and Max are the minimum and maximum number of runs per team per day for this division.
     """
     parts = spec.split(":")
-    if len(parts) != 3:
+    if len(parts) != 4:
         raise ValueError(
-            f"Invalid division-day-runs spec {spec!r}. Expected 'DivisionLabel:DayLabel:N'"
+            f"Invalid division-day-runs spec {spec!r}. Expected 'DivisionLabel:DayLabel:Min:Max'"
         )
-    division_label, day_label, n_str = parts
+    division_label, day_label, min_str, max_str = parts
     try:
-        n = int(n_str.strip())
+        min_runs = int(min_str.strip())
+        max_runs = int(max_str.strip())
     except ValueError:
-        raise ValueError(f"Invalid run count {n_str!r} in spec {spec!r}. Must be an integer.")
-    return division_label.strip(), day_label.strip(), n
+        raise ValueError(f"Invalid run count in spec {spec!r}. Must be integers.")
+    return division_label.strip(), day_label.strip(), min_runs, max_runs
 
 
 def parse_division_day_spec(spec: str) -> tuple[str, str]:

@@ -46,7 +46,7 @@ rcj-planner generate \
 | `--interview-day` | no (repeatable) | — | Override interview time window for a day: `Label:HH:MM-HH:MM`. Label must match an existing `--day` label. Days without an override use their `--day` window. |
 | `--interview-rooms` | no | `1` | Number of parallel interview resources. When `1`, the resource is named `"Interview"`; when `>1`, resources are named `"Interview 1"`, `"Interview 2"`, etc. |
 | `--division-day` | no (repeatable) | — | Override arena run time window for a division/day: `Label:DayLabel:HH:MM-HH:MM`. Label must match an existing `--division` label, DayLabel an existing `--day` label. |
-| `--division-day-runs` | no (repeatable) | — | Cap runs per team for a division on a given day: `Label:DayLabel:N`. Days not mentioned are unconstrained. |
+| `--division-day-runs` | no (repeatable) | — | Configure min and max runs per team for a division on a given day: `Label:DayLabel:Min:Max`. Days not mentioned are unconstrained. |
 
 #### Division spec
 
@@ -85,7 +85,7 @@ Example:
 
 ```bash
 --division-day "Rescue Maze:Day1:10:00-15:00" \
---division-day-runs "Rescue Maze:Day1:2"
+--division-day-runs "Rescue Maze:Day1:1:2"
 ```
 
 This restricts Rescue Maze arena slots on Day 1 to the 10:00–15:00 window, and caps each team at 2 runs that day.

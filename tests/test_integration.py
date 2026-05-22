@@ -178,7 +178,7 @@ def test_generate_division_day_override(tmp_path):
 
 
 def test_generate_division_day_runs(tmp_path):
-    """--division-day-runs Maze:Day1:2 with runs=3 and 2-day schedule gives 2 Day1 runs, 1 Day2 run."""
+    """--division-day-runs Maze:Day1:2:2 with runs=3 and 2-day schedule gives 2 Day1 runs, 1 Day2 run."""
     maze_csv = tmp_path / "maze.csv"
     maze_csv.write_text("team_name\nTeam A\nTeam B\nTeam C\nTeam D\n")
     schedule_file = tmp_path / "schedule.json"
@@ -188,7 +188,7 @@ def test_generate_division_day_runs(tmp_path):
     result = runner.invoke(cli, [
         "generate",
         "--division", f"Maze:{maze_csv}:arenas=1:runs=3",
-        "--division-day-runs", "Maze:Day1:2",
+        "--division-day-runs", "Maze:Day1:2:2",
         "--run-time", "10",
         "--interview-time", "15",
         "--interview-group-size", "2",

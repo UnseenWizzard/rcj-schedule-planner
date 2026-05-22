@@ -469,6 +469,40 @@ def test_day_run_limits_two_day_schedule():
         assert len(day1_runs) == 2, f"{team.name}: expected 2 Day1 runs, got {len(day1_runs)}"
         assert len(day2_runs) == 1, f"{team.name}: expected 1 Day2 run, got {len(day2_runs)}"
 
+def test_day_run_even_min_max_two_day_schedule():
+    """day_run_limits={"Day1": 2} and day_run_minimums={"Day2": 2} with runs_per_arena=4 should give 2 runs on Day1 and 2 on Day2."""
+    teams = [Team(f"Team{i}", "Maze") for i in range(4)]
+    divisions = [Division(label="Maze", teams=teams, num_arenas=1, runs_per_arena=4,
+                          day_run_limits={"Day1": 2}, day_run_minimums={"Day2": 2})]
+    s = build_schedule(divisions, DAYS_2, run_time=10, interview_time=20,
+                       interview_group_size=2, buffer_minutes=10)
+    assert validate_schedule(s) == []
+    for team in teams:
+        assert len(s.assignments_for_team(team)) == 5, f"{team.name}: expected 4 runs + 1 interview, got {len(s.assignments_for_team(team))}"
+        day1_runs = [a for a in s.assignments_for_team(team)
+                     if a.resource.kind == "arena" and a.slot.day == "Day1"]
+        day2_runs = [a for a in s.assignments_for_team(team)
+                     if a.resource.kind == "arena" and a.slot.day == "Day2"]
+        assert len(day1_runs) == 2, f"{team.name}: expected 2 Day1 runs, got {len(day1_runs)}"
+        assert len(day2_runs) == 2, f"{team.name}: expected 2 Day2 runs, got {len(day2_runs)}"
+
+def test_day_run_min_max_within_bounds_spreads_to_even_two_day_schedule():
+    """day_run_limits={"Day1": 3,"Day2": 2} and day_run_minimums={"Day1": 1,"Day2": 2} with runs_per_arena=4 should give 2 runs on Day1 and 2 on Day2."""
+    teams = [Team(f"Team{i}", "Maze") for i in range(4)]
+    divisions = [Division(label="Maze", teams=teams, num_arenas=1, runs_per_arena=4,
+                          day_run_minimums={"Day1": 1,"Day2": 2},day_run_limits={"Day1": 3,"Day2": 2}, )]
+    s = build_schedule(divisions, DAYS_2, run_time=10, interview_time=20,
+                       interview_group_size=2, buffer_minutes=10)
+    assert validate_schedule(s) == []
+    for team in teams:
+        print(f"{team.name} assignments: {[f'{a.resource.kind} on {a.slot.day}' for a in s.assignments_for_team(team)]}")
+        assert len(s.assignments_for_team(team)) == 5, f"{team.name}: expected 4 runs + 1 interview, got {len(s.assignments_for_team(team))}"
+        day1_runs = [a for a in s.assignments_for_team(team)
+                     if a.resource.kind == "arena" and a.slot.day == "Day1"]
+        day2_runs = [a for a in s.assignments_for_team(team)
+                     if a.resource.kind == "arena" and a.slot.day == "Day2"]
+        assert len(day1_runs) == 2, f"{team.name}: expected 2 Day1 runs, got {len(day1_runs)}"
+        assert len(day2_runs) == 2, f"{team.name}: expected 2 Day2 runs, got {len(day2_runs)}"
 
 def test_day_run_limits_zero_on_day():
     """day_run_limits={"Day1": 0} forces all runs to Day2."""
