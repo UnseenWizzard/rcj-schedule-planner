@@ -306,3 +306,34 @@ def test_generate_division_day_runs_multi_day_minimum(tmp_path):
     for team_name in maze_teams:
         team_rows = [r for r in maze_arena_rows if r["teams"].strip() == team_name]
         assert len(team_rows) >= 2, f"{team_name} on Day1: expected >= 2 runs, got {len(team_rows)}"
+
+
+def test_generate_division_day_runs_large_two_day_balances(tmp_path):
+    """30 teams, 3 arenas, runs=3, two 9-18 days with min/max range must succeed via CLI.
+
+    Regression for commit abea07d's broken min/max candidate logic.
+    """
+    maze_csv = tmp_path / "maze.csv"
+    maze_csv.write_text("team_name\n" + "\n".join(f"T{i:02d}" for i in range(30)) + "\n")
+    schedule_file = tmp_path / "schedule.json"
+    output_dir = tmp_path / "out"
+
+    runner = CliRunner()
+    result = runner.invoke(cli, [
+        "generate",
+        "--division", f"Maze:{maze_csv}:arenas=3:runs=3:no_interviews",
+        "--division-day-runs", "Maze:Day1:4:5",
+        "--division-day-runs", "Maze:Day2:4:5",
+        "--run-time", "12",
+        "--interview-time", "20",
+        "--interview-group-size", "3",
+        "--buffer", "5",
+        "--day", "Day1:09:00-18:00",
+        "--day", "Day2:09:00-18:00",
+        "--save", str(schedule_file),
+        "--output-dir", str(output_dir),
+    ])
+    assert result.exit_code == 0, result.output
+
+    result = runner.invoke(cli, ["validate", str(schedule_file)])
+    assert result.exit_code == 0, result.output

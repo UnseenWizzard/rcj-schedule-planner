@@ -230,38 +230,45 @@ def build_schedule(
                                 continue
                         if _team_conflicts(slot, team, assignments, buffer_minutes):
                             continue
-                        day_min = div.day_run_minimums.get(slot.day,0)
                         days = div.day_specs if div.day_specs is not None else day_specs
-                        runsNeededOnOtherDays = sum(d != slot.day and team_day_runs[team][d.split(":")[0]] < day_min for d in days)
-                        runsNeededToday = div.day_run_minimums.get(slot.day, 0) - team_day_runs[team][slot.day]
-                        if runsNeededToday < 0 and runsNeededOnOtherDays > 0:
-                            continue # deprioritize teams that have already met today's minimum if they still need runs on other days
-
+                        day_labels = [d.split(":")[0] for d in days]
+                        today_min = div.day_run_minimums.get(slot.day, 0)
+                        runsNeededToday = today_min - team_day_runs[team][slot.day]
+                        other_day_min_need = sum(
+                            max(0, div.day_run_minimums.get(dl, 0) - team_day_runs[team][dl])
+                            for dl in day_labels if dl != slot.day
+                        )
+                        # Hard skip: assigning here would leave too few remaining runs to meet other days' minimums.
+                        if total_runs_per_team - team_runs[team] - 1 < other_day_min_need:
+                            continue
+                        runsNeededOnOtherDays = sum(
+                            1 for dl in day_labels
+                            if dl != slot.day
+                            and team_day_runs[team][dl] < div.day_run_minimums.get(dl, 0)
+                        )
+                        if runsNeededToday > 0:
+                            min_priority = 0
+                        elif runsNeededOnOtherDays > 0:
+                            min_priority = 2
+                        else:
+                            min_priority = 1
                         candidates.append({
                             "index": i,
                             "team": team,
                             "runsNeededToday": runsNeededToday,
                             "runsNeededOnOtherDays": runsNeededOnOtherDays,
+                            "min_priority": min_priority,
                             "repeats_arena": 1 if (apply_no_repeat and team_last_arena.get(team) == arena) else 0,
                         })
                     if not candidates:
                         continue
-                    
-
-        
-                    # Pick best candidate: fewest runs needed on other days → max runs still needed today → avoid repeating arena → fewest runs on this day → fewest total runs → original order
+                    # Pick best candidate: lowest min-priority (catch-up today first, save-for-others last) → max runs still needed today → avoid repeating arena → fewest runs on this day → fewest total runs → original order
                     best_team_details = min(
                         candidates,
-                        key=lambda x: (x["runsNeededOnOtherDays"], -x["runsNeededToday"], x["repeats_arena"], team_day_runs[x["team"]][slot.day], team_runs[x["team"]], x["index"])
+                        key=lambda x: (x["min_priority"], -x["runsNeededToday"], x["repeats_arena"], team_day_runs[x["team"]][slot.day], team_runs[x["team"]], x["index"])
                     )
                     best_idx = best_team_details["index"]
                     best_team = best_team_details["team"]
-
-                    # print(f"Assigning team '{best_team.name}' to {arena.name} on {slot.day} at {slot.start.strftime('%H:%M')}. "
-                    #       f"Runs today: {team_day_runs[best_team][slot.day]}, "
-                    #       f"Runs needed today: {best_team_details['runsNeededToday']}, "
-                    #       f"Runs needed on other days: {best_team_details['runsNeededOnOtherDays']}, "
-                    #       f"Total runs: {team_runs[best_team]}.")
 
                     assignments.append(Assignment(slot, arena, [best_team]))
                     team_last_arena[best_team] = arena
@@ -303,9 +310,6 @@ def build_schedule(
         if div.day_run_minimums:
             for day_lbl, minimum in div.day_run_minimums.items():
                 for team in teams:
-                    
-                    # print(f"{team.name} assignments: {[f'{a.resource.kind} on {a.slot.day}' for a in assignments if team in a.teams]}")
-                    
                     actual = sum(
                         1 for a in assignments
                         if a.slot.day == day_lbl

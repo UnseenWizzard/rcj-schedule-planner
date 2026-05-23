@@ -643,3 +643,52 @@ def test_day_run_three_day_schedule():
             runs = [a for a in s.assignments_for_team(team)
                     if a.resource.kind == "arena" and a.slot.day == day]
             assert len(runs) == 1, f"{team.name} on {day}: expected 1 run, got {len(runs)}"
+
+
+def test_day_run_min_max_large_two_day_schedule_balances():
+    """30 teams, 3 arenas, runs=3, two 9-18 days, range min/max should succeed.
+
+    Regression: commit abea07d's candidate logic raised SchedulingError on
+    this feasible scenario because of buggy day-label comparison and a
+    hard `continue` that excluded teams the greedy still needed.
+    """
+    DAYS_LONG = ["Day1:09:00-18:00", "Day2:09:00-18:00"]
+    teams = [Team(f"T{i:02d}", "Maze") for i in range(30)]
+    divisions = [Division(label="Maze", teams=teams, num_arenas=3,
+                          runs_per_arena=3, no_interviews=True,
+                          day_run_minimums={"Day1": 4, "Day2": 4},
+                          day_run_limits={"Day1": 5, "Day2": 5})]
+    s = build_schedule(divisions, DAYS_LONG, run_time=12,
+                       interview_time=20, interview_group_size=3,
+                       buffer_minutes=5)
+    assert validate_schedule(s) == []
+    for t in teams:
+        arena_assignments = [a for a in s.assignments
+                             if a.resource.kind == "arena" and t in a.teams]
+        assert len(arena_assignments) == 9, f"{t.name}: expected 9 runs, got {len(arena_assignments)}"
+        for d in ("Day1", "Day2"):
+            c = sum(1 for a in arena_assignments if a.slot.day == d)
+            assert 4 <= c <= 5, f"{t.name} on {d}: {c} runs not in [4,5]"
+
+
+def test_day_run_minimum_uses_per_day_value_not_today_min():
+    """Day1 min=1, Day2 min=2: per-day minimums must be respected independently.
+
+    Regression: the original buggy logic compared other days' run counts
+    against today's minimum, conflating the two day-specific values.
+    """
+    teams = [Team(f"Team{i}", "Maze") for i in range(4)]
+    divisions = [Division(label="Maze", teams=teams, num_arenas=1,
+                          runs_per_arena=4,
+                          day_run_minimums={"Day1": 1, "Day2": 2},
+                          day_run_limits={"Day1": 3, "Day2": 2})]
+    s = build_schedule(divisions, DAYS_2, run_time=10, interview_time=20,
+                       interview_group_size=2, buffer_minutes=10)
+    assert validate_schedule(s) == []
+    for t in teams:
+        arena = [a for a in s.assignments
+                 if a.resource.kind == "arena" and t in a.teams]
+        d1 = sum(1 for a in arena if a.slot.day == "Day1")
+        d2 = sum(1 for a in arena if a.slot.day == "Day2")
+        assert d1 == 2, f"{t.name}: expected 2 Day1 runs, got {d1}"
+        assert d2 == 2, f"{t.name}: expected 2 Day2 runs, got {d2}"
