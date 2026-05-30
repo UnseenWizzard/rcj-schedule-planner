@@ -1,15 +1,18 @@
 #!/bin/bash
 # Split a CSV file by division into separate per-division files
-# Usage: ./split_divisions.sh rcj_ao_2026_rescue_teams.csv
+# Usage: ./split_divisions.sh <file> [separator]
+# separator defaults to ','
 
 INPUT_FILE="${1:-.}"
+SEPARATOR="${2:-,}"
+
 if [[ ! -f "$INPUT_FILE" ]]; then
     echo "Error: File '$INPUT_FILE' not found"
     exit 1
 fi
 
 # Use awk to process the CSV and create per-division files
-awk -F',' 'NR==1 {next}
+awk -F"$SEPARATOR" 'NR==1 {next}
 {
     division = $NF
     gsub(/^[ \t]+|[ \t]+$/, "", division)  # trim whitespace
