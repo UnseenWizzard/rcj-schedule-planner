@@ -47,7 +47,7 @@ rcj-planner generate \
 | `--interview-rooms` | no | `1` | Number of parallel interview resources. When `1`, the resource is named `"Interview"`; when `>1`, resources are named `"Interview 1"`, `"Interview 2"`, etc. |
 | `--division-day` | no (repeatable) | — | Override arena run time window for a division/day: `Label:DayLabel:HH:MM-HH:MM`. Label must match an existing `--division` label, DayLabel an existing `--day` label. |
 | `--division-day-runs` | no (repeatable) | — | Configure min and max runs per team for a division on a given day: `Label:DayLabel:Min:Max`. Days not mentioned are unconstrained. |
-| `--no-repeat-arena` | no | off | Opt-in, best-effort constraint: avoids scheduling a team's consecutive runs on the same arena. Applies only to divisions with more than one arena; single-arena divisions are silently exempt. Never makes an otherwise-feasible schedule infeasible. |
+| `--no-repeat-arena` | no | off | Enforce no-repeat-arena as a hard constraint. By default the scheduler already prefers not to schedule a team's consecutive runs on the same arena (best-effort for multi-arena divisions); this flag makes the rule required and causes scheduling to fail if it cannot be honored. Single-arena divisions are silently exempt. |
 
 #### Division spec
 
