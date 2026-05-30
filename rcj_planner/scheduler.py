@@ -274,7 +274,7 @@ def build_schedule(
                     # Pick best candidate: lowest min-priority (catch-up today first, save-for-others last) → max runs still needed today → avoid repeating arena → fewest runs on this day → fewest total runs → original order
                     best_team_details = min(
                         candidates,
-                        key=lambda x: (x["min_priority"], -x["runsNeededToday"], x["repeats_arena"], team_day_runs[x["team"]][slot.day], team_runs[x["team"]], x["index"])
+                        key=lambda x: (x["min_priority"], -x["runsNeededToday"], x["repeats_arena"], team_arena_runs[(x["team"], arena)], team_day_runs[x["team"]][slot.day], team_runs[x["team"]], x["index"])
                     )
                     best_idx = best_team_details["index"]
                     best_team = best_team_details["team"]
