@@ -34,7 +34,12 @@ def cli():
 @click.option("--division-day-runs", "division_day_runs_specs", multiple=True,
               help="Per-division per-day run limit: 'DivisionLabel:DayLabel:N'")
 @click.option("--no-repeat-arena", "no_repeat_arena", is_flag=True, default=False,
-              help="Avoid a team's consecutive runs being on the same arena (best-effort, multi-arena only)")
+              help=(
+                  "Enforce as a hard constraint that a team's consecutive runs are never on the same arena. "
+                  "By default the scheduler already prefers not to repeat arenas (best-effort for multi-arena divisions); "
+                  "this flag makes the rule required and causes scheduling to fail if it cannot be honored. "
+                  "Single-arena divisions are silently exempt."
+              ))
 def generate(division_specs, run_time, interview_time, interview_group_size, days,
              interview_days, interview_rooms, output_dir, save_path, buffer, break_specs,
              division_day_specs, division_day_runs_specs, no_repeat_arena):

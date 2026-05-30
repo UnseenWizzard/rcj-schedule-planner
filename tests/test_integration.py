@@ -254,6 +254,9 @@ def test_generate_division_day_runs_unknown_day(tmp_path):
 
 def test_generate_no_repeat_arena_flag(tmp_path):
     """--no-repeat-arena with a multi-arena division should produce a valid schedule."""
+    import json
+    from rcj_planner.persistence import load as load_schedule
+    from rcj_planner.scheduler import validate_schedule
     maze_csv = tmp_path / "maze.csv"
     maze_csv.write_text("team_name\nTeam A\nTeam B\nTeam C\nTeam D\n")
     schedule_file = tmp_path / "schedule.json"
@@ -276,6 +279,35 @@ def test_generate_no_repeat_arena_flag(tmp_path):
     result = runner.invoke(cli, ["validate", str(schedule_file)])
     assert result.exit_code == 0, result.output
     assert "valid" in result.output
+
+    s = load_schedule(str(schedule_file))
+    assert s.meta["no_repeat_arena"] is True
+    assert validate_schedule(s) == []
+
+
+def test_generate_no_repeat_arena_default_soft(tmp_path):
+    """Without --no-repeat-arena the meta flag is False and the schedule is valid."""
+    from rcj_planner.persistence import load as load_schedule
+    maze_csv = tmp_path / "maze.csv"
+    maze_csv.write_text("team_name\nTeam A\nTeam B\nTeam C\nTeam D\n")
+    schedule_file = tmp_path / "schedule.json"
+    output_dir = tmp_path / "out"
+
+    runner = CliRunner()
+    result = runner.invoke(cli, [
+        "generate",
+        "--division", f"Maze:{maze_csv}:arenas=2:runs=2:no_interviews",
+        "--run-time", "10",
+        "--interview-time", "20",
+        "--interview-group-size", "2",
+        "--day", "Day1:09:00-17:00",
+        "--save", str(schedule_file),
+        "--output-dir", str(output_dir),
+    ])
+    assert result.exit_code == 0, result.output
+
+    s = load_schedule(str(schedule_file))
+    assert s.meta["no_repeat_arena"] is False
 
 
 def test_generate_division_day_runs_multi_day_minimum(tmp_path):
