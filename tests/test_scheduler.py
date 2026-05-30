@@ -623,11 +623,41 @@ def test_no_repeat_arena_single_arena_exempt():
         assert len(arena_runs) == 3
 
 
-def test_no_repeat_arena_off_by_default():
+def test_no_repeat_arena_default_is_soft_preference():
     divisions = make_divisions(num_teams=4, num_arenas=2, runs_per_arena=2, no_interviews=True)
     s = build_schedule(divisions, DAYS, run_time=10, interview_time=20,
                        interview_group_size=2, buffer_minutes=10)
     assert validate_schedule(s) == []
+    assert s.meta["no_repeat_arena"] is False
+    # The soft preference is on by default for multi-arena divisions; the feasible
+    # scenario should achieve full alternation in practice.
+    teams = divisions[0].teams
+    for team in teams:
+        arena_assignments = sorted(
+            [a for a in s.assignments_for_team(team) if a.resource.kind == "arena"],
+            key=lambda a: (a.slot.day, a.slot.start),
+        )
+        for i in range(len(arena_assignments) - 1):
+            assert arena_assignments[i].resource != arena_assignments[i + 1].resource, (
+                f"{team.name}: consecutive runs on same arena {arena_assignments[i].resource.name}"
+            )
+
+
+def test_no_repeat_arena_hard_succeeds_when_feasible():
+    divisions = make_divisions(num_teams=4, num_arenas=2, runs_per_arena=2, no_interviews=True)
+    s = build_schedule(divisions, DAYS, run_time=10, interview_time=20,
+                       interview_group_size=2, buffer_minutes=10, no_repeat_arena=True)
+    assert validate_schedule(s) == []
+    teams = divisions[0].teams
+    for team in teams:
+        arena_assignments = sorted(
+            [a for a in s.assignments_for_team(team) if a.resource.kind == "arena"],
+            key=lambda a: (a.slot.day, a.slot.start),
+        )
+        for i in range(len(arena_assignments) - 1):
+            assert arena_assignments[i].resource != arena_assignments[i + 1].resource, (
+                f"{team.name}: consecutive runs on same arena {arena_assignments[i].resource.name}"
+            )
 
 
 def test_day_run_three_day_schedule():
@@ -692,3 +722,61 @@ def test_day_run_minimum_uses_per_day_value_not_today_min():
         d2 = sum(1 for a in arena if a.slot.day == "Day2")
         assert d1 == 2, f"{t.name}: expected 2 Day1 runs, got {d1}"
         assert d2 == 2, f"{t.name}: expected 2 Day2 runs, got {d2}"
+
+
+# --- validate_schedule: no-repeat-arena hard constraint ---
+
+def _make_arena_schedule(meta_no_repeat: bool) -> "Schedule":
+    """Helper: team runs Arena1, Arena1, Arena2 — first two are a consecutive repeat violation."""
+    from rcj_planner.models import Schedule, Assignment, TimeSlot, Resource, Team
+    from datetime import time
+    team = Team("Alpha", "DivA")
+    arena1 = Resource("arena", "DivA – Arena 1")
+    arena2 = Resource("arena", "DivA – Arena 2")
+    slot1 = TimeSlot("Day1", time(9, 0), time(9, 10))
+    slot2 = TimeSlot("Day1", time(9, 20), time(9, 30))
+    slot3 = TimeSlot("Day1", time(9, 40), time(9, 50))
+    # arena1 → arena1 → arena2: the first consecutive pair is a violation
+    assignments = [
+        Assignment(slot1, arena1, [team]),
+        Assignment(slot2, arena1, [team]),
+        Assignment(slot3, arena2, [team]),
+    ]
+    meta = {
+        "no_repeat_arena": meta_no_repeat,
+        "days": ["Day1:09:00-17:00"],
+        "buffer_minutes": 0,
+    }
+    return Schedule(assignments=assignments, meta=meta)
+
+
+def test_validate_reports_repeat_arena_when_hard_flag_set():
+    s = _make_arena_schedule(meta_no_repeat=True)
+    violations = validate_schedule(s)
+    assert len(violations) >= 1
+    assert any("Alpha" in v and "Arena 1" in v for v in violations), violations
+
+
+def test_validate_ignores_repeat_arena_when_flag_not_set():
+    s = _make_arena_schedule(meta_no_repeat=False)
+    assert validate_schedule(s) == []
+
+
+def test_validate_repeat_arena_exempt_for_single_arena():
+    from rcj_planner.models import Schedule, Assignment, TimeSlot, Resource, Team
+    from datetime import time
+    team = Team("Beta", "DivA")
+    arena = Resource("arena", "DivA – Arena 1")
+    slot1 = TimeSlot("Day1", time(9, 0), time(9, 10))
+    slot2 = TimeSlot("Day1", time(9, 20), time(9, 30))
+    assignments = [
+        Assignment(slot1, arena, [team]),
+        Assignment(slot2, arena, [team]),
+    ]
+    meta = {
+        "no_repeat_arena": True,
+        "days": ["Day1:09:00-17:00"],
+        "buffer_minutes": 0,
+    }
+    s = Schedule(assignments=assignments, meta=meta)
+    assert validate_schedule(s) == []

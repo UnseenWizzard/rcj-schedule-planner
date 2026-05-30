@@ -56,6 +56,12 @@ def build_schedule(
     Each division gets its own namespaced arena resources and independent run schedule.
     All divisions share interview resources (one or more, per num_interview_rooms).
     arena_reset_minutes (kwarg) is a global fallback used only if legacy tuple has 4 elements.
+
+    no_repeat_arena: When False (default), the scheduler already prefers not to schedule
+    a team's consecutive runs on the same arena (best-effort soft preference for multi-arena
+    divisions). When True, this is promoted to a hard constraint: candidates that would repeat
+    the previous arena are filtered out entirely, and SchedulingError is raised if the
+    constraint cannot be satisfied. Single-arena divisions are silently exempt in both modes.
     """
     divisions = [_to_division(e) for e in divisions]
     breaks = breaks or []
@@ -193,7 +199,8 @@ def build_schedule(
             team_arena_runs = {(team, arena): 0 for team in teams for arena in arenas}
             last_slot_for_arena = {arena: None for arena in arenas}
             arena_run_count = {arena: 0 for arena in arenas}
-            apply_no_repeat = no_repeat_arena and num_arenas > 1
+            apply_soft_no_repeat = num_arenas > 1
+            apply_hard_no_repeat = no_repeat_arena and num_arenas > 1
             team_last_arena: dict = {}
             # Build a list of all (team, arena) pairs that need to be scheduled, each repeated runs_per_arena times
             required_pairs = []
@@ -230,6 +237,8 @@ def build_schedule(
                                 continue
                         if _team_conflicts(slot, team, assignments, buffer_minutes):
                             continue
+                        if apply_hard_no_repeat and team_last_arena.get(team) == arena:
+                            continue
                         days = div.day_specs if div.day_specs is not None else day_specs
                         day_labels = [d.split(":")[0] for d in days]
                         today_min = div.day_run_minimums.get(slot.day, 0)
@@ -258,7 +267,7 @@ def build_schedule(
                             "runsNeededToday": runsNeededToday,
                             "runsNeededOnOtherDays": runsNeededOnOtherDays,
                             "min_priority": min_priority,
-                            "repeats_arena": 1 if (apply_no_repeat and team_last_arena.get(team) == arena) else 0,
+                            "repeats_arena": 1 if (apply_soft_no_repeat and team_last_arena.get(team) == arena) else 0,
                         })
                     if not candidates:
                         continue
@@ -411,6 +420,25 @@ def validate_schedule(schedule: Schedule) -> list[str]:
                 elif a.slot.buffer_conflict(b.slot, buffer):
                     violations.append(
                         f"Team '{team.name}' has insufficient buffer between {a.slot} and {b.slot}"
+                    )
+
+    # Check no-repeat-arena hard constraint
+    if meta.get("no_repeat_arena"):
+        day_order = meta.get("days", [])
+        day_idx = {spec.split(":")[0]: i for i, spec in enumerate(day_order)}
+        for team in all_teams:
+            arena_assignments = [a for a in assignments if team in a.teams and a.resource.kind == "arena"]
+            if not arena_assignments:
+                continue
+            if len({a.resource for a in arena_assignments}) == 1:
+                continue
+            arena_assignments.sort(key=lambda a: (day_idx.get(a.slot.day, 0), a.slot.start))
+            for i in range(len(arena_assignments) - 1):
+                a, b = arena_assignments[i], arena_assignments[i + 1]
+                if a.resource == b.resource:
+                    violations.append(
+                        f"Team '{team.name}' has consecutive runs on the same arena "
+                        f"'{a.resource.name}' at {a.slot} and {b.slot}"
                     )
 
     return violations
