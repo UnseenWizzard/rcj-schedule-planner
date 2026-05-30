@@ -138,6 +138,27 @@ def test_parse_division_day_runs_spec_non_integer():
         parse_division_day_runs_spec("Maze:Day1:abc")
 
 
+def test_parse_division_day_runs_spec_non_integer_values():
+    with pytest.raises(ValueError):
+        parse_division_day_runs_spec("Maze:Day1:abc:2")
+    with pytest.raises(ValueError):
+        parse_division_day_runs_spec("Maze:Day1:2:xyz")
+
+
+def test_parse_division_day_runs_spec_equal_min_max():
+    div_lbl, day_lbl, min_runs, max_runs = parse_division_day_runs_spec("Maze:Day1:2:2")
+    assert div_lbl == "Maze"
+    assert day_lbl == "Day1"
+    assert min_runs == 2
+    assert max_runs == 2
+
+
+def test_parse_division_day_runs_spec_zero_min():
+    div_lbl, day_lbl, min_runs, max_runs = parse_division_day_runs_spec("Maze:Day1:0:3")
+    assert min_runs == 0
+    assert max_runs == 3
+
+
 def test_parse_division_day_spec_valid():
     div_label, day_spec = parse_division_day_spec("Maze:Day1:09:00-15:00")
     assert div_label == "Maze"
