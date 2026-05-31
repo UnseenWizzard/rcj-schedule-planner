@@ -80,17 +80,32 @@ def _find_best_line_match(
     return best
 
 
-def create_super_teams(teams: list[Team], points_range: int = 20) -> list[SuperTeam]:
+def _build_pools(teams: list[Team], level: str, limit: int | None) -> tuple[list[Team], list[Team]]:
+    """Return (maze_pool, line_pool) for a level, top-N by points, sorted ascending for pairing."""
+    maze = sorted(
+        [t for t in teams if t.discipline == "Maze" and t.level == level],
+        key=lambda t: t.points,
+        reverse=True,
+    )
+    line = sorted(
+        [t for t in teams if t.discipline == "Line" and t.level == level],
+        key=lambda t: t.points,
+        reverse=True,
+    )
+    if limit is not None:
+        if maze and limit > len(maze):
+            raise ValueError(f"Requested {limit} teams but only {len(maze)} Maze {level} teams available")
+        if line and limit > len(line):
+            raise ValueError(f"Requested {limit} teams but only {len(line)} Line {level} teams available")
+        maze = maze[:limit]
+        line = line[:limit]
+    return sorted(maze, key=lambda t: t.points), sorted(line, key=lambda t: t.points)
+
+
+def create_super_teams(teams: list[Team], points_range: int = 20, limit: int | None = None) -> list[SuperTeam]:
     result = []
     for level in ("Entry", "Regular"):
-        maze = sorted(
-            [t for t in teams if t.discipline == "Maze" and t.level == level],
-            key=lambda t: t.points,
-        )
-        line = sorted(
-            [t for t in teams if t.discipline == "Line" and t.level == level],
-            key=lambda t: t.points,
-        )
+        maze, line = _build_pools(teams, level, limit)
         used_line: set[int] = set()
         for maze_team in maze:
             best = _find_best_line_match(maze_team, line, used_line, points_range, require_diff_language=True)
@@ -111,7 +126,12 @@ def write_short_csv(super_teams: list[SuperTeam], out) -> None:
         writer.writerow([f"{st.maze_team.name},{st.line_team.name}"])
 
 
-def write_csv(super_teams: list[SuperTeam], out) -> None:
+def write_csv(
+    super_teams: list[SuperTeam],
+    out,
+    unmatched_maze: list[Team] = (),
+    unmatched_line: list[Team] = (),
+) -> None:
     writer = csv.writer(out)
     writer.writerow(
         ["Level", "MazeTeam", "MazeCity", "MazeLanguage", "MazePoints", "LineTeam", "LineCity", "LineLanguage", "LinePoints", "PointsDiff"]
@@ -131,6 +151,10 @@ def write_csv(super_teams: list[SuperTeam], out) -> None:
                 st.points_diff,
             ]
         )
+    for t in unmatched_maze:
+        writer.writerow([t.level, t.name, t.city, t.language, t.points, "", "", "", "", ""])
+    for t in unmatched_line:
+        writer.writerow([t.level, "", "", "", "", t.name, t.city, t.language, t.points, ""])
 
 
 def main() -> None:
@@ -138,16 +162,26 @@ def main() -> None:
     parser.add_argument("csv_file", help="Input CSV (TeamName;Discipline;Level;City;Institution;Language;Points)")
     parser.add_argument("--points-range", type=int, default=20, help="Max points difference (default: 20)")
     parser.add_argument("--output-dir", "-o", default=".", help="Directory for output CSV files (default: current directory)")
+    parser.add_argument("--limit", type=int, default=None, help="Max teams per discipline per level (selects top N by points)")
     args = parser.parse_args()
 
     teams = load_teams(args.csv_file)
-    super_teams = create_super_teams(teams, args.points_range)
+    try:
+        super_teams = create_super_teams(teams, args.points_range, args.limit)
+    except ValueError as e:
+        print(f"error: {e}", file=sys.stderr)
+        sys.exit(1)
 
     for level in ("Entry", "Regular"):
+        maze_pool, line_pool = _build_pools(teams, level, args.limit)
         level_teams = [st for st in super_teams if st.level == level]
+        paired_maze = {st.maze_team.name for st in level_teams}
+        paired_line = {st.line_team.name for st in level_teams}
+        unmatched_maze = [t for t in maze_pool if t.name not in paired_maze]
+        unmatched_line = [t for t in line_pool if t.name not in paired_line]
         details_path = os.path.join(args.output_dir, f"superteams_{level.lower()}_details.csv")
         with open(details_path, "w", newline="", encoding="utf-8") as f:
-            write_csv(level_teams, f)
+            write_csv(level_teams, f, unmatched_maze, unmatched_line)
         short_path = os.path.join(args.output_dir, f"superteams_{level.lower()}.csv")
         with open(short_path, "w", newline="", encoding="utf-8") as f:
             write_short_csv(level_teams, f)

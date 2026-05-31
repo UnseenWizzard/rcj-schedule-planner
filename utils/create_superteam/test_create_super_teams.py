@@ -216,6 +216,24 @@ class TestWriteCsv:
         rows = list(csv.reader(buf))
         assert len(rows) == 1
 
+    def test_unmatched_maze_row_has_empty_line_columns(self):
+        import io
+        buf = io.StringIO()
+        unmatched = [make_team("MazeX", "Maze", "Entry", "Vienna", 8, "DE")]
+        write_csv([], buf, unmatched_maze=unmatched)
+        buf.seek(0)
+        rows = list(csv.reader(buf))
+        assert rows[1] == ["Entry", "MazeX", "Vienna", "DE", "8", "", "", "", "", ""]
+
+    def test_unmatched_line_row_has_empty_maze_columns(self):
+        import io
+        buf = io.StringIO()
+        unmatched = [make_team("LineX", "Line", "Regular", "Prague", 12, "CZ")]
+        write_csv([], buf, unmatched_line=unmatched)
+        buf.seek(0)
+        rows = list(csv.reader(buf))
+        assert rows[1] == ["Regular", "", "", "", "", "LineX", "Prague", "CZ", "12", ""]
+
 
 # ── main / per-level output ───────────────────────────────────────────────────
 
@@ -240,7 +258,7 @@ class TestMainOutputFiles:
         assert (tmp_path / "superteams_entry.csv").exists()
         assert (tmp_path / "superteams_regular.csv").exists()
 
-    def test_entry_file_contains_only_entry_teams(self, tmp_path):
+    def test_entry_details_contains_only_entry_teams(self, tmp_path):
         from utils.create_superteam.create_super_teams import main
         csv_path = self._make_csv(tmp_path, [
             "ME;Maze;Entry;Berlin;S;0",
@@ -250,11 +268,11 @@ class TestMainOutputFiles:
         ])
         sys.argv = ["create_super_teams.py", csv_path, "--output-dir", str(tmp_path)]
         main()
-        rows = list(csv.reader((tmp_path / "superteams_entry.csv").open()))
+        rows = list(csv.reader((tmp_path / "superteams_entry_details.csv").open()))
         data_rows = rows[1:]
         assert all(r[0] == "Entry" for r in data_rows)
 
-    def test_regular_file_contains_only_regular_teams(self, tmp_path):
+    def test_regular_details_contains_only_regular_teams(self, tmp_path):
         from utils.create_superteam.create_super_teams import main
         csv_path = self._make_csv(tmp_path, [
             "ME;Maze;Entry;Berlin;S;0",
@@ -264,6 +282,22 @@ class TestMainOutputFiles:
         ])
         sys.argv = ["create_super_teams.py", csv_path, "--output-dir", str(tmp_path)]
         main()
-        rows = list(csv.reader((tmp_path / "superteams_regular.csv").open()))
+        rows = list(csv.reader((tmp_path / "superteams_regular_details.csv").open()))
         data_rows = rows[1:]
         assert all(r[0] == "Regular" for r in data_rows)
+
+    def test_details_includes_unmatched_teams(self, tmp_path):
+        from utils.create_superteam.create_super_teams import main
+        # M1 pairs with L1 (within range); M2 has no matching line team (points too far)
+        csv_path = self._make_csv(tmp_path, [
+            "M1;Maze;Entry;Berlin;S;10",
+            "M2;Maze;Entry;Vienna;S;100",
+            "L1;Line;Entry;Munich;S;10",
+        ])
+        sys.argv = ["create_super_teams.py", csv_path, "--output-dir", str(tmp_path)]
+        main()
+        rows = list(csv.reader((tmp_path / "superteams_entry_details.csv").open()))
+        names_in_file = {r[1] for r in rows[1:]} | {r[5] for r in rows[1:]}
+        assert "M1" in names_in_file
+        assert "L1" in names_in_file
+        assert "M2" in names_in_file  # unmatched, but still listed
