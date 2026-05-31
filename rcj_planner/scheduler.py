@@ -42,7 +42,7 @@ def build_schedule(
     divisions: list,
     day_specs: list[str],
     run_time: int,
-    interview_time: int,
+    interview_time: int | None,
     interview_group_size: int,
     buffer_minutes: int,
     breaks: list[Break] | None = None,
@@ -69,18 +69,20 @@ def build_schedule(
 
     global_run_slots = generate_slots(day_specs, run_time)
     interview_specs = interview_day_specs if interview_day_specs is not None else day_specs
-    all_interview_slots = generate_slots(interview_specs, interview_time)
 
-    # Filter interview slots against global breaks only
-    interview_slots = [
-        s for s in all_interview_slots
-        if not any(b.blocks_slot(s) for b in global_breaks)
-    ]
-
-    if num_interview_rooms == 1:
-        interview_resources = [Resource("interview", "Interview")]
+    if interview_time is not None:
+        all_interview_slots = generate_slots(interview_specs, interview_time)
+        interview_slots = [
+            s for s in all_interview_slots
+            if not any(b.blocks_slot(s) for b in global_breaks)
+        ]
+        if num_interview_rooms == 1:
+            interview_resources = [Resource("interview", "Interview")]
+        else:
+            interview_resources = [Resource("interview", f"Interview {i+1}") for i in range(num_interview_rooms)]
     else:
-        interview_resources = [Resource("interview", f"Interview {i+1}") for i in range(num_interview_rooms)]
+        interview_slots = []
+        interview_resources = []
 
     assignments: list[Assignment] = []
 
@@ -164,7 +166,7 @@ def build_schedule(
                 round_last_slots.append(last_assigned_slot)
 
             # Try to schedule interviews in the reset gaps between rounds
-            if not div.no_interviews:
+            if interview_time is not None and not div.no_interviews:
                 chunks = [
                     teams[i:i + interview_group_size]
                     for i in range(0, len(teams), interview_group_size)
@@ -335,7 +337,7 @@ def build_schedule(
     # Phase 2 — Interviews grouped by division (shared interview resources)
     # Chunks already placed in Phase 1 (simplified mode) are skipped here.
     for div in divisions:
-        if div.no_interviews:
+        if interview_time is None or div.no_interviews:
             continue
         div_label, teams = div.label, div.teams
         chunks = [
@@ -379,7 +381,7 @@ def build_schedule(
         },
         "run_time_minutes": run_time,
         "interview_time_minutes": interview_time,
-        "interview_group_size": interview_group_size,
+        "interview_group_size": interview_group_size if interview_time is not None else None,
         "buffer_minutes": buffer_minutes,
         "no_repeat_arena": no_repeat_arena,
         "days": day_specs,

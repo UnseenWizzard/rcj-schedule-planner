@@ -17,8 +17,8 @@ def cli():
 @click.option("--division", "division_specs", required=True, multiple=True,
               help="Division spec: 'Label:path/to/teams.csv:arenas=N'")
 @click.option("--run-time", required=True, type=int, help="Minutes per run slot")
-@click.option("--interview-time", required=True, type=int, help="Minutes per interview slot")
-@click.option("--interview-group-size", required=True, type=int, help="Teams per interview slot")
+@click.option("--interview-time", default=None, type=int, help="Minutes per interview slot (omit to skip interviews)")
+@click.option("--interview-group-size", default=1, type=int, show_default=True, help="Teams per interview slot")
 @click.option("--day", "days", required=True, multiple=True, help="Day spec: Label:HH:MM-HH:MM")
 @click.option("--interview-day", "interview_days", multiple=True,
               help="Override interview time window for a day: Label:HH:MM-HH:MM")
